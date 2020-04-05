@@ -1,3 +1,11 @@
+# Ignore root files
+condor_logs/
+*.jdl
+*.sh
+*.root
+*.0
+__init__.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
