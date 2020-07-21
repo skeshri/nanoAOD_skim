@@ -14,11 +14,26 @@ class wvAnalysisProducer(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
         #self.out.branch("EventMass",  "F");
-	#pass
+        """process event, return True (go to next module) or False (fail, go to next event)"""
+        #pass
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
     def analyze(self, event):
-        """process event, return True (go to next module) or False (fail, go to next event)"""
+        """nanoAOD skimming is done considering the final events selection
+        for the vv semileptonic final state.
+        
+        For the vv semileptonic final state we should be either one or two 
+        tight leptons, either one Fat jet and two small radius jet or four 
+        small radius jets.
+        
+        Arguments:
+            event {instance of event} -- instance of event
+        
+        Returns:
+            boolean -- if the event passes skimming then it returns true and
+                       go to the next module else returns false and go to 
+                       the next event.
+        """
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         jets = Collection(event, "Jet")
@@ -30,10 +45,10 @@ class wvAnalysisProducer(Module):
         eventFatJets = 0
         
         for lep in muons :
-            if lep.softId and abs(lep.dz)<0.1 and abs(lep.dxy < 0.02) and lep.pfRelIso04_all < 0.4 and lep.pt > 20:
+            if lep.tightId and lep.pt > 10 :
                 eventMuons += 1
         for lep in electrons :
-            if lep.cutBased == 2 and lep.pt > 20 :
+            if lep.cutBased >= 2 and lep.pt > 10 :
                 eventElectrons += 1
         for jet in jets :
             if jet.pt > 20:
@@ -42,7 +57,7 @@ class wvAnalysisProducer(Module):
             if fatjet.pt > 20:
                eventFatJets += 1
         
-        if not ( ((eventElectrons >= 1 or eventMuons >=1) and (eventMuons+eventElectrons < 3)) and ( (eventJets >= 2 and eventFatJets >= 1) or (eventJets >= 4 and eventFatJets == 0) )  ):
+        if not ( ((eventElectrons >= 1 or eventMuons >=1)) and ( (eventJets >= 2 and eventFatJets >= 1) or (eventJets >= 4 and eventFatJets == 0) )  ):
             keepIt = False
         
         return keepIt

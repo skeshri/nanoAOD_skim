@@ -1,10 +1,15 @@
 # Ignore root files
+*.bkup
+*.patch
+summary.dat
+CMSSW_10*.*
 condor_logs/
 *.jdl
 *.sh
 *.root
 *.0
 __init__.py
+docker_stderror
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
