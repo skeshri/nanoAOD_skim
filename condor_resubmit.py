@@ -19,12 +19,12 @@ import os
 """
 
 """path of log file directory"""
-path = "condor_logs/Run2018_v6_3May/200503_031434/"
+path = "condor_logs/Run2017_v6_DataReDoJEC/200726_173958/"
 
 """Name of main condor jdl/sh file name"""
-condor_file_name = "submit_condor_jobs_lnujj_v6_Run2018_v6_3May"
+condor_file_name = "submit_condor_jobs_lnujj_Run2017_v6_DataReDoJEC"
 
-"""This variable `Resubmit_no` is going to append in the new jdl file. 
+"""This variable `Resubmit_no` is going to append in the new jdl file.
 New jdl file name is the main jdl file + _resubmit_ + Resubmit_no
 
 New JDL FILE name : condor_file_name + "_resubmit_" + Resubmit_no
@@ -52,13 +52,18 @@ for lines in head:
 
 for lines in output.split():
   print "==> ",lines.strip()
+  # print "==> ",lines.strip().split('/')[-1].replace('.stdout','')
+  OldRefFile = lines.strip().split('/')[-1].replace('.stdout','').split('_')[-1]
+  # print "====> ",OldRefFile
   grep_output = os.popen('grep -E "Running.*root" '+lines.strip()).read()
   # print grep_output
   root_file = grep_output.split()[5].split('/')[-1]
   grepCommand_GetJdlInfo = 'grep -A1 -B3 "'+root_file+'" '+condor_file_name+'.jdl'
   # print grepCommand_GetJdlInfo
   grep_condor_jdl_part = os.popen(grepCommand_GetJdlInfo).read()
-  updateString = grep_condor_jdl_part.replace('Process)','Process)'+ '_resubmit_' +Resubmit_no)
+  updateString = grep_condor_jdl_part.replace('$(Process)',OldRefFile+'_$(Process)'+ '_resubmit_' +Resubmit_no)
   # print updateString
   outjdl_file.write(updateString)
 outjdl_file.close()
+
+print "===> ",outjdl_file
