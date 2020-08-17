@@ -19,17 +19,23 @@ import os
 """
 
 """path of log file directory"""
-path = "condor_logs/Run2017_v6_DataReDoJEC/200726_173958/"
+#path = "condor_logs/Run2017_v6_DataReDoJEC/200726_173958/"
+#path = "condor_logs/Run2016_v6_DataReDoJEC/200727_064518/"
+#path = "condor_logs/Run2018_v6_DataReDoJEC/200730_103313/"
+path = "condor_logs/Run2017_v7_5Aug20200/200805_032620/"
 
 """Name of main condor jdl/sh file name"""
-condor_file_name = "submit_condor_jobs_lnujj_Run2017_v6_DataReDoJEC"
+#condor_file_name = "submit_condor_jobs_lnujj_Run2017_v6_DataReDoJEC"
+#condor_file_name = "submit_condor_jobs_lnujj_Run2016_v6_DataReDoJEC"
+#condor_file_name = "submit_condor_jobs_lnujj_Run2018_v6_DataReDoJEC"
+condor_file_name = "submit_condor_jobs_lnujj_Run2017_v7_5Aug20200"
 
 """This variable `Resubmit_no` is going to append in the new jdl file.
 New jdl file name is the main jdl file + _resubmit_ + Resubmit_no
 
 New JDL FILE name : condor_file_name + "_resubmit_" + Resubmit_no
 """
-Resubmit_no = "1"
+Resubmit_no = "2"
 
 """This string is going to be searched in the log files.
 
@@ -37,7 +43,7 @@ If this string is not present in the log file this means the jobs are failed.
 """
 string_to_search = "preselected entries from root:"
 
-grepCommand = 'grep -L  "'+string_to_search+'" '+ path + os.sep +'*.stdout'
+grepCommand = 'grep -L  "'+string_to_search+'" '+ path + os.sep +'*_1.stdout'
 grepCommand = grepCommand.replace('//','/')
 print 'grep command: ',grepCommand
 output = os.popen(grepCommand).read()
@@ -53,7 +59,10 @@ for lines in head:
 for lines in output.split():
   print "==> ",lines.strip()
   # print "==> ",lines.strip().split('/')[-1].replace('.stdout','')
-  OldRefFile = lines.strip().split('/')[-1].replace('.stdout','').split('_')[-1]
+  if lines.strip().split('/')[-1].replace('.stdout','').split('_')[-2] == "resubmit":
+    OldRefFile = lines.strip().split('/')[-1].replace('.stdout','').split('_')[-4]
+  else:
+    OldRefFile = lines.strip().split('/')[-1].replace('.stdout','').split('_')[-1]
   # print "====> ",OldRefFile
   grep_output = os.popen('grep -E "Running.*root" '+lines.strip()).read()
   # print grep_output
