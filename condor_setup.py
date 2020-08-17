@@ -7,12 +7,18 @@ sys.path.append("Utils/python_utils/.")
 from color_style import style
 
 # Variables to be changed by user
-StringToChange = "Run2017_v6_19MayTTBarHadronic"
-InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
+#StringToChange = "Run2016_v6_15June2020_MatteoWJetBinned"
+#StringToChange = "Run2018_v6_DataReDoJEC"
+StringToChange = "Run2017_v7_5Aug20200"
+#InputFileFromWhereReadDASNames = 'sample_list_v6_2016_campaign.dat'
+#InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
+#InputFileFromWhereReadDASNames = 'sample_list_v6_2018_campaign.dat'
+#InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
+InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
 
 Initial_path = '/eos/uscms/store/user/lnujj/VVjj_aQGC/nanoAOD_skim/'
 Initial_path += StringToChange
-condor_file_name = 'submit_condor_jobs_lnujj_v6_'+StringToChange
+condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
 
 # Create log files
 import infoCreaterGit
@@ -37,7 +43,6 @@ import makeTarFile
 makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
 print "copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n"
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+storeDir+'/' + CMSSWRel+".tgz")
-
 
 post_proc_to_run = "post_proc.py"
 command = "python "+post_proc_to_run
@@ -136,8 +141,15 @@ outScript.write("\n"+command);
 outScript.write("\n"+'echo "====> List root files : " ');
 outScript.write("\n"+'ls *.root');
 outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
-outScript.write("\n"+'echo "xrdcp -f *.root root://cmseos.fnal.gov/${2}"');
-outScript.write("\n"+'xrdcp -f *.root root://cmseos.fnal.gov/${2}');
+outScript.write("\n"+'if ls *Hadd.root 1> /dev/null 2>&1; then');
+outScript.write("\n"+'    echo "File *Hadd.root exists. Copy this."');
+outScript.write("\n"+'    echo "xrdcp -f *Hadd.root root://cmseos.fnal.gov/${2}"');
+outScript.write("\n"+'    xrdcp -f *Hadd.root root://cmseos.fnal.gov/${2}');
+outScript.write("\n"+'else');
+outScript.write("\n"+'    echo "file *Hadd.root does not exists, so copy *.root file."');
+outScript.write("\n"+'    echo "xrdcp -f *.root root://cmseos.fnal.gov/${2}"');
+outScript.write("\n"+'    xrdcp -f *.root root://cmseos.fnal.gov/${2}');
+outScript.write("\n"+'fi');
 outScript.write("\n"+'rm *.root');
 outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
 outScript.write("\n"+'rm -rf ' + CMSSWRel);
