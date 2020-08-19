@@ -9,7 +9,7 @@ from color_style import style
 # Variables to be changed by user
 #StringToChange = "Run2016_v6_15June2020_MatteoWJetBinned"
 #StringToChange = "Run2018_v6_DataReDoJEC"
-StringToChange = "Run2017_v7_5Aug20200"
+StringToChange = "Run2017_v7_18Aug2020_Hadd"
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2016_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2018_campaign.dat'
@@ -130,13 +130,13 @@ outScript.write("\n"+'cd ' + CMSSWRel + '/src/PhysicsTools/NanoAODTools/python/p
 outScript.write("\n"+'rm *.root');
 outScript.write("\n"+'scramv1 b ProjectRename');
 outScript.write("\n"+'eval `scram runtime -sh`');
+outScript.write("\n"+'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" '+post_proc_to_run);
 outScript.write("\n"+'echo "========================================="');
 outScript.write("\n"+'echo "cat post_proc.py"');
 outScript.write("\n"+'echo "..."');
 outScript.write("\n"+'cat post_proc.py');
 outScript.write("\n"+'echo "..."');
 outScript.write("\n"+'echo "========================================="');
-outScript.write("\n"+'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" '+post_proc_to_run);
 outScript.write("\n"+command);
 outScript.write("\n"+'echo "====> List root files : " ');
 outScript.write("\n"+'ls *.root');
