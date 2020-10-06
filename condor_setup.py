@@ -10,10 +10,13 @@ from color_style import style
 #StringToChange = "Run2016_v6_15June2020_MatteoWJetBinned"
 #StringToChange = "Run2018_v6_DataReDoJEC"
 StringToChange = "Run2017_v7_18Aug2020_Hadd"
+customEOS = False
+customEOS_cmd = 'eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2016_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2018_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
+#InputFileFromWhereReadDASNames = 'sample_list_v7_2017_eos_custom.dat'
 InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
 
 Initial_path = '/eos/uscms/store/user/lnujj/VVjj_aQGC/nanoAOD_skim/'
@@ -97,7 +100,10 @@ with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
      ########################################
      #print 'dasgoclient --query="file dataset='+lines.strip()+'"'
      #print "..."
-     output = os.popen('dasgoclient --query="file dataset='+lines.strip()+'"').read()
+     if customEOS:
+       output = os.popen(customEOS_cmd + lines.strip()).read()
+     else:
+       output = os.popen('dasgoclient --query="file dataset='+lines.strip()+'"').read()
 
      count_root_files = 0
      for root_file in output.split():
