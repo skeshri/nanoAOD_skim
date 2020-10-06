@@ -5,15 +5,15 @@ keep event
 keep lumi*
 #
 #
-# keep Generator*
+keep Generator*
 keep *Weight
-# keep LHE*
-# keep nLHE*
-# keep nLHEPart
+keep LHE*
+keep nLHE*
+keep nLHEPart
 #
 #
-#keep nGenPart
-#keep GenPart*
+keep nGenPart
+keep GenPart*
 #
 #
 keep nIsoTrack
@@ -32,8 +32,8 @@ keep MET*
 keep Raw*
 keep Puppi*
 keep fixed*
-#keep nGenDressedLepton
-#keep GenDressedLepton*
+keep nGenDressedLepton
+keep GenDressedLepton*
 #
 #     Trigger
 #
@@ -46,13 +46,13 @@ keep HLT_Mu*
 # keep Jet*
 keep nFatJet
 keep FatJet*
-#keep nGenJet*
-#keep GenJet*
-#keep nSubGenJet*
-#keep SubGenJet*
+keep nGenJet*
+keep GenJet*
+keep nSubGenJet*
+keep SubGenJet*
 keep nSubJet
 keep SubJet*
-#keep genTtbarId
+keep genTtbarId
 #
 #
 keep nSoftActivityJet

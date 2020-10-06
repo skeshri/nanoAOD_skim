@@ -9,14 +9,15 @@ from color_style import style
 # Variables to be changed by user
 #StringToChange = "Run2016_v6_15June2020_MatteoWJetBinned"
 #StringToChange = "Run2018_v6_DataReDoJEC"
-StringToChange = "Run2017_v7_18Aug2020_Hadd"
+StringToChange = "Run2016_v7_15Sep2020"
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2016_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2018_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
-InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
+#InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
+InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
 
-Initial_path = '/eos/uscms/store/user/lnujj/VVjj_aQGC/nanoAOD_skim/'
+Initial_path = '/eos/uscms/store/user/lnujj/VV_aTGC/nanoAOD_skim/'
 Initial_path += StringToChange
 condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
 
