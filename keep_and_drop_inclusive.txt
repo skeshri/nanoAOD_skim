@@ -14,16 +14,25 @@ keep nLHEPart
 #
 keep nGenPart
 keep GenPart*
+keep nPSWeight
+keep PSWeight
+#
+#
+keep nGenIsolatedPhoton
+keep GenIsolatedPhoton*
 #
 #
 keep nIsoTrack
 keep IsoTrack*
+keep Fsr*
 #
 #
 keep Pileup_nTrueInt
 keep Pileup*
 #
 #
+keep nPhoton
+keep Photon*
 keep nElectron
 keep Electron*
 keep nMuon
@@ -37,13 +46,15 @@ keep GenDressedLepton*
 #
 #     Trigger
 #
-keep HLT_Ele*
-keep HLT_Mu*
+# keep HLT_Ele*
+# keep HLT_Mu*
+# keep HLT_Photon*
+keep HLT*
 #
 #   JETs
 #
-# keep nJet
-# keep Jet*
+keep nJet
+keep Jet*
 keep nFatJet
 keep FatJet*
 keep nGenJet*

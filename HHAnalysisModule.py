@@ -4,7 +4,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 
-class wvAnalysisProducer(Module):
+class HHAnalysisProducer(Module):
     def __init__(self):
         pass
     def beginJob(self):
@@ -40,13 +40,19 @@ class wvAnalysisProducer(Module):
         jets = Collection(event, "Jet")
         fatJets = Collection(event, "FatJet")
         keepIt = True
+        eventPhotons = 0
         eventElectrons = 0
         eventMuons = 0
         eventJets = 0
         eventFatJets = 0
-        if (len(photons)>0): print "\n\n=====> photons size: ",len(photons),type(photons)
-        print "Lengths: ",len(photons)," ",len(electrons)," ",len(muons)," ",len(jets)," ",len(fatJets)
+        # print "Got photons"
+        # if (len(photons)>0): print "\n\n=====> photons size: ",len(photons),type(photons)
+        # print "Lengths: ",len(photons)," ",len(electrons)," ",len(muons)," ",len(jets)," ",len(fatJets)
 
+        for pho in photons :
+            # print "Got photons",pho.pt
+            if pho.cutBased==3 and pho.pt > 10 :
+                eventPhotons += 1
         for lep in muons :
             if lep.tightId and lep.pt > 10 :
                 eventMuons += 1
@@ -54,18 +60,19 @@ class wvAnalysisProducer(Module):
             if lep.cutBased >= 2 and lep.pt > 10 :
                 eventElectrons += 1
         for jet in jets :
-            if jet.pt > 20:
+            if jet.pt > 15:
                eventJets += 1
         for fatjet in fatJets :
-            if fatjet.pt > 20:
+            if fatjet.pt > 25:
                eventFatJets += 1
 
-        if not ( ((eventElectrons >= 1 or eventMuons >=1)) and ( (eventJets >= 2 and eventFatJets >= 1) or (eventJets >= 4 and eventFatJets == 0) )  ):
+        # print "Log: ",eventPhotons," ",eventMuons," ",eventElectrons," ",eventJets," ",eventFatJets
+
+        if not ( ((eventElectrons == 0 or eventMuons ==0)) and (eventPhotons==2) and (eventFatJets >= 1 or eventJets >=2  )  ):
             keepIt = False
 
         return keepIt
 
 
 # define modules using the syntax 'name = lambda : constructor' to avoid having them loaded when not needed
-wvAnalysisModule = lambda : wvAnalysisProducer() #(jetSelection= lambda j : j.pt > 30)
-
+HHAnalysisModule = lambda : HHAnalysisProducer() #(jetSelection= lambda j : j.pt > 30)

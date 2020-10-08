@@ -9,15 +9,15 @@ from color_style import style
 # Variables to be changed by user
 #StringToChange = "Run2016_v6_15June2020_MatteoWJetBinned"
 #StringToChange = "Run2018_v6_DataReDoJEC"
-StringToChange = "Run2016_v7_15Sep2020"
+StringToChange = "Run2016_v7_06Oct2020"
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2016_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2017_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v6_2018_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
 #InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
-InputFileFromWhereReadDASNames = 'sample_list_v7_2016_campaign.dat'
+InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
 
-Initial_path = '/eos/uscms/store/user/lnujj/VV_aTGC/nanoAOD_skim/'
+Initial_path = '/eos/uscms/store/user/rasharma/double-higgs/nanoAOD_skim/'
 Initial_path += StringToChange
 condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
 
@@ -45,13 +45,13 @@ makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
 print "copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n"
 os.system('xrdcp -f ' + CMSSWRel+".tgz" + ' root://cmseos.fnal.gov/'+storeDir+'/' + CMSSWRel+".tgz")
 
-post_proc_to_run = "post_proc.py"
+post_proc_to_run = "post_proc_DoubleHiggs.py"
 command = "python "+post_proc_to_run
 
 Transfer_Input_Files = ("Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt, " +
                         "Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt, " +
                         "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt, " +
-                        "keep_and_drop_data.txt")
+                        "keep_and_drop_inclusive.txt")
 
 #with open('input_data_Files/sample_list_v6_2017_campaign.dat') as in_file:
 with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
@@ -133,9 +133,9 @@ outScript.write("\n"+'scramv1 b ProjectRename');
 outScript.write("\n"+'eval `scram runtime -sh`');
 outScript.write("\n"+'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" '+post_proc_to_run);
 outScript.write("\n"+'echo "========================================="');
-outScript.write("\n"+'echo "cat post_proc.py"');
+outScript.write("\n"+'echo "cat post_proc_DoubleHiggs.py"');
 outScript.write("\n"+'echo "..."');
-outScript.write("\n"+'cat post_proc.py');
+outScript.write("\n"+'cat post_proc_DoubleHiggs.py');
 outScript.write("\n"+'echo "..."');
 outScript.write("\n"+'echo "========================================="');
 outScript.write("\n"+command);

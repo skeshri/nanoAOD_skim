@@ -24,6 +24,8 @@ keep Pileup_nTrueInt
 keep Pileup*
 #
 #
+keep nPhoton
+keep Photon*
 keep nElectron
 keep Electron*
 keep nMuon
