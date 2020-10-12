@@ -34,8 +34,11 @@ else:
   print "==> Processing a MC file..."
   isMCTrueFalse=True
   if testfile.find("RunIIAutumn18NanoAODv") != -1: year = 2018
+  if testfile.find("VVjj_2018v") != -1: year = 2018
   if testfile.find("RunIIFall17NanoAODv") != -1: year = 2017
+  if testfile.find("VVjj_2017v") != -1: year = 2017
   if testfile.find("RunIISummer16NanoAODv") != -1: year = 2016
+  if testfile.find("VVjj_2016v") != -1: year = 2016
   jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="All", redojec=True, jetType = "AK4PFchs")
   fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="All", redojec=True, jetType = "AK8PFPuppi")
   p=PostProcessor(".",[testfile],"","keep_and_drop.txt",[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)

@@ -101,8 +101,10 @@ with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
      #print 'dasgoclient --query="file dataset='+lines.strip()+'"'
      #print "..."
      if customEOS:
+       xrd_redirector = 'root://cmseos.fnal.gov/'
        output = os.popen(customEOS_cmd + lines.strip()).read()
      else:
+       xrd_redirector = 'root://cms-xrd-global.cern.ch/'
        output = os.popen('dasgoclient --query="file dataset='+lines.strip()+'"').read()
 
      count_root_files = 0
@@ -113,7 +115,7 @@ with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
        outjdl_file.write("Output = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
        outjdl_file.write("Error  = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
        outjdl_file.write("Log  = "+output_log_path+"/"+sample_name+"_$(Process).log\n")
-       outjdl_file.write("Arguments = "+("root://cms-xrd-global.cern.ch/"+root_file).replace('/','\/')+" "+output_path+"  "+Initial_path+"\n")
+       outjdl_file.write("Arguments = "+(xrd_redirector+root_file).replace('/','\/')+" "+output_path+"  "+Initial_path+"\n")
        outjdl_file.write("Queue \n")
      print "Number of files: ",count_root_files
      print "Number of jobs (till now): ",count_jobs
