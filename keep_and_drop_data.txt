@@ -9,10 +9,6 @@ keep nIsoTrack
 keep IsoTrack*
 #
 #
-keep Pileup_nTrueInt
-keep Pileup*
-#
-#
 keep nElectron
 keep Electron*
 keep nMuon
@@ -40,8 +36,6 @@ keep nSoftActivityJet
 keep SoftActivityJet*
 #
 #
-keep L1PreFiring*
-keep btag*
 keep Calo*
 keep Chs*
 keep nCorr*

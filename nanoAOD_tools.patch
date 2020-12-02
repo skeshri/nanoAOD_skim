@@ -1,213 +1,41 @@
-diff --git a/python/postprocessing/framework/output.py b/python/postprocessing/framework/output.py
-index 005499f..da0570a 100644
---- a/python/postprocessing/framework/output.py
-+++ b/python/postprocessing/framework/output.py
-@@ -13,12 +13,12 @@ class OutputBranch:
-         self.lenVar = lenVar
-         self.n = n
-         self.precision = ROOT.ReduceMantissaToNbitsRounding(limitedPrecision) if limitedPrecision and rootBranchType=='F' else lambda x : x
--        #check if a branch was already there 
-+        #check if a branch was already there
-         existingBranch = tree.GetBranch(name)
-         if (existingBranch):
-           self.branch = existingBranch
-           self.branch.SetAddress(self.buff)
--        else:  
-+        else:
-           if lenVar != None:
-             self.branch = tree.Branch(name, self.buff, "%s[%s]/%s" % (name,lenVar,rootBranchType))
-           elif n == 1:
-@@ -33,7 +33,7 @@ class OutputBranch:
-                 self.buff = array(self.buff.typecode, max(len(val),2*len(self.buff))*[0. if self.buff.typecode in 'fd' else 0])
-                 self.branch.SetAddress(self.buff)
-             for i,v in enumerate(val): self.buff[i] = self.precision(v)
--        elif self.n == 1: 
-+        elif self.n == 1:
-             self.buff[0] = self.precision(val)
-         else:
-             if len(val) != self.n: raise RuntimeError("Mismatch in filling branch %s of fixed length %d with %d values (%s)" % (self.Branch.GetName(),self.n,len(val),val))
-@@ -44,7 +44,7 @@ class OutputTree:
-         self._file = tfile
-         self._tree = ttree
-         self._intree = intree
--        self._branches = {} 
-+        self._branches = {}
-     def branch(self, name, rootBranchType, n=1, lenVar=None, title=None,limitedPrecision=False):
-         if (lenVar != None) and (lenVar not in self._branches): #and (not self._tree.GetBranch(lenVar)):
-             self._branches[lenVar] = OutputBranch(self._tree, lenVar, "i")
-@@ -79,17 +79,17 @@ class FullOutput(OutputTree):
-             provenance=False,
-             jsonFilter=None
-     ):
--        outputFile.cd()
-+        # outputFile.cd()
-+
- 
--        
-         self.outputbranchSelection = outputbranchSelection
-         self.maxEntries = maxEntries
-         self.firstEntry = firstEntry
-         if fullClone:
-             outputTree = inputTree.CopyTree('1', "", maxEntries if maxEntries else ROOT.TVirtualTreePlayer.kMaxEntries, firstEntry)
--        else:            
-+        else:
-             outputTree = inputTree.CloneTree(0)
--            
-+
-         # enable back all branches in inputTree, then disable for computation
-         # the branches as requested in branchSelection
-         inputTree.SetBranchStatus("*",1)
 diff --git a/python/postprocessing/framework/postprocessor.py b/python/postprocessing/framework/postprocessor.py
-index 397e048..2ab3d6e 100755
+index 1c75036..ceaf437 100755
 --- a/python/postprocessing/framework/postprocessor.py
 +++ b/python/postprocessing/framework/postprocessor.py
-@@ -34,7 +34,7 @@ class PostProcessor :
- 	if self.jobReport and not self.haddFileName :
- 		print "Because you requested a FJR we assume you want the final hadd. No name specified for the output file, will use tree.root"
- 		self.haddFileName="tree.root"
-- 	self.branchsel = BranchSelection(branchsel) if branchsel else None 
-+ 	self.branchsel = BranchSelection(branchsel) if branchsel else None
-         self.outputbranchsel = BranchSelection(outputbranchsel) if outputbranchsel else None
-         self.histFileName=histFileName
-         self.histDirName=histDirName
-@@ -49,16 +49,16 @@ class PostProcessor :
-         rndchars  = "".join([hex(ord(i))[2:] for i in os.urandom(8)]) if not self.longTermCache else "long_cache-id%d-%s" % (os.getuid(), hashlib.sha1(fname).hexdigest());
-         localfile = "%s/%s-%s.root" % (tmpdir, os.path.basename(fname).replace(".root",""), rndchars)
-         if self.longTermCache and os.path.exists(localfile):
--            if verbose: print "Filename %s is already available in local path %s " % (fname,localfile) 
-+            if verbose: print "Filename %s is already available in local path %s " % (fname,localfile)
-             return localfile, False
-         try:
--            if verbose: print "Filename %s is remote, will do a copy to local path %s " % (fname,localfile) 
-+            if verbose: print "Filename %s is remote, will do a copy to local path %s " % (fname,localfile)
-             start = time.clock()
-             subprocess.check_output(["xrdcp","-f","-N",fname,localfile])
--            if verbose: print "Time used for transferring the file locally: %s s" % (time.clock() - start) 
-+            if verbose: print "Time used for transferring the file locally: %s s" % (time.clock() - start)
-             return localfile, (not self.longTermCache)
-         except:
--            if verbose: print "Error: could not save file locally, will run from remote" 
-+            if verbose: print "Error: could not save file locally, will run from remote"
-             if os.path.exists(localfile):
-                 if verbose: print "Deleting partially transferred file %s" % localfile
-                 try:
-@@ -69,7 +69,7 @@ class PostProcessor :
-     def run(self) :
-         outpostfix = self.postfix if self.postfix != None else ("_Friend" if self.friend else "_Skim")
-     	if not self.noOut:
--            
-+
-             if self.compression != "none":
-                 ROOT.gInterpreter.ProcessLine("#include <Compression.h>")
-                 (algo, level) = self.compression.split(":")
-@@ -79,7 +79,7 @@ class PostProcessor :
-                 elif algo == "LZ4":  compressionAlgo  = ROOT.ROOT.kLZ4
-                 else: raise RuntimeError("Unsupported compression %s" % algo)
-             else:
--                compressionLevel = 0 
-+                compressionLevel = 0
- 	    print "Will write selected trees to "+self.outputDir
-             if not self.justcount:
-                 if not os.path.exists(self.outputDir):
-@@ -88,10 +88,10 @@ class PostProcessor :
-             compressionLevel = 0
+@@ -144,6 +144,7 @@ class PostProcessor:
  
- 	if self.noOut:
--	    if len(self.modules) == 0: 
-+	    if len(self.modules) == 0:
- 		raise RuntimeError("Running with --noout and no modules does nothing!")
- 
--        # Open histogram file, if desired 
-+        # Open histogram file, if desired
-         if (self.histFileName != None and self.histDirName == None) or (self.histFileName == None and self.histDirName != None) :
-             raise RuntimeError("Must specify both histogram file and histogram directory!")
-         elif self.histFileName != None and self.histDirName != None:
-@@ -99,7 +99,7 @@ class PostProcessor :
-         else :
-             self.histFile = None
- 
--    
-+
-         for m in self.modules:
-             if hasattr( m, 'writeHistFile') and m.writeHistFile :
-                 m.beginJob(histFile=self.histFile,histDirName=self.histDirName)
-@@ -108,6 +108,7 @@ class PostProcessor :
- 
- 	fullClone = (len(self.modules) == 0)
- 	outFileNames=[]
-+	outFileNameshadd=""
-         t0 = time.clock()
- 	totEntriesRead=0
- 	for fname in self.inputFiles:
-@@ -151,14 +152,15 @@ class PostProcessor :
- 		if elist: inTree.SetEntryList(elist)
- 	    else:
- 		# initialize reader
--		inTree = InputTree(inTree, elist) 
-+		inTree = InputTree(inTree, elist)
- 
- 	    # prepare output file
+         fullClone = (len(self.modules) == 0)
+         outFileNames = []
++        outFileNameshadd = ""
+         t0 = time.time()
+         totEntriesRead = 0
+         for fname in self.inputFiles:
+@@ -199,6 +200,8 @@ class PostProcessor:
              if not self.noOut:
-                 outFileName = os.path.join(self.outputDir, os.path.basename(fname).replace(".root",outpostfix+".root"))
-+                outFileNameshadd = os.path.join(self.outputDir, os.path.basename(fname).replace(".root",outpostfix+"Hadd.root"))
-                 outFile = ROOT.TFile.Open(outFileName, "RECREATE", "", compressionLevel)
+                 outFileName = os.path.join(self.outputDir, os.path.basename(
+                     fname).replace(".root", outpostfix + ".root"))
++                outFileNameshadd = os.path.join(self.outputDir, os.path.basename(
++                    fname).replace(".root", outpostfix + "Hadd.root"))
+                 outFile = ROOT.TFile.Open(
+                     outFileName, "RECREATE", "", compressionLevel)
                  outFileNames.append(outFileName)
--                if compressionLevel: 
-+                if compressionLevel:
-                     outFile.SetCompressionAlgorithm(compressionAlgo)
-                 # prepare output tree
-                 if self.friend:
-@@ -170,12 +172,12 @@ class PostProcessor :
-                         outFile,
-                         branchSelection=self.branchsel,
-                         outputbranchSelection=self.outputbranchsel,
--                        fullClone=fullClone, 
--                        maxEntries=self.maxEntries, 
-+                        fullClone=fullClone,
-+                        maxEntries=self.maxEntries,
-                         firstEntry=self.firstEntry,
-                         jsonFilter=jsonFilter,
-                         provenance=self.provenance)
--            else : 
-+            else :
-                 outFile = None
-                 outTree = None
-                 if self.branchsel:
-@@ -191,7 +193,7 @@ class PostProcessor :
- 		print 'Selected %d / %d entries from %s (%.2f%%)' % (outTree.tree().GetEntries(), nall, fname, outTree.tree().GetEntries()/(0.01*nall) if nall else 0)
- 
- 	    # now write the output
--            if not self.noOut: 
-+            if not self.noOut:
-                 outTree.write()
-                 outFile.Close()
-                 print "Done %s" % outFileName
-@@ -199,15 +201,24 @@ class PostProcessor :
- 		self.jobReport.addInputFile(fname,nall)
- 	    if self.prefetch:
- 		if toBeDeleted: os.unlink(ftoread)
--		
-+
- 	for m in self.modules: m.endJob()
--	
-+
- 	print  totEntriesRead/(time.clock()-t0), "Hz"
- 
- 
- 	if self.haddFileName :
--		haddnano = "./haddnano.py" if os.path.isfile("./haddnano.py") else "haddnano.py"
--		os.system("%s %s %s" %(haddnano, self.haddFileName," ".join(outFileNames)))
-+          haddnano = "./haddnano.py" if os.path.isfile("./haddnano.py") else "haddnano.py"
-+          print("\n\n[postprocessor.py::INFO::] %s %s %s" %(haddnano, outFileNameshadd," ".join(outFileNames)))
-+          print ""
-+          os.system('date')
-+          startTime = time.clock()
-+          print ""
-+          os.system("%s %s %s" %(haddnano, outFileNameshadd," ".join(outFileNames)))
-+          print ""
-+          os.system('date')
-+          print "Time taken for hadd is %s s"%(time.clock() - startTime)
-+          print ""
- 	if self.jobReport :
- 		self.jobReport.addOutputFile(self.haddFileName)
- 		self.jobReport.save()
+@@ -257,8 +260,18 @@ class PostProcessor:
+         if self.haddFileName:
+             haddnano = "./haddnano.py" if os.path.isfile(
+                 "./haddnano.py") else "haddnano.py"
++            print("\n\n[postprocessor.py::INFO::] %s %s %s" %
++                  (haddnano, outFileNameshadd," ".join(outFileNames)))
++            print ""
++            os.system('date')
++            startTime = time.clock()
++            print ""
+             os.system("%s %s %s" %
+-                      (haddnano, self.haddFileName, " ".join(outFileNames)))
++                      (haddnano, outFileNameshadd, " ".join(outFileNames)))
++            print ""
++            os.system('date')
++            print "Time taken for hadd is %s s"%(time.clock() - startTime)
++            print ""
+         if self.jobReport:
+             self.jobReport.addOutputFile(self.haddFileName)
+             self.jobReport.save()
