@@ -6,8 +6,8 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
 1. Step: 1: Get CMSSW release
 
    ```bash
-   cmsrel CMSSW_10_2_15
-   cd CMSSW_10_2_15/src
+   cmsrel CMSSW_10_2_22
+   cd CMSSW_10_2_22/src
    cmsenv
    ```
    
@@ -15,21 +15,31 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
 
    ```bash
    git clone git@github.com:cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
+   cd PhysicsTools/NanoAODTools
+   git checkout 079c9e18c14c9d71ffe6d0cc4b42f15d97c29efc
    ```
    
 3. Step: 3: Get our analysis repository
 
    ```bash
-   git clone git@github.com:ram1123/nanoAOD_vvVBS.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
+   git clone git@github.com:osWW-VBS/nanoAOD_vvVBS.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
    git submodule init
    git submodule update
    cd -
    cmsenv
+   patch PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS/nanoAOD_tools.patch
+   cp PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS/data/btag/*.csv PhysicsTools/NanoAODTools/data/btagSF/.
    scram b
    voms-proxy-init -voms cms
    ```
    
+   (Optional: Fix git repo)
+
+   ```bash
+   find PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS/.git/ -name "*.py*" -delete
+   ```
+
 4. Step: 4: interactive running
 
    ```bash
