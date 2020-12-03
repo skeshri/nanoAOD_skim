@@ -170,7 +170,8 @@
 ################################################
 # 	EGamma data
 ################################################
-/DoubleEG/Run2016B-02Apr2020-v1/NANOAOD
+/DoubleEG/Run2016B-02Apr2020_ver1-v1/NANOAOD
+/DoubleEG/Run2016B-02Apr2020_ver2-v1/NANOAOD
 /DoubleEG/Run2016C-02Apr2020-v1/NANOAOD
 /DoubleEG/Run2016D-02Apr2020-v1/NANOAOD
 /DoubleEG/Run2016E-02Apr2020-v1/NANOAOD
@@ -180,7 +181,8 @@
 ###############################################
 # 	Double Muon data
 ################################################
-/DoubleMuon/Run2016B-02Apr2020-v1/NANOAOD
+/DoubleMuon/Run2016B-02Apr2020_ver1-v1/NANOAOD
+/DoubleMuon/Run2016B-02Apr2020_ver2-v1/NANOAOD
 /DoubleMuon/Run2016C-02Apr2020-v1/NANOAOD
 /DoubleMuon/Run2016D-02Apr2020-v1/NANOAOD
 /DoubleMuon/Run2016E-02Apr2020-v1/NANOAOD
@@ -190,7 +192,8 @@
 ################################################
 # 	Muonn EG data
 ################################################
-/MuonEG/Run2016B-02Apr2020-v1/NANOAOD
+/MuonEG/Run2016B-02Apr2020_ver1-v1/NANOAOD
+/MuonEG/Run2016B-02Apr2020_ver2-v1/NANOAOD
 /MuonEG/Run2016C-02Apr2020-v1/NANOAOD
 /MuonEG/Run2016D-02Apr2020-v1/NANOAOD
 /MuonEG/Run2016F-02Apr2020-v1/NANOAOD
@@ -199,7 +202,8 @@
 ###############################################
 # 	Single Electron data
 ################################################
-/SingleElectron/Run2016B-02Apr2020-v1/NANOAOD
+/SingleElectron/Run2016B-02Apr2020_ver1-v1/NANOAOD
+/SingleElectron/Run2016B-02Apr2020_ver2-v1/NANOAOD
 /SingleElectron/Run2016C-02Apr2020-v1/NANOAOD
 /SingleElectron/Run2016D-02Apr2020-v1/NANOAOD
 /SingleElectron/Run2016E-02Apr2020-v1/NANOAOD
@@ -209,7 +213,8 @@
 ################################################
 # 	Single Muon data
 ################################################
-/SingleMuon/Run2016B-02Apr2020-v1/NANOAOD
+/SingleMuon/Run2016B-02Apr2020_ver1-v1/NANOAOD
+/SingleMuon/Run2016B-02Apr2020_ver2-v1/NANOAOD
 /SingleMuon/Run2016C-02Apr2020-v1/NANOAOD
 /SingleMuon/Run2016D-02Apr2020-v1/NANOAOD
 /SingleMuon/Run2016E-02Apr2020-v1/NANOAOD

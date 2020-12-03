@@ -52,7 +52,7 @@ else:
     era="2018"
     sfFileName="DeepCSV_102XSF_V2.csv"
   btagSF = lambda: btagSFProducer(era,algo="deepcsv",selectedWPs=['L','M','T','shape_corr'],sfFileName=sfFileName)
-  p=PostProcessor(".",[testfile],"","keep_and_drop.txt",[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop_data.txt")
+  p=PostProcessor(".",[testfile],"","keep_and_drop.txt",[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
 
 p.run()
 print "DONE"
