@@ -30,7 +30,7 @@ if testfile.find("SingleMuon") != -1 or testfile.find("EGamma") != -1 or testfil
   print "===> JSON File: ",jsonFileName
   jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
   fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK8PFPuppi")
-  p=PostProcessor(".",[testfile],None,"keep_and_drop_data.txt",[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop_data.txt")
+  p=PostProcessor(".",[testfile],None,None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
 else:
   print "==> Processing a MC file..."
   isMCTrueFalse=True
@@ -52,7 +52,7 @@ else:
     era="2018"
     sfFileName="DeepCSV_102XSF_V2.csv"
   btagSF = lambda: btagSFProducer(era,algo="deepcsv",selectedWPs=['L','M','T','shape_corr'],sfFileName=sfFileName)
-  p=PostProcessor(".",[testfile],"","keep_and_drop.txt",[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
+  p=PostProcessor(".",[testfile],"",None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
 
 p.run()
 print "DONE"
