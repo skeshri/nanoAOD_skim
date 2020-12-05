@@ -5,6 +5,7 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import Pos
 from wvAnalysisModule import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2 import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
+from JetSFMaker import *
 
 testfile = "root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/NANOAOD/Nano25Oct2019-v1/20000/D03C6AE0-73AD-A940-B8CA-779A621D4853.root"
 
@@ -52,7 +53,8 @@ else:
     era="2018"
     sfFileName="DeepCSV_102XSF_V2.csv"
   btagSF = lambda: btagSFProducer(era,algo="deepcsv",selectedWPs=['L','M','T','shape_corr'],sfFileName=sfFileName)
-  p=PostProcessor(".",[testfile],"",None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
+  puidSF = lambda: JetSFMaker("%s" % year)
+  p=PostProcessor(".",[testfile],"",None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector(),btagSF(),puidSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
 
 p.run()
 print "DONE"
