@@ -12,7 +12,7 @@ condor_submit $ref_jdl --dry-run $temp_file
 
 proc_ids=($(grep "ProcId=" $temp_file | cut -d '=' -f2))
 out_dir=($(grep "Args=" $temp_file | cut -d '=' -f2- | cut -d '"' -f2 | cut -d ' ' -f2))
-out_file=($(grep "Args=" $temp_file | cut -d '=' -f2- | cut -d '"' -f2 | cut -d '/' -f12))
+out_file=($(grep "Args=" $temp_file | cut -d '=' -f2- | cut -d '"' -f2 | cut -d ' ' -f1 | rev | cut -d '/' -f1 | rev))
 
 resubmit_list=""
 
