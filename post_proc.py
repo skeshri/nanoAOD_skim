@@ -20,13 +20,13 @@ if testfile.find("SingleMuon") != -1 or testfile.find("EGamma") != -1 or testfil
   isMCTrueFalse=False
   if testfile.find("Run2016") != -1:
     Year=2016
-    jsonFileName="Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt"
+    jsonFileName="Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt"
   if testfile.find("Run2017") != -1:
     Year=2017
-    jsonFileName="Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt"
+    jsonFileName="Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt"
   if testfile.find("Run2018") != -1:
     Year=2018
-    jsonFileName="Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt"
+    jsonFileName="Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
   print "\n===> Running over ",Year," data...\n"
   print "===> JSON File: ",jsonFileName
   jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
