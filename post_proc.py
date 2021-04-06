@@ -14,7 +14,7 @@ entriesToRun = 100  # 0 if need to run over all entries else put number of entri
 isMCTrueFalse = True
 Year = 2016
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
-DownloadFileToLocalThenRun=True
+DownloadFileToLocalThenRun=False
 
 if testfile.find("SingleMuon") != -1 or testfile.find("EGamma") != -1 or testfile.find("SingleElectron") != -1 or testfile.find("DoubleMuon") != -1 or testfile.find("MuonEG") != -1 or testfile.find("DoubleEG") != -1:
   isMCTrueFalse=False
