@@ -22,6 +22,21 @@ InputFileFromWhereReadDASNames = 'sample_list_v7_2017_campaign.dat'
 Initial_path = '/eos/user/r/rasharma/post_doc_ihep/h2l2Q/'
 Initial_path += StringToChange
 condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
+condor_queue = "microcentury" 
+"""
+Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours
+Condor queue options
+name            Duration
+------------------------
+espresso        20min   
+microcentury    1h      
+longlunch       2h      
+workday 8h      1nd
+tomorrow        1d      
+testmatch       3d      
+nextweek        1w      
+"""
+
 
 # Create log files
 import infoCreaterGit
@@ -58,7 +73,7 @@ Transfer_Input_Files = ("Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.t
 #with open('input_data_Files/sample_list_v6_2017_campaign.dat') as in_file:
 with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
   outjdl_file = open(condor_file_name+".jdl","w")
-  outjdl_file.write("+JobFlavour   = \"microcentury\" \n")
+  outjdl_file.write("+JobFlavour   = \""+condor_queue+"\"\n")
   outjdl_file.write("Executable = "+condor_file_name+".sh\n")
   outjdl_file.write("Universe = vanilla\n")
   outjdl_file.write("Notification = ERROR\n")
