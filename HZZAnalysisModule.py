@@ -53,8 +53,8 @@ class HZZAnalysisProducer(Module):
         fatJets = Collection(event, "FatJet")
         keepIt = True
 
-        SelectedElectrons = [x for x in electrons if x.pt > 15 and x.cutBased>3]
-        SelectedMuons = [x for x in muons if x.pt > 15 and x.tightId>=1]
+        SelectedElectrons = [x for x in electrons if x.pt > 10 and x.cutBased>=2]
+        SelectedMuons = [x for x in muons if x.pt > 10 and x.tightId>=1]
         SelectedJets = [x for x in jets if x.pt > 20]
         SelectedFatJets = [x for x in fatJets if x.pt > 200]
 
