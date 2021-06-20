@@ -19,42 +19,39 @@ if testfile.find("SingleMuon") != -1 or testfile.find("EGamma") != -1 or testfil
   isMCTrueFalse=False
   Year=2018
   if testfile.find("Run2016") != -1:
-    Year=2016
+    Year='UL2016'
     jsonFileName="Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
   if testfile.find("Run2017") != -1:
-    Year=2017
+    Year='UL2017'
     jsonFileName="Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt"
   if testfile.find("Run2018") != -1:
-    Year=2018
+    Year='UL2018'
     jsonFileName="Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt"
   jsonFileName = "data/jsonFiles/"+jsonFileName
   print "\n===> Running over ",Year," data...\n"
   print "===> JSON File: ",jsonFileName
-  # jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
-  # fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK8PFPuppi")
-  # p=PostProcessor(".",[testfile],None,None,[HZZAnalysisModule(),fatJetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
-  p=PostProcessor(".",[testfile],None,None,[HZZAnalysisModule()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
+  jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
+  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK8PFPuppi")
+  p=PostProcessor(".",[testfile],None,None,[HZZAnalysisModule(),fatJetCorrector(),jetmetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
 else:
   print "==> Processing a MC file..."
   isMCTrueFalse=True
   year = 2018
   if testfile.find("VVjj_2018v") != -1: year = 2018
   if testfile.find("RunIIAutumn18NanoAODv") != -1: year = 2018
-  if testfile.find("RunIISummer20UL18") != -1: year = 2018
+  if testfile.find("RunIISummer20UL18") != -1: year = 'UL2018'
 
   if testfile.find("RunIISummer19UL17NanoAOD") != -1: year = 2017
   if testfile.find("RunIIFall17NanoAODv") != -1: year = 2017
-  if testfile.find("RunIISummer20UL17") != -1: year = 2017
+  if testfile.find("RunIISummer20UL17") != -1: year = 'UL2017'
   if testfile.find("VVjj_2017v") != -1: year = 2017
 
   if testfile.find("RunIISummer16NanoAODv") != -1: year = 2016
-  if testfile.find("RunIISummer20UL16") != -1: year = 2016
+  if testfile.find("RunIISummer20UL16") != -1: year = 'UL2016'
   if testfile.find("VVjj_2016v") != -1: year = 2016
 
-  # jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK4PFchs")
-  # fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Total", jetType = "AK8PFPuppi")
-  # fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK4PFchs")
-
+  jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK4PFchs")
+  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK8PFPuppi")
   if year == 2016:
     era="Legacy2016"
     sfFileName="DeepCSV_2016LegacySF_V1.csv"
@@ -65,10 +62,8 @@ else:
     era="2018"
     sfFileName="DeepCSV_102XSF_V2.csv"
   btagSF = lambda: btagSFProducer(era,algo="deepcsv",selectedWPs=['L','M','T','shape_corr'],sfFileName=sfFileName)
-  puidSF = lambda: JetSFMaker("%s" % year)
-  # p=PostProcessor(".",[testfile],"",None,[HZZAnalysisModule(),fatJetCorrector(),btagSF(),puidSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
-  p=PostProcessor(".",[testfile],"",None,[HZZAnalysisModule(),btagSF(),puidSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
-  # p=PostProcessor(".",[testfile],"",None,[HZZAnalysisModule()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
+  puidSF = lambda: JetSFMaker("%s" % ((year)))
+  p=PostProcessor(".",[testfile],"",None,[HZZAnalysisModule(),fatJetCorrector(),jetmetCorrector(),btagSF(),puidSF()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
 
 p.run()
 print "DONE"
