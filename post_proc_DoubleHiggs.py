@@ -28,8 +28,10 @@ if testfile.find("SinglePhoton") != -1 or testfile.find("EGamma") != -1 or testf
   print "\n===> Running over ",Year," data...\n"
   print "===> JSON File: ",jsonFileName
   # jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="All", redojec=True, jetType = "AK4PFchs")
-  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="All", redojec=True, jetType = "AK8PFPuppi")
-  p=PostProcessor(".",[testfile],None,None,[HHAnalysisModule(),fatJetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
+  jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
+  # fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="All", redojec=True, jetType = "AK8PFPuppi")
+  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK8PFPuppi")
+  p=PostProcessor(".",[testfile],None,None,[HHAnalysisModule(),fatJetCorrector(),jetmetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,haddFileName="nano_allEvt.root",prefetch=DownloadFileToLocalThenRun)
 else:
   print "==> Processing a MC file..."
   isMCTrueFalse=True
@@ -37,8 +39,11 @@ else:
   if testfile.find("RunIIFall17NanoAODv") != -1: year = 2017
   if testfile.find("RunIISummer16NanoAODv") != -1: year = 2016
   # jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="All", redojec=True, jetType = "AK4PFchs")
-  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="All", redojec=True, jetType = "AK8PFPuppi")
-  p=PostProcessor(".",[testfile],"","keep_and_drop_inclusive.txt",[HHAnalysisModule(),fatJetCorrector()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
+  # fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="All",  jetType = "AK8PFPuppi")
+  fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK8PFPuppi")
+  jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=year, jesUncert="Merged", jetType = "AK4PFchs")
+
+  p=PostProcessor(".",[testfile],"","keep_and_drop_inclusive.txt",[HHAnalysisModule(),fatJetCorrector(),jetmetCorrector()],provenance=True,fwkJobReport=False,maxEntries=entriesToRun,haddFileName="nano_allEvt.root",prefetch=DownloadFileToLocalThenRun)
 
 p.run()
 print "DONE"

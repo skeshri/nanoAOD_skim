@@ -63,12 +63,12 @@ class HHAnalysisProducer(Module):
             if jet.pt > 15:
                eventJets += 1
         for fatjet in fatJets :
-            if fatjet.pt > 25:
+            if fatjet.pt > 150:
                eventFatJets += 1
 
         # print "Log: ",eventPhotons," ",eventMuons," ",eventElectrons," ",eventJets," ",eventFatJets
 
-        if not ( ((eventElectrons == 0 or eventMuons ==0)) and (eventPhotons==2) and (eventFatJets >= 1 or eventJets >=2  )  ):
+        if not ( ((eventElectrons == 0 or eventMuons ==0)) and (eventPhotons==2) and (eventFatJets >= 0 or eventJets >=0) ):
             keepIt = False
 
         return keepIt

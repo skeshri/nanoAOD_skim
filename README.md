@@ -6,22 +6,23 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
 1. Step: 1: Get CMSSW release
 
    ```bash
-   cmsrel CMSSW_10_2_15
-   cd CMSSW_10_2_15/src
+   cmsrel CMSSW_10_6_20
+   cd CMSSW_10_6_20/src
    cmsenv
    ```
-   
+
 2. Step: 2: Get  official nanoAODTools
 
    ```bash
    git clone git@github.com:cms-nanoAOD/nanoAOD-tools.git PhysicsTools/NanoAODTools
    cd PhysicsTools/NanoAODTools
-   git checkout 6b4870f6c62dbffc717e82de80ce3e51a254c284
+   git checkout e963c7080606607777b083f59d752fe67b766265
    ```
-   
+
 3. Step: 3: Get our analysis repository
 
    ```bash
+   cd $CMSSW_BASE/src
    git clone git@github.com:ram1123/nanoAOD_vvVBS.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
    git checkout Feature-HH
@@ -32,16 +33,16 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
    scram b
    voms-proxy-init -voms cms
    ```
-   
+
 4. Step: 4: interactive running
 
    ```bash
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
-   python post_proc.py
+   python post_proc_DoubleHiggs.py
    ```
-   
-5. batch job submission.
-   1. Crab-job submission   
+
+5. batch job submission (**old**).
+   1. Crab-job submission
       ```bash
       cd crab/
       voms-proxy-init -voms cms --valid 200:00
