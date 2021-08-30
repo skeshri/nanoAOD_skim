@@ -24,6 +24,7 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
    ```bash
    git clone git@github.com:ram1123/nanoAOD_vvVBS.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
+   git checkout Feature-HH
    git submodule init
    git submodule update
    cd -
