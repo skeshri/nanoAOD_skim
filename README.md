@@ -41,24 +41,37 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
    python post_proc_DoubleHiggs.py
    ```
 
-5. batch job submission (**old**).
-   1. Crab-job submission
-      ```bash
-      cd crab/
-      voms-proxy-init -voms cms --valid 200:00
-      source /cvmfs/cms.cern.ch/crab3/crab.sh
-      crab submit -c crab_cfg.py
-      ```
+5. batch job submission.
+   1. Step: 5 (b): Condor-job submission
 
-   2. Step: 5 (b): Condor-job submission
+      1. Setting up a voms Proxy: To access grid files to run the macro on, we must run the following commands:
+
+         ```bash
+         cmsenv
+         voms-proxy-init --voms cms --valid 168:00
+         ```
+
+         after the voms command, you should receive an output similar to:
+
+         ```
+         Created proxy in /tmp/x509up_u95168
+         ```
+
+         to set this proxy to your `X509_USER_PROXY` environment variable for the example above, simply use the command:
+
+         ```bash
+         cp /tmp/x509up_u95168 ~/
+         export X509_USER_PROXY=~/x509up_u95168
+         ```
+
+         where `x590up_u95168` would be replaced by whatever your proxy name is.
+
       1. In file `condor_setup.py`, specify correct input text file from which you need to take input NanoAOD DAS names. Also, updated the output EOS path. Then do following:
-
          ```bash
          cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
          # Edit condor_setup.py, then
-         python condor_setup.py
+         python condor_setup.py  --DASNames=HH_sample_list_v7_2017_campaign.txt
          # Set proxy before submitting the condor jobs.
-         voms-proxy-init -voms cms --valid 200:00
          condor_submit <Files-created-from-above-command>.jdl
          ```
 

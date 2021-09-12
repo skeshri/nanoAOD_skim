@@ -1,4 +1,5 @@
 # Ignore root files
+rasharma.cc
 *.bkup
 *.patch
 summary.dat

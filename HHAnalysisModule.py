@@ -60,10 +60,10 @@ class HHAnalysisProducer(Module):
             if lep.cutBased >= 2 and lep.pt > 10 :
                 eventElectrons += 1
         for jet in jets :
-            if jet.pt > 15:
+            if jet.pt > 25:
                eventJets += 1
         for fatjet in fatJets :
-            if fatjet.pt > 150:
+            if fatjet.pt > 200:
                eventFatJets += 1
 
         # print "Log: ",eventPhotons," ",eventMuons," ",eventElectrons," ",eventJets," ",eventFatJets
