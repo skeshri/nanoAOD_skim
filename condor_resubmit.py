@@ -1,5 +1,3 @@
-import os
-
 """Condor resubmit script.
 
 # Three steps to submit condor script
@@ -18,30 +16,42 @@ import os
     necessary lines from the main jdl file and add it to the new jdl file.
 """
 
+import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--LogFilePath', type=str,
+                    default='condor_logs/Run2017_v7_5Aug20200/200805_032620/',
+                    help='String to be added in the output file name')
+parser.add_argument('--CondorFileName', type=str,
+                    default='submit_condor_jobs_lnujj_Run2017_v7_5Aug20200',
+                    help='String to be added in the output file name')
+parser.add_argument('--ResubmitCount', type=int,
+                    default=1,
+                    help='String to be added in the output file name')
+parser.add_argument('--StringSearch', type=str,
+                    default='preselected entries from root:',
+                    help='String to be added in the output file name')
+args = parser.parse_args()
+
+
 """path of log file directory"""
-#path = "condor_logs/Run2017_v6_DataReDoJEC/200726_173958/"
-#path = "condor_logs/Run2016_v6_DataReDoJEC/200727_064518/"
-#path = "condor_logs/Run2018_v6_DataReDoJEC/200730_103313/"
-path = "condor_logs/Run2017_v7_5Aug20200/200805_032620/"
+path = args.LogFilePath
 
 """Name of main condor jdl/sh file name"""
-#condor_file_name = "submit_condor_jobs_lnujj_Run2017_v6_DataReDoJEC"
-#condor_file_name = "submit_condor_jobs_lnujj_Run2016_v6_DataReDoJEC"
-#condor_file_name = "submit_condor_jobs_lnujj_Run2018_v6_DataReDoJEC"
-condor_file_name = "submit_condor_jobs_lnujj_Run2017_v7_5Aug20200"
+condor_file_name = args.CondorFileName
 
 """This variable `Resubmit_no` is going to append in the new jdl file.
 New jdl file name is the main jdl file + _resubmit_ + Resubmit_no
 
 New JDL FILE name : condor_file_name + "_resubmit_" + Resubmit_no
 """
-Resubmit_no = "2"
+Resubmit_no = args.ResubmitCount
 
 """This string is going to be searched in the log files.
 
 If this string is not present in the log file this means the jobs are failed.
 """
-string_to_search = "preselected entries from root:"
+string_to_search = args.StringSearch
 
 grepCommand = 'grep -L  "'+string_to_search+'" '+ path + os.sep +'*_1.stdout'
 grepCommand = grepCommand.replace('//','/')
