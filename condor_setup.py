@@ -48,7 +48,7 @@ InputFileFromWhereReadDASNames = args.DASNames
 
 Initial_path = args.OutputPath
 Initial_path += StringToChange
-condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
+condor_file_name = 'submit_condor_jobs_lnujj_' + StringToChange
 
 customEOS = False
 customEOS_cmd = 'eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD'
@@ -58,7 +58,7 @@ condor_queue = args.condorQueue
 # Create log files
 import infoCreaterGit
 SumamryOfCurrentSubmission = raw_input("\n\nWrite summary for current job submission: ")
-infoLogFiles = infoCreaterGit.BasicInfoCreater('summary.dat',SumamryOfCurrentSubmission)
+infoLogFiles = infoCreaterGit.BasicInfoCreater('summary.dat', SumamryOfCurrentSubmission)
 infoLogFiles.GenerateGitPatchAndLog()
 
 # Get CMSSW directory path and name
@@ -67,7 +67,7 @@ CMSSWRel = cmsswDirPath.split("/")[-1]
 
 # Create directories for storing log files and output files at EOS.
 import fileshelper
-dirsToCreate = fileshelper.FileHelper('condor_logs/'+StringToChange, Initial_path)
+dirsToCreate = fileshelper.FileHelper('condor_logs/' + StringToChange, Initial_path)
 output_log_path = dirsToCreate.CreateLogDirWithDate()
 storeDir = dirsToCreate.CreateSotreArea(Initial_path)
 dirName = dirsToCreate.dirName
@@ -75,9 +75,9 @@ dirName = dirsToCreate.dirName
 # create tarball of present working CMSSW base directory
 os.system('rm -f CMSSW*.tgz')
 import makeTarFile
-makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
-print "copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n"
-os.system('cp ' + CMSSWRel+".tgz" + ' '+storeDir+'/' + CMSSWRel+".tgz")
+makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel + ".tgz")
+print "copying the " + CMSSWRel + ".tgz  file to eos path: " + storeDir + "\n"
+os.system('cp ' + CMSSWRel + ".tgz" + ' ' + storeDir + '/' + CMSSWRel + ".tgz")
 
 Transfer_Input_Files = ("data/jsonFiles/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt, "
                         + "data/jsonFiles/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt, "
@@ -85,10 +85,10 @@ Transfer_Input_Files = ("data/jsonFiles/Cert_271036-284044_13TeV_PromptReco_Coll
                         + "keep_and_drop_data.txt, "
                         + "keep_and_drop_inclusive.txt")
 
-#with open('input_data_Files/sample_list_v6_2017_campaign.dat') as in_file:
-with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
-  outjdl_file = open(condor_file_name+".jdl","w")
-  outjdl_file.write("+JobFlavour   = \""+condor_queue+"\"\n")
+# with open('input_data_Files/sample_list_v6_2017_campaign.dat') as in_file:
+with open('input_data_Files/' + InputFileFromWhereReadDASNames) as in_file:
+  outjdl_file = open(condor_file_name + ".jdl", "w")
+  outjdl_file.write("+JobFlavour   = \"" + condor_queue + "\"\n")
   outjdl_file.write("Executable = "+condor_file_name+".sh\n")
   outjdl_file.write("Universe = vanilla\n")
   outjdl_file.write("Notification = ERROR\n")
@@ -144,7 +144,7 @@ with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
        count_root_files+=1
        count_jobs += 1
        outjdl_file.write("Output = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
-       outjdl_file.write("Error  = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
+       outjdl_file.write("Error  = "+output_log_path+"/"+sample_name+"_$(Process).stderr\n")
        outjdl_file.write("Log  = "+output_log_path+"/"+sample_name+"_$(Process).log\n")
        outjdl_file.write("Arguments = "+(xrd_redirector+root_file).replace('/','\/')+" "+output_path+"  "+Initial_path+"\n")
        outjdl_file.write("Queue \n")
@@ -170,7 +170,7 @@ outScript.write("\n" + 'rm *.root')
 outScript.write("\n" + 'scramv1 b ProjectRename')
 outScript.write("\n" + 'eval `scram runtime -sh`')
 outScript.write("\n" + 'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" ' + args.postProc)
-outScript.write("\n" + 'sed -i "s/entriesToRun = .*/entriesToRun = ' + args.entriesToRun+ '/g" ' + args.postProc)
+outScript.write("\n" + 'sed -i "s/entriesToRun = .*/entriesToRun = ' + str(args.entriesToRun) + '/g" ' + args.postProc)
 outScript.write("\n" + 'echo "========================================="')
 outScript.write("\n" + 'echo "cat ' + args.postProc + '"')
 outScript.write("\n" + 'echo "..."')
