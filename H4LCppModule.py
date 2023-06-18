@@ -19,6 +19,17 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
+        if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
+            base = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
+            if base:
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/src/RoccoR.cc+O" % base)
+            else:
+                base = "%s/src/PhysicsTools/NanoAODTools" % os.getenv(
+                    "CMSSW_BASE")
+                ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/interface/RoccoR.h" % base)
         self.worker = ROOT.H4LTools()
         pass
 
@@ -78,9 +89,25 @@ class HZZAnalysisCppProducer(Module):
         self.Muon_nTrackerLayers = tree.arrayReader("Muon_nTrackerLayers")
         self.Muon_isPFcand = tree.arrayReader("Muon_isPFcand")
         self.Muon_pdgId = tree.arrayReader("Muon_pdgId")
+        self.Muon_charge = tree.arrayReader("Muon_charge")
         self.Muon_pfRelIso03_all = tree.arrayReader("Muon_pfRelIso03_all")
+        self.Muon_genPartIdx = tree.arrayReader("Muon_genPartIdx")
         self.worker.SetMuons(self.nMuon, self.Muon_pt, self.Muon_eta, self.Muon_phi, self.Muon_mass, self.Muon_isGlobal, self.Muon_isTracker,
-                              self.Muon_dxy, self.Muon_dz, self.Muon_sip3d, self.Muon_ptErr, self.Muon_nTrackerLayers, self.Muon_isPFcand, self.Muon_pdgId, self.Muon_pfRelIso03_all)
+                              self.Muon_dxy, self.Muon_dz, self.Muon_sip3d, self.Muon_ptErr, self.Muon_nTrackerLayers, self.Muon_isPFcand, self.Muon_pdgId,self.Muon_charge, self.Muon_pfRelIso03_all, self.Muon_genPartIdx)
+        
+        self.nFsrPhoton = tree.valueReader("nFsrPhoton")
+        self.FsrPhoton_pt = tree.arrayReader("FsrPhoton_pt")
+        self.FsrPhoton_eta = tree.arrayReader("FsrPhoton_eta")
+        self.FsrPhoton_phi = tree.arrayReader("FsrPhoton_phi")
+        self.FsrPhoton_dROverEt2 = tree.arrayReader("FsrPhoton_dROverEt2")
+        self.FsrPhoton_relIso03 = tree.arrayReader("FsrPhoton_relIso03")
+        self.FsrPhoton_muonIdx = tree.arrayReader("FsrPhoton_muonIdx")
+        self.worker.SetFsrPhotons(self.nFsrPhoton,self.FsrPhoton_dROverEt2,self.FsrPhoton_eta,self.FsrPhoton_phi,self.FsrPhoton_pt,
+                                  self.FsrPhoton_relIso03)
+
+        self.nGenPart = tree.valueReader("nGenPart")
+        self.GenPart_pt = tree.arrayReader("GenPart_pt")
+        self.worker.SetGenParts(self.nGenPart,self.GenPart_pt)
         # self._ttreereaderversion must be set AFTER all calls to
         # tree.valueReader or tree.arrayReader
         self._ttreereaderversion = tree._ttreereaderversion
@@ -109,8 +136,9 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
+        isMC = True
 
-        
+        self.worker.MuonPtCorrection(isMC)
         foundZZCandidate = self.worker.ZZSelection()
         if (foundZZCandidate):
             keepIt = True

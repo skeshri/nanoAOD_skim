@@ -6,10 +6,11 @@
 #include <TTreeReaderArray.h>
 #include <TLorentzVector.h>
 #include <vector>
+#include "RoccoR.h"
 
 class H4LTools {
     public:
-      H4LTools(){}
+      H4LTools();
       int elePtcut = 7;
       int MuPtcut = 5;
       int sip3dCut = 4;
@@ -32,7 +33,8 @@ class H4LTools {
       void SetMuons(TTreeReaderValue<unsigned> *nMuon_, TTreeReaderArray<float> *Muon_pt_, TTreeReaderArray<float> *Muon_eta_,
                         TTreeReaderArray<float> *Muon_phi_, TTreeReaderArray<float> *Muon_mass_, TTreeReaderArray<bool> *Muon_isGlobal_, TTreeReaderArray<bool> *Muon_isTracker_,
                         TTreeReaderArray<float> *Muon_dxy_, TTreeReaderArray<float> *Muon_dz_,TTreeReaderArray<float> *Muon_sip3d_, TTreeReaderArray<float> *Muon_ptErr_,
-                        TTreeReaderArray<int> *Muon_nTrackerLayers_, TTreeReaderArray<bool> *Muon_isPFcand_, TTreeReaderArray<int> *Muon_pdgId_, TTreeReaderArray<float> *Muon_pfRelIso03_all_){
+                        TTreeReaderArray<int> *Muon_nTrackerLayers_, TTreeReaderArray<bool> *Muon_isPFcand_, TTreeReaderArray<int> *Muon_pdgId_,TTreeReaderArray<int> *Muon_charge_, TTreeReaderArray<float> *Muon_pfRelIso03_all_,
+                        TTreeReaderArray<int> *Muon_genPartIdx_){
         nMuon = nMuon_; 
         Muon_pt = Muon_pt_; 
         Muon_phi = Muon_phi_;
@@ -47,7 +49,26 @@ class H4LTools {
         Muon_nTrackerLayers = Muon_nTrackerLayers_;
         Muon_isPFcand = Muon_isPFcand_;
         Muon_pdgId = Muon_pdgId_;
+        Muon_charge = Muon_charge_;
         Muon_pfRelIso03_all = Muon_pfRelIso03_all_;
+        Muon_genPartIdx = Muon_genPartIdx_;
+      }
+
+      void SetFsrPhotons(TTreeReaderValue<unsigned> *nFsrPhoton_, TTreeReaderArray<float> *FsrPhoton_dROverEt2_, TTreeReaderArray<float> *FsrPhoton_eta_,
+                        TTreeReaderArray<float> *FsrPhoton_phi_, TTreeReaderArray<float> *FsrPhoton_pt_, 
+                        TTreeReaderArray<float> *FsrPhoton_relIso03_){
+        nFsrPhoton = nFsrPhoton_;
+        FsrPhoton_dROverEt2 = FsrPhoton_dROverEt2_; 
+        FsrPhoton_phi = FsrPhoton_phi_;
+        FsrPhoton_eta = FsrPhoton_eta_;
+        FsrPhoton_pt = FsrPhoton_pt_;
+        FsrPhoton_relIso03 = FsrPhoton_relIso03_;
+        
+      }
+
+      void SetGenParts(TTreeReaderValue<unsigned> *nGenPart_, TTreeReaderArray<float> *GenPart_pt_){
+        nGenPart = nGenPart_;
+        GenPart_pt = GenPart_pt_;
       }
 
       std::vector<unsigned int> goodLooseElectrons2012();
@@ -56,11 +77,18 @@ class H4LTools {
       std::vector<unsigned int> goodElectrons2015_noIso_noBdt(std::vector<unsigned int> Electronindex);
       std::vector<bool> passTight_BDT_Id();
       std::vector<bool> passTight_Id();
+      std::vector<unsigned int> goodFsrPhotons();
+      unsigned doFsrRecovery(TLorentzVector Lep);
+      std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
 
       bool ZZSelection();
       TLorentzVector Z1;
       TLorentzVector Z2;
 
+      RoccoR  *calibrator;
+      float ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers);
+      std::vector<float> Muon_Pt_Corrected;
+      void MuonPtCorrection(bool isMC);
 
     private:
 
@@ -89,7 +117,20 @@ class H4LTools {
       TTreeReaderArray<float> *Muon_dz = nullptr;
       TTreeReaderArray<float> *Muon_ptErr = nullptr;
       TTreeReaderArray<int> *Muon_pdgId = nullptr;
+      TTreeReaderArray<int> *Muon_charge = nullptr;
       TTreeReaderArray<float> *Muon_pfRelIso03_all = nullptr;
+      TTreeReaderArray<int> *Muon_genPartIdx = nullptr;
+
+      TTreeReaderValue<unsigned> *nFsrPhoton = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_dROverEt2 = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_eta = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_phi = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_pt = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_relIso03 = nullptr;
+      TTreeReaderArray<float> *FsrPhoton_muonIdx = nullptr;
+
+      TTreeReaderValue<unsigned> *nGenPart = nullptr;
+      TTreeReaderArray<float> *GenPart_pt = nullptr;
 
 
       
@@ -98,5 +139,10 @@ class H4LTools {
 
 };
 
+H4LTools::H4LTools(){
+  std::string DATAPATH = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS";
+  DATAPATH += "/KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
+  calibrator = new RoccoR(DATAPATH);
+}
 #endif
 
