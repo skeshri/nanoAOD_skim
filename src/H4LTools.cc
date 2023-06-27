@@ -113,6 +113,37 @@ std::vector<unsigned int> H4LTools::goodFsrPhotons(){
     return goodFsrPhoton;
 }
 
+std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu){
+    std::vector<unsigned int> goodJets;
+    unsigned nJ = (*nJet).Get()[0];
+    for(unsigned int i=0;i<nJ;i++){
+        int overlaptag=0;
+        TLorentzVector jettest;
+        jettest.SetPtEtaPhiM((*Jet_pt)[i],(*Jet_eta)[i],(*Jet_phi)[i],(*Jet_mass)[i]);
+        for(unsigned int ie=0;ie<ele.size();ie++){
+            TLorentzVector eletest;
+            eletest.SetPtEtaPhiM((*Electron_pt)[ele[ie]],(*Electron_eta)[ele[ie]],(*Electron_phi)[ele[ie]],(*Electron_mass)[ele[ie]]);
+            if(eletest.DeltaR(jettest)<0.4) overlaptag++;
+        }
+        for(unsigned int im=0;im<mu.size();im++){
+            TLorentzVector mutest;
+            mutest.SetPtEtaPhiM((*Muon_pt)[mu[im]],(*Muon_eta)[mu[im]],(*Muon_phi)[mu[im]],(*Muon_mass)[mu[im]]);
+            if(mutest.DeltaR(jettest)<0.4) overlaptag++;
+        }
+    
+      if(overlaptag==0){
+        if(((*Jet_pt)[i]>30)&&(fabs((*Jet_eta)[i])<4.7)){
+            std::cout<<"jetindex: "<<i<<"jetID "<<(*Jet_jetId)[i]<<" puID "<<(*Jet_puId)[i]<<std::endl;
+            if(((*Jet_jetId)[i]>0)&&((*Jet_puId)[i]==7))
+            {
+                goodJets.push_back(i);
+            }
+        }
+      }
+    }
+    return goodJets;
+}
+
 unsigned H4LTools::doFsrRecovery(TLorentzVector Lep){
     // This Function returns the index for the possible FsrPhoton
     unsigned int FsrIdx = 999; //only Idx>0 works, pay attention!
@@ -197,7 +228,7 @@ void H4LTools::MuonPtCorrection(bool isMC){
 bool H4LTools::ZZSelection(){
     bool foundZZCandidate = false;
  
-    std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu;
+    std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu, tighteleforjetidx, tightmuforjetidx;
     looseEle = goodLooseElectrons2012();
     looseMu = goodLooseMuons2012();
     bestEle = goodElectrons2015_noIso_noBdt(looseEle);
@@ -210,6 +241,14 @@ bool H4LTools::ZZSelection(){
     std::vector<bool> AllMuid;
     AllEid = passTight_BDT_Id();
     AllMuid = passTight_Id();
+    std::vector<unsigned int> jetidx;
+    for (unsigned int iuj=0;iuj<looseEle.size();iuj++){
+        if(AllEid[looseEle[iuj]]) tighteleforjetidx.push_back(looseEle[iuj]);
+    }
+    for (unsigned int juj=0;juj<looseMu.size();juj++){
+        if(AllMuid[looseMu[juj]]) tightmuforjetidx.push_back(looseMu[juj]);
+    }
+    jetidx = SelectedJets(tighteleforjetidx,tightmuforjetidx);
     
 
     TLorentzVector z1,z2;
@@ -530,7 +569,9 @@ bool H4LTools::ZZSelection(){
        
     
     Z1 = Zlist[Z1index];
-    Z2 = Zlist[Z2index];       
+    Z2 = Zlist[Z2index];
+    //mela = new Mela(13.0, 125.0, TVar::SILENT);
+    //mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);       
         
 
 

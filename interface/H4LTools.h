@@ -7,6 +7,7 @@
 #include <TLorentzVector.h>
 #include <vector>
 #include "RoccoR.h"
+//#include "../JHUGenMELA/MELA/interface/Mela.h"
 
 class H4LTools {
     public:
@@ -28,6 +29,19 @@ class H4LTools {
         Electron_sip3d = Electron_sip3d_;
         Electron_mvaFall17V2Iso_WP90 = Electron_mvaFall17V2Iso_WP90_;
         Electron_pdgId = Electron_pdgId_;
+      }
+
+      void SetJets(TTreeReaderValue<unsigned> *nJet_, TTreeReaderArray<float> *Jet_pt_, TTreeReaderArray<float> *Jet_eta_,
+                        TTreeReaderArray<float> *Jet_phi_, TTreeReaderArray<float> *Jet_mass_, TTreeReaderArray<float> *Jet_btagDeepC_,
+                        TTreeReaderArray<int> *Jet_jetId_, TTreeReaderArray<int> *Jet_puId_){
+        nJet = nJet_; 
+        Jet_pt = Jet_pt_; 
+        Jet_phi = Jet_phi_;
+        Jet_eta = Jet_eta_;
+        Jet_mass = Jet_mass_;
+        Jet_btagDeepC = Jet_btagDeepC_;
+        Jet_jetId = Jet_jetId_;
+        Jet_puId = Jet_puId_; //1 or 0?
       }
 
       void SetMuons(TTreeReaderValue<unsigned> *nMuon_, TTreeReaderArray<float> *Muon_pt_, TTreeReaderArray<float> *Muon_eta_,
@@ -80,12 +94,14 @@ class H4LTools {
       std::vector<unsigned int> goodFsrPhotons();
       unsigned doFsrRecovery(TLorentzVector Lep);
       std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
+      std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
 
       bool ZZSelection();
       TLorentzVector Z1;
       TLorentzVector Z2;
 
       RoccoR  *calibrator;
+      //Mela* mela;
       float ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers);
       std::vector<float> Muon_Pt_Corrected;
       void MuonPtCorrection(bool isMC);
@@ -131,6 +147,18 @@ class H4LTools {
 
       TTreeReaderValue<unsigned> *nGenPart = nullptr;
       TTreeReaderArray<float> *GenPart_pt = nullptr;
+
+      TTreeReaderValue<unsigned> *nJet = nullptr;
+      TTreeReaderArray<float> *Jet_eta = nullptr;
+      TTreeReaderArray<float> *Jet_phi = nullptr;
+      TTreeReaderArray<float> *Jet_pt = nullptr;
+      TTreeReaderArray<float> *Jet_mass = nullptr;
+      TTreeReaderArray<float> *Jet_btagDeepC = nullptr;
+      TTreeReaderArray<int> *Jet_jetId = nullptr;
+      TTreeReaderArray<int> *Jet_puId = nullptr;
+
+
+
 
 
       

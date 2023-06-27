@@ -9,27 +9,29 @@ class HZZAnalysisCppProducer(Module):
     def __init__(self):
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
-            base = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/H4LTools.cc+O" % base)
             else:
-                base = "%s/src/PhysicsTools/NanoAODTools" % os.getenv(
-                    "CMSSW_BASE")
+                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools" 
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
+            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/RoccoR.cc+O" % base)
             else:
-                base = "%s/src/PhysicsTools/NanoAODTools" % os.getenv(
-                    "CMSSW_BASE")
+                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools" 
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
+        #base = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
+        #ROOT.gSystem.Load("%s/JHUGenMELA/MELA/src/Mela.so" % base)
+        #ROOT.gROOT.ProcessLine(
+        #    ".L %s/JHUGenMELA/MELA/src/Mela.cc+O" % base)
         self.worker = ROOT.H4LTools()
         pass
 
@@ -108,6 +110,16 @@ class HZZAnalysisCppProducer(Module):
         self.nGenPart = tree.valueReader("nGenPart")
         self.GenPart_pt = tree.arrayReader("GenPart_pt")
         self.worker.SetGenParts(self.nGenPart,self.GenPart_pt)
+
+        self.nJet = tree.valueReader("nJet")
+        self.Jet_pt = tree.arrayReader("Jet_pt")
+        self.Jet_eta = tree.arrayReader("Jet_eta")
+        self.Jet_phi = tree.arrayReader("Jet_phi")
+        self.Jet_mass = tree.arrayReader("Jet_mass")
+        self.Jet_btagDeepC = tree.arrayReader("Jet_btagDeepB")
+        self.Jet_jetId = tree.arrayReader("Jet_jetId")
+        self.Jet_puId = tree.arrayReader("Jet_puId")
+        self.worker.SetJets(self.nJet,self.Jet_pt,self.Jet_eta,self.Jet_phi,self.Jet_mass,self.Jet_btagDeepC,self.Jet_jetId,self.Jet_puId)
         # self._ttreereaderversion must be set AFTER all calls to
         # tree.valueReader or tree.arrayReader
         self._ttreereaderversion = tree._ttreereaderversion
