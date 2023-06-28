@@ -7,6 +7,8 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 # MHT producer, unclean jets only (no lepton overlap cleaning, no jet selection)
 class HZZAnalysisCppProducer(Module):
     def __init__(self):
+        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
+        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
             base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
@@ -28,8 +30,8 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
-        #base = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
-        #ROOT.gSystem.Load("%s/JHUGenMELA/MELA/src/Mela.so" % base)
+        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
+        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/src/Mela_cc.so" % base)
         #ROOT.gROOT.ProcessLine(
         #    ".L %s/JHUGenMELA/MELA/src/Mela.cc+O" % base)
         self.worker = ROOT.H4LTools()
