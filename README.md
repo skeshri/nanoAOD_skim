@@ -44,28 +44,16 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
 4. Step: 4: interactive running
 
    ```bash
+   git clone -b v2.3.5 https://github.com/JHUGen/JHUGenMELA
+   sh JHUGenMELA/MELA/setup.sh -j 8
+   cd JHUGenMELA/MELA
+   make
+   cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
-   python post_proc.py
+   python python/postprocessing/analysis/nanoAOD_vvVBS/post_proc.py
    ```
 
-5. batch job submission.
-   1. Crab-job submission (Not tested)
-      ```bash
-      cd crab/
-      voms-proxy-init -voms cms --valid 200:00
-      source /cvmfs/cms.cern.ch/crab3/crab.sh
-      crab submit -c crab_cfg.py
-      ```
-
-   2. Step: 5 (b): Condor-job submission
-      1. Setting up a voms Proxy: To access grid files to run the macro on, we must run the following commands:
-
-         ```bash
-         cmsenv
-         voms-proxy-init --voms cms --valid 168:00
-         ```
-
-         after the voms command, you should receive an output similar to:
+ voms command, you should receive an output similar to:
 
          ```
          Created proxy in /tmp/x509up_u95168
