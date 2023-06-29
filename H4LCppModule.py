@@ -30,8 +30,6 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
-        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
-        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/src/Mela_cc.so" % base)
         #ROOT.gROOT.ProcessLine(
         #    ".L %s/JHUGenMELA/MELA/src/Mela.cc+O" % base)
         self.worker = ROOT.H4LTools()
