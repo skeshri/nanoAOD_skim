@@ -7,11 +7,11 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 # MHT producer, unclean jets only (no lepton overlap cleaning, no jet selection)
 class HZZAnalysisCppProducer(Module):
     def __init__(self):
-        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS"
+        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
-            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/H4LTools.cc+O" % base)
@@ -21,7 +21,7 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS" 
+            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/RoccoR.cc+O" % base)
