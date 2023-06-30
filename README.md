@@ -53,6 +53,3 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    python python/postprocessing/analysis/nanoAOD_vvVBS/post_proc.py
    ```
 
-
-         condor_submit <Files-created-from-above-command>.jdl
-         ```
