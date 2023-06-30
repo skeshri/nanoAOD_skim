@@ -1,0 +1,16 @@
+# this is a comment
+drop * # start with all
+#
+#
+keep *4l
+keep *Z1
+keep *Z2
+# keep nPhoton
+# keep Photon*
+# keep nElectron
+# keep Electron*
+# keep nMuon
+# keep Muon*
+# keep nTau
+# keep Tau*
+#
