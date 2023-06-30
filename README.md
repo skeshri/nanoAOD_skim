@@ -53,26 +53,6 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    python python/postprocessing/analysis/nanoAOD_vvVBS/post_proc.py
    ```
 
- voms command, you should receive an output similar to:
 
-         ```
-         Created proxy in /tmp/x509up_u95168
-         ```
-
-         to set this proxy to your `X509_USER_PROXY` environment variable for the example above, simply use the command:
-
-         ```bash
-         cd $CMSSW_BASE/src/flashgg
-         ./proxy.sh x509up_u95168
-         ```
-
-         where `x590up_u95168` would be replaced by whatever your proxy name is.
-
-      1. In file `condor_setup.py`, specify correct input text file from which you need to take input NanoAOD DAS names. Also, updated the output EOS path. Then do following:
-
-         ```bash
-         cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
-         # Edit condor_setup.py, then
-         python condor_setup_lxplus.py
          condor_submit <Files-created-from-above-command>.jdl
          ```
