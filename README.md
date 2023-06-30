@@ -49,7 +49,7 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    cd JHUGenMELA/MELA
    make
    cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/
-   cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
+   cp python/postprocessing/analysis/nanoAOD_vvVBS/keep_and_drop.txt .
    python python/postprocessing/analysis/nanoAOD_vvVBS/post_proc.py
    ```
 
