@@ -7,7 +7,7 @@
 #include <TLorentzVector.h>
 #include <vector>
 #include "RoccoR.h"
-//#include "../JHUGenMELA/MELA/interface/Mela.h"
+#include "../JHUGenMELA/MELA/interface/Mela.h"
 
 class H4LTools {
     public:
@@ -101,7 +101,7 @@ class H4LTools {
       TLorentzVector Z2;
 
       RoccoR  *calibrator;
-      //Mela* mela;
+      Mela* mela;
       float ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers);
       std::vector<float> Muon_Pt_Corrected;
       void MuonPtCorrection(bool isMC);
@@ -168,8 +168,8 @@ class H4LTools {
 };
 
 H4LTools::H4LTools(){
-  std::string DATAPATH = "/afs/cern.ch/user/y/yujil/Run3H4l/CMSSW_10_6_20/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS";
-  DATAPATH += "/KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
+  std::string DATAPATH = "";
+  DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
   calibrator = new RoccoR(DATAPATH);
 }
 #endif
