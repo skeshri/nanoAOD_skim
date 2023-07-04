@@ -44,6 +44,7 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
 4. Step: 4: interactive running
 
    ```bash
+   cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
    git clone -b v2.3.5 https://github.com/JHUGen/JHUGenMELA
    sh JHUGenMELA/MELA/setup.sh -j 8
    cd JHUGenMELA/MELA
