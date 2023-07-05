@@ -9,6 +9,9 @@ class HZZAnalysisCppProducer(Module):
     def __init__(self):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
+        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
+        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libmcfm_707.so" % base)
+        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
             base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
@@ -56,6 +59,12 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pTZ2",  "F")
         self.out.branch("etaZ2",  "F")
         self.out.branch("phiZ2",  "F")
+        self.out.branch("D_CP",  "F")
+        self.out.branch("D_0m",  "F")
+        self.out.branch("D_0hp",  "F")
+        self.out.branch("D_int",  "F")
+        self.out.branch("D_L1",  "F")
+        self.out.branch("D_L1Zg",  "F")
         
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -162,6 +171,12 @@ class HZZAnalysisCppProducer(Module):
             etaZ2 = self.worker.Z2.Eta()
             phiZ2 = self.worker.Z2.Phi()
             massZ2 = self.worker.Z2.M()
+            D_CP = self.worker.D_CP
+            D_0m = self.worker.D_0m
+            D_0hp = self.worker.D_0hp
+            D_int = self.worker.D_int
+            D_L1 = self.worker.D_L1
+            D_L1Zg = self.worker.D_L1Zg
 
             ZZsystem = ROOT.TLorentzVector()
             ZZsystem = self.worker.Z1 + self.worker.Z2
@@ -181,6 +196,12 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pTZ2",pTZ2)
             self.out.fillBranch("etaZ2",etaZ2)
             self.out.fillBranch("phiZ2",phiZ2)
+            self.out.fillBranch("D_CP",D_CP)
+            self.out.fillBranch("D_0m",D_0m)
+            self.out.fillBranch("D_0hp",D_0hp)
+            self.out.fillBranch("D_int",D_int)
+            self.out.fillBranch("D_L1",D_L1)
+            self.out.fillBranch("D_L1Zg",D_L1Zg)
 
        
         

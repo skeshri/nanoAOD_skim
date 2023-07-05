@@ -28,7 +28,6 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
 }
 std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigned int> Muonindex){
     std::vector<unsigned int> bestMuonindex;
-    //std::cout<<Muonindex.size()<<std::endl;
     for (unsigned int i=0; i<Muonindex.size(); i++){
         if ((Muon_Pt_Corrected[Muonindex[i]]>MuPtcut)&&(fabs((*Muon_eta)[Muonindex[i]])<2.4)&&((*Muon_isGlobal)[Muonindex[i]]||(*Muon_isTracker)[Muonindex[i]])){
             if ((*Muon_sip3d)[Muonindex[i]]<sip3dCut){
@@ -133,7 +132,7 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
     
       if(overlaptag==0){
         if(((*Jet_pt)[i]>30)&&(fabs((*Jet_eta)[i])<4.7)){
-            std::cout<<"jetindex: "<<i<<"jetID "<<(*Jet_jetId)[i]<<" puID "<<(*Jet_puId)[i]<<std::endl;
+            //std::cout<<"jetindex: "<<i<<"jetID "<<(*Jet_jetId)[i]<<" puID "<<(*Jet_puId)[i]<<std::endl;
             if(((*Jet_jetId)[i]>0)&&((*Jet_puId)[i]==7))
             {
                 goodJets.push_back(i);
@@ -570,12 +569,175 @@ bool H4LTools::ZZSelection(){
     
     Z1 = Zlist[Z1index];
     Z2 = Zlist[Z2index];
-    //mela = new Mela(13.0, 125.0, TVar::SILENT);
-    //mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);       
+    
+    TLorentzVector ZZsystem;
+    ZZsystem = Z1+Z2;
+    float massZZ;
+    massZZ = ZZsystem.M();
+         
+
+    unsigned int jet1index, jet2index;
+    if(jetidx.size()>0)
+    {
+        if(jetidx.size()==1)
+        {
+            jet1index = jetidx[0];
+        }
+        if(jetidx.size()==2)
+        {
+            jet1index = jetidx[0];
+            jet2index = jetidx[1];
+            if((*Jet_pt)[jetidx[1]]>(*Jet_pt)[jetidx[0]])
+            {
+                jet1index = jetidx[1];
+                jet2index = jetidx[0];
+            }
+        }
+        if(jetidx.size()>2)
+        {
+            jet1index = jetidx[0];
+            jet2index = jetidx[1];
+            if((*Jet_pt)[jetidx[1]]>(*Jet_pt)[jetidx[0]])
+            {
+                jet1index = jetidx[1];
+                jet2index = jetidx[0];
+            }
+            for (unsigned int pj=2;pj<jetidx.size();pj++){
+                if(((*Jet_pt)[jetidx[pj]]>jet1index)&&((*Jet_pt)[jetidx[pj]]>jet2index)){
+                    jet1index = jetidx[pj];
+                }
+                if((*Jet_pt)[jetidx[pj]]>jet2index){
+                    jet2index = jetidx[pj];
+                }
+            }
+        }
+    }
+    TLorentzVector Jet1,Jet2;
+    SimpleParticleCollection_t associated;
+    if(jetidx.size()>0){
+        Jet1.SetPtEtaPhiM((*Jet_pt)[jet1index],(*Jet_eta)[jet1index],(*Jet_phi)[jet1index],(*Jet_mass)[jet1index]);
+        associated.push_back(SimpleParticle_t(0, Jet1));
+        if(jetidx.size()>1){
+           Jet2.SetPtEtaPhiM((*Jet_pt)[jet2index],(*Jet_eta)[jet2index],(*Jet_phi)[jet2index],(*Jet_mass)[jet2index]);
+           associated.push_back(SimpleParticle_t(0, Jet2));
+        }
+    }
+    
+    
         
+    SimpleParticleCollection_t daughters;
+    TLorentzVector Lep1,Lep2,Lep3,Lep4;
+    Lep1.SetPtEtaPhiM(Zlep1pt[Z1index],Zlep1eta[Z1index],Zlep1phi[Z1index],Zlep1mass[Z1index]);
+    Lep2.SetPtEtaPhiM(Zlep2pt[Z1index],Zlep2eta[Z1index],Zlep2phi[Z1index],Zlep2mass[Z1index]);
+    Lep3.SetPtEtaPhiM(Zlep1pt[Z2index],Zlep1eta[Z2index],Zlep1phi[Z2index],Zlep1mass[Z2index]);
+    Lep4.SetPtEtaPhiM(Zlep2pt[Z2index],Zlep2eta[Z2index],Zlep2phi[Z2index],Zlep2mass[Z2index]);
+    
+    daughters.push_back(SimpleParticle_t((-1)*Zflavor[Z1index]*Zlep1chg[Z1index], Lep1));
+    daughters.push_back(SimpleParticle_t((-1)*Zflavor[Z1index]*Zlep2chg[Z1index], Lep2));
+    daughters.push_back(SimpleParticle_t((-1)*Zflavor[Z2index]*Zlep1chg[Z2index], Lep3));
+    daughters.push_back(SimpleParticle_t((-1)*Zflavor[Z2index]*Zlep2chg[Z2index], Lep4));
+    me_0plus_JHU=999.0; me_qqZZ_MCFM=999.0; p0plus_m4l=999.0; bkg_m4l=999.0; D_bkg_kin=999.0; D_bkg=999.0;
+    D_bkg_kin_vtx_BS=999.0;
+    
+    p0minus_VAJHU=999.0; pg1g4_VAJHU=999.0; Dgg10_VAMCFM=999.0, D_g4=999.0; D_g1g4=999.0; D_0m=999.0; D_CP=999.0; D_0hp=999; D_int=999.0;D_L1=999.0; D_L1_int=999.0; D_L1Zg=999.0; D_L1Zgint=999.0;
+    p0plus_VAJHU=9999.0; p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen=999.0; pDL1_VAJHU=999.0; pD_L1Zgint=999.0; p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen=999.0; p_GG_SIG_ghg2_1_ghz1_1_ghza1prime2_1E4_JHUGen=999.0, p_GG_SIG_ghg2_1_ghz1_1_ghz1prime2_1E4_JHUGen=999.0, p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen=999.0, p0plus_VAJHU=999.0; 
+    
+    mela->setInputEvent(&daughters, &associated, 0, 0);
+    mela->setCurrentCandidateFromIndex(0);
+    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+    mela->computeP(me_0plus_JHU, true);
+    
+    mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::ZZGG);
+    mela->computeP(p0minus_VAJHU, true);
+    // additional probabilities   GG_SIG_ghg2_1_ghz2_1_JHUGen
+    mela->setProcess(TVar::H0hplus, TVar::JHUGen, TVar::ZZGG);
+    mela->computeP(p0plus_VAJHU, true); 
+    
+    // p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen, Couplings:ghg2=1,0;ghz1=1,0;ghz2=1,0 Options:SubtractP=GG_SIG_ghg2_1_ghz1_1_JHUGen,GG_SIG_ghg2_1_ghz2_1_JHUGen
+    mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][gHIGGS_GG_2][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_1][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_2][0]=1.;
+    mela->computeP(p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen, true);    //FIXME 
+
+    p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen -= p0plus_VAJHU+me_0plus_JHU;  
 
 
+    // p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen
+    // Couplings:ghg2=1,0;ghz1_prime2=10000,0
+    mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][gHIGGS_GG_2][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_1_PRIME2][0]=10000.;
+    // (mela->selfDHzzcoupl)[0][3][0]=1.;
+    mela->computeP(p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen, true);    //FIXME
+
+	// p_GG_SIG_ghg2_1_ghz1_1_ghz1prime2_1E4_JHUGen/1e8, ghg2=1,0;ghz1=1,0;ghz1_prime2=10000,0, Options:SubtractP=GG_SIG_ghg2_1_ghz1_1_JHUGen,GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen
+	mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][gHIGGS_GG_2][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_1][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_1_PRIME2][0]=10000.;
+    mela->computeP(p_GG_SIG_ghg2_1_ghz1_1_ghz1prime2_1E4_JHUGen, true);    //FIXME 
+    p_GG_SIG_ghg2_1_ghz1_1_ghz1prime2_1E4_JHUGen -= p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen+me_0plus_JHU;
+
+	// p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen, ghg2=1,0;ghzgs1_prime2=10000,0	
+	mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][gHIGGS_GG_2][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_ZA_1_PRIME2][0]=10000.;
+    // (mela->selfDHzzcoupl)[0][3][0]=1.;
+    mela->computeP(p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen, true);    //FIXME
+
+	// p_GG_SIG_ghg2_1_ghz1_1_ghza1prime2_1E4_JHUGen, ghg2=1,0;ghzgs1_prime2=10000,0
+	mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][gHIGGS_GG_2][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_VV_1][0]=1.;
+    (mela->selfDHzzcoupl)[0][gHIGGS_ZA_1_PRIME2][0]=10000.;
+    mela->computeP(p_GG_SIG_ghg2_1_ghz1_1_ghza1prime2_1E4_JHUGen, true);    //FIXME
+
+	p_GG_SIG_ghg2_1_ghz1_1_ghza1prime2_1E4_JHUGen -= me_0plus_JHU+p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen;
+
+	// pg1g4_VAJHU=0.0;
+    mela->setProcess(TVar::SelfDefine_spin0, TVar::JHUGen, TVar::ZZGG);
+    (mela->selfDHggcoupl)[0][0][0]=1.;
+    (mela->selfDHzzcoupl)[0][0][0]=1.;
+    (mela->selfDHzzcoupl)[0][3][0]=1.;
+    mela->computeP(pg1g4_VAJHU, true);
+
+    pg1g4_VAJHU -= me_0plus_JHU+p0minus_VAJHU;
+
+    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
+    mela->computeP(me_qqZZ_MCFM, true);
+                    
+    mela->computeD_gg(TVar::MCFM, TVar::D_gg10, Dgg10_VAMCFM);
+                    
+    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+    mela->computePM4l(TVar::SMSyst_None, p0plus_m4l);
+                    
+    mela->setProcess(TVar::bkgZZ, TVar::JHUGen, TVar::ZZGG);
+    mela->computePM4l(TVar::SMSyst_None, bkg_m4l);
+    D_0m = me_0plus_JHU / (me_0plus_JHU + (p0minus_VAJHU * pow(getDg4Constant(massZZ),2)));
+	D_CP = pg1g4_VAJHU / (2 * sqrt(me_0plus_JHU * p0minus_VAJHU ));
+    D_0hp = me_0plus_JHU / (me_0plus_JHU + (p0plus_VAJHU * pow(getDg2Constant(massZZ),2)));
+	D_int = p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen / (2 * sqrt(me_0plus_JHU * p0plus_VAJHU));
+    D_L1 = me_0plus_JHU / (me_0plus_JHU + ((p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen/1e8) * pow(getDL1Constant(massZZ),2)));
+	D_L1Zg = me_0plus_JHU / (me_0plus_JHU + ((p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen/1e8) * pow(getDL1ZgsConstant(massZZ),2)));
+    mela->resetInputEvent();
     return foundZZCandidate;
+    
 
+}
 
+float H4LTools::getDg4Constant(float ZZMass){
+    return spline_g4->Eval(ZZMass);
+}
+
+float H4LTools::getDg2Constant(float ZZMass){
+    return spline_g2->Eval(ZZMass);
+}
+
+float H4LTools::getDL1Constant(float ZZMass){
+    return spline_L1->Eval(ZZMass);
+}
+
+float H4LTools::getDL1ZgsConstant(float ZZMass){
+    return spline_L1Zgs->Eval(ZZMass);
 }

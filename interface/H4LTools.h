@@ -5,6 +5,7 @@
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
 #include <TLorentzVector.h>
+#include <TSpline.h>
 #include <vector>
 #include "RoccoR.h"
 #include "../JHUGenMELA/MELA/interface/Mela.h"
@@ -95,7 +96,11 @@ class H4LTools {
       unsigned doFsrRecovery(TLorentzVector Lep);
       std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
       std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
-
+      
+      TSpline *spline_g4;
+      TSpline *spline_g2;
+      TSpline *spline_L1;
+      TSpline *spline_L1Zgs;
       bool ZZSelection();
       TLorentzVector Z1;
       TLorentzVector Z2;
@@ -105,7 +110,16 @@ class H4LTools {
       float ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers);
       std::vector<float> Muon_Pt_Corrected;
       void MuonPtCorrection(bool isMC);
-
+      float me_0plus_JHU, me_qqZZ_MCFM, p0plus_m4l, bkg_m4l;
+      float D_bkg_kin, D_bkg, D_g4, D_g1g4, D_0m, D_CP, D_0hp, D_int, D_L1, D_L1_int, D_L1Zg, D_L1Zgint;
+      float D_bkg_kin_vtx_BS;
+      float p0minus_VAJHU, Dgg10_VAMCFM, pg1g4_VAJHU;
+      float p0plus_VAJHU, p_GG_SIG_ghg2_1_ghz1prime2_1E4_JHUGen, p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen, p_GG_SIG_ghg2_1_ghz1_1_ghza1prime2_1E4_JHUGen, p_GG_SIG_ghg2_1_ghz1_1_ghz1prime2_1E4_JHUGen, p_GG_SIG_ghg2_1_ghz1_1_ghz2_1_JHUGen, pDL1_VAJHU, pD_L1Zgint; //, p0plus_VAJHU;
+      float getDg4Constant(float ZZMass);
+      float getDg2Constant(float ZZMass);
+      float getDL1Constant(float ZZMass);
+      float getDL1ZgsConstant(float ZZMass);
+      
     private:
 
       TTreeReaderValue<unsigned> *nElectron = nullptr;
@@ -157,20 +171,30 @@ class H4LTools {
       TTreeReaderArray<int> *Jet_jetId = nullptr;
       TTreeReaderArray<int> *Jet_puId = nullptr;
 
-
-
-
-
-      
-
-      
-
 };
 
 H4LTools::H4LTools(){
   std::string DATAPATH = "";
   DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
   calibrator = new RoccoR(DATAPATH);
+  mela = new Mela(13.0, 125.0, TVar::SILENT);
+  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  
+  TFile *gConstant_g4 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_g4.root");
+  spline_g4 = (TSpline*) gConstant_g4->Get("sp_tgfinal_HZZ2e2mu_SM_over_tgfinal_HZZ2e2mu_g4");
+  gConstant_g4->Close();
+  delete gConstant_g4;
+  TFile *gConstant_g2 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_g2.root");
+  spline_g2 = (TSpline*) gConstant_g2->Get("sp_tgfinal_HZZ2e2mu_SM_over_tgfinal_HZZ2e2mu_g2");
+  gConstant_g2->Close();
+  delete gConstant_g2;
+  TFile *gConstant_L1 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_L1.root");
+  spline_L1 = (TSpline*) gConstant_L1->Get("sp_tgfinal_HZZ2e2mu_SM_over_tgfinal_HZZ2e2mu_L1");
+  gConstant_L1->Close();
+  delete gConstant_L1;
+  TFile *gConstant_L1Zgs = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_L1Zgs.root");
+  spline_L1Zgs = (TSpline*) gConstant_L1Zgs->Get("sp_tgfinal_HZZ2e2mu_SM_photoncut_over_tgfinal_HZZ2e2mu_L1Zgs");
+  gConstant_L1Zgs->Close();
+  delete gConstant_L1Zgs;
 }
 #endif
 
