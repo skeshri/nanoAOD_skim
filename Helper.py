@@ -1,16 +1,16 @@
 import ROOT
 
 PI=3.14159
-def PassTrig(HLTS):
-    for x in HLTS:
-       if((x.Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)==True): return True
-       if((x.DoubleEle25_CaloIdL_MW)==True): return True
-       if((x.Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)==True): return True
-       if((x.Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
-       if((x.Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
-       if((x.DiMu9_Ele9_CaloIdL_TrackIdL_DZ)==True): return True
-       if((x.Ele32_WPTight_Gsf)==True): return True
-       if((x.IsoMu24)==True): return True
+def PassTrig(event):
+
+    if((event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)==True): return True
+    if((event.HLT_DoubleEle25_CaloIdL_MW)==True): return True
+    if((event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)==True): return True
+    if((event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
+    if((event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
+    if((event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)==True): return True
+    if((event.HLT_Ele32_WPTight_Gsf)==True): return True
+    if((event.HLT_IsoMu24)==True): return True
 
     return False
 

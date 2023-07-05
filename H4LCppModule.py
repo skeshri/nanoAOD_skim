@@ -1,6 +1,7 @@
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 import ROOT
 import os
+from Helper import *
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
@@ -158,7 +159,8 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-
+        passedTrig = PassTrig(event)
+        if (passedTrig==False): return keepIt
         self.worker.MuonPtCorrection(isMC)
         foundZZCandidate = self.worker.ZZSelection()
         if (foundZZCandidate):
