@@ -1,18 +1,24 @@
 import ROOT
 
 PI=3.14159
-def PassTrig(event):
+def PassTrig(event,year=2018):
+    
+    TriggerList = []
+    PassTrig = False
+    if (year == 2018):
+        TriggerList.append(event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
+        TriggerList.append(event.HLT_DoubleEle25_CaloIdL_MW)
+        TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
+        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)
+        TriggerList.append(event.HLT_Ele32_WPTight_Gsf)
+        TriggerList.append(event.HLT_IsoMu24)
+    
+    for i in range(len(TriggerList)):
+        PassTrig = PassTrig | TriggerList[i]
 
-    if((event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)==True): return True
-    if((event.HLT_DoubleEle25_CaloIdL_MW)==True): return True
-    if((event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)==True): return True
-    if((event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
-    if((event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)==True): return True
-    if((event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)==True): return True
-    if((event.HLT_Ele32_WPTight_Gsf)==True): return True
-    if((event.HLT_IsoMu24)==True): return True
-
-    return False
+    return PassTrig
 
 def goodLooseElectrons2012(electrons, elePtcut):
     goodElectrons = []

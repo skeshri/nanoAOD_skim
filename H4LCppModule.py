@@ -159,7 +159,7 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-        passedTrig = PassTrig(event)
+        passedTrig = PassTrig(event, 2018)
         if (passedTrig==False): return keepIt
         self.worker.MuonPtCorrection(isMC)
         foundZZCandidate = self.worker.ZZSelection()
