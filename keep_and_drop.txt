@@ -2,6 +2,18 @@
 drop * # start with all
 #
 #
+keep run
+keep event
+keep lumi*
+#
+#
+#     Trigger
+#
+keep HLT*
+#
+keep Flag*
+#
+#
 keep *4l
 keep *Z1
 keep *Z2
