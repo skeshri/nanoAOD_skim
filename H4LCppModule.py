@@ -15,22 +15,22 @@ class HZZAnalysisCppProducer(Module):
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
-            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/H4LTools.cc+O" % base)
             else:
-                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/RoccoR.cc+O" % base)
             else:
-                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
@@ -66,7 +66,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("D_int",  "F")
         self.out.branch("D_L1",  "F")
         self.out.branch("D_L1Zg",  "F")
-        
+
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -84,7 +84,7 @@ class HZZAnalysisCppProducer(Module):
         self.Electron_sip3d = tree.arrayReader("Electron_sip3d")
         self.Electron_mvaFall17V2Iso_WP90 = tree.arrayReader("Electron_mvaFall17V2Iso_WP90")
         self.Electron_pdgId = tree.arrayReader("Electron_pdgId")
-        self.worker.SetElectrons(self.nElectron, self.Electron_pt, self.Electron_eta, self.Electron_phi, self.Electron_mass,self.Electron_dxy, self.Electron_dz, self.Electron_sip3d, 
+        self.worker.SetElectrons(self.nElectron, self.Electron_pt, self.Electron_eta, self.Electron_phi, self.Electron_mass,self.Electron_dxy, self.Electron_dz, self.Electron_sip3d,
                                  self.Electron_mvaFall17V2Iso_WP90,self.Electron_pdgId)
 
         self.nMuon = tree.valueReader("nMuon")
@@ -106,7 +106,7 @@ class HZZAnalysisCppProducer(Module):
         self.Muon_genPartIdx = tree.arrayReader("Muon_genPartIdx")
         self.worker.SetMuons(self.nMuon, self.Muon_pt, self.Muon_eta, self.Muon_phi, self.Muon_mass, self.Muon_isGlobal, self.Muon_isTracker,
                               self.Muon_dxy, self.Muon_dz, self.Muon_sip3d, self.Muon_ptErr, self.Muon_nTrackerLayers, self.Muon_isPFcand, self.Muon_pdgId,self.Muon_charge, self.Muon_pfRelIso03_all, self.Muon_genPartIdx)
-        
+
         self.nFsrPhoton = tree.valueReader("nFsrPhoton")
         self.FsrPhoton_pt = tree.arrayReader("FsrPhoton_pt")
         self.FsrPhoton_eta = tree.arrayReader("FsrPhoton_eta")
@@ -144,7 +144,7 @@ class HZZAnalysisCppProducer(Module):
         # do NOT access other branches in python between the check/call to
         # initReaders and the call to C++ worker code
 
-        
+
 
         keepIt = False
 
@@ -162,7 +162,7 @@ class HZZAnalysisCppProducer(Module):
         passedTrig = PassTrig(event, 2018)
         if (passedTrig==False): return keepIt
         self.worker.MuonPtCorrection(isMC)
-        foundZZCandidate = self.worker.ZZSelection()
+        foundZZCandidate = self.worker.ZZSelection_2l2q()
         if (foundZZCandidate):
             keepIt = True
             pTZ1 = self.worker.Z1.Pt()
@@ -205,8 +205,8 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("D_L1",D_L1)
             self.out.fillBranch("D_L1Zg",D_L1Zg)
 
-       
-        
+
+
         return keepIt
 
 

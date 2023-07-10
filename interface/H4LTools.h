@@ -20,8 +20,8 @@ class H4LTools {
       void SetElectrons(TTreeReaderValue<unsigned> *nElectron_, TTreeReaderArray<float> *Electron_pt_, TTreeReaderArray<float> *Electron_eta_,
                         TTreeReaderArray<float> *Electron_phi_, TTreeReaderArray<float> *Electron_mass_, TTreeReaderArray<float> *Electron_dxy_,TTreeReaderArray<float> *Electron_dz_,
                         TTreeReaderArray<float> *Electron_sip3d_, TTreeReaderArray<bool> *Electron_mvaFall17V2Iso_WP90_, TTreeReaderArray<int> *Electron_pdgId_){
-        nElectron = nElectron_; 
-        Electron_pt = Electron_pt_; 
+        nElectron = nElectron_;
+        Electron_pt = Electron_pt_;
         Electron_phi = Electron_phi_;
         Electron_eta = Electron_eta_;
         Electron_mass = Electron_mass_;
@@ -35,8 +35,8 @@ class H4LTools {
       void SetJets(TTreeReaderValue<unsigned> *nJet_, TTreeReaderArray<float> *Jet_pt_, TTreeReaderArray<float> *Jet_eta_,
                         TTreeReaderArray<float> *Jet_phi_, TTreeReaderArray<float> *Jet_mass_, TTreeReaderArray<float> *Jet_btagDeepC_,
                         TTreeReaderArray<int> *Jet_jetId_, TTreeReaderArray<int> *Jet_puId_){
-        nJet = nJet_; 
-        Jet_pt = Jet_pt_; 
+        nJet = nJet_;
+        Jet_pt = Jet_pt_;
         Jet_phi = Jet_phi_;
         Jet_eta = Jet_eta_;
         Jet_mass = Jet_mass_;
@@ -50,8 +50,8 @@ class H4LTools {
                         TTreeReaderArray<float> *Muon_dxy_, TTreeReaderArray<float> *Muon_dz_,TTreeReaderArray<float> *Muon_sip3d_, TTreeReaderArray<float> *Muon_ptErr_,
                         TTreeReaderArray<int> *Muon_nTrackerLayers_, TTreeReaderArray<bool> *Muon_isPFcand_, TTreeReaderArray<int> *Muon_pdgId_,TTreeReaderArray<int> *Muon_charge_, TTreeReaderArray<float> *Muon_pfRelIso03_all_,
                         TTreeReaderArray<int> *Muon_genPartIdx_){
-        nMuon = nMuon_; 
-        Muon_pt = Muon_pt_; 
+        nMuon = nMuon_;
+        Muon_pt = Muon_pt_;
         Muon_phi = Muon_phi_;
         Muon_eta = Muon_eta_;
         Muon_mass = Muon_mass_;
@@ -70,15 +70,15 @@ class H4LTools {
       }
 
       void SetFsrPhotons(TTreeReaderValue<unsigned> *nFsrPhoton_, TTreeReaderArray<float> *FsrPhoton_dROverEt2_, TTreeReaderArray<float> *FsrPhoton_eta_,
-                        TTreeReaderArray<float> *FsrPhoton_phi_, TTreeReaderArray<float> *FsrPhoton_pt_, 
+                        TTreeReaderArray<float> *FsrPhoton_phi_, TTreeReaderArray<float> *FsrPhoton_pt_,
                         TTreeReaderArray<float> *FsrPhoton_relIso03_){
         nFsrPhoton = nFsrPhoton_;
-        FsrPhoton_dROverEt2 = FsrPhoton_dROverEt2_; 
+        FsrPhoton_dROverEt2 = FsrPhoton_dROverEt2_;
         FsrPhoton_phi = FsrPhoton_phi_;
         FsrPhoton_eta = FsrPhoton_eta_;
         FsrPhoton_pt = FsrPhoton_pt_;
         FsrPhoton_relIso03 = FsrPhoton_relIso03_;
-        
+
       }
 
       void SetGenParts(TTreeReaderValue<unsigned> *nGenPart_, TTreeReaderArray<float> *GenPart_pt_){
@@ -96,12 +96,13 @@ class H4LTools {
       unsigned doFsrRecovery(TLorentzVector Lep);
       std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
       std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
-      
+
       TSpline *spline_g4;
       TSpline *spline_g2;
       TSpline *spline_L1;
       TSpline *spline_L1Zgs;
       bool ZZSelection();
+      bool ZZSelection_2l2q();
       TLorentzVector Z1;
       TLorentzVector Z2;
 
@@ -119,7 +120,7 @@ class H4LTools {
       float getDg2Constant(float ZZMass);
       float getDL1Constant(float ZZMass);
       float getDL1ZgsConstant(float ZZMass);
-      
+
     private:
 
       TTreeReaderValue<unsigned> *nElectron = nullptr;
@@ -178,7 +179,7 @@ H4LTools::H4LTools(){
   DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
   calibrator = new RoccoR(DATAPATH);
   mela = new Mela(13.0, 125.0, TVar::SILENT);
-  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  
+  mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
   TFile *gConstant_g4 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_g4.root");
   spline_g4 = (TSpline*) gConstant_g4->Get("sp_tgfinal_HZZ2e2mu_SM_over_tgfinal_HZZ2e2mu_g4");
   gConstant_g4->Close();
