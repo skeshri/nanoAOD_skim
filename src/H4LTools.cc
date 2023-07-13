@@ -189,6 +189,90 @@ std::vector<TLorentzVector> H4LTools::BatchFsrRecovery(std::vector<TLorentzVecto
     }
     return LepFsrList;
 }
+std::vector<TLorentzVector> H4LTools::ElectronFsr(){
+    std::vector<TLorentzVector> leplist;
+    std::vector<TLorentzVector> leplistfsr;
+    unsigned nlep = (*nElectron).Get()[0];
+    for(unsigned int i=0;i<nlep;i++){
+        TLorentzVector Lep;
+        Lep.SetPtEtaPhiM((*Electron_pt)[i],(*Electron_eta)[i],(*Electron_phi)[i],(*Electron_mass)[i]);
+        leplist.push_back(Lep);
+    }
+    leplistfsr = BatchFsrRecovery(leplist);
+    return leplistfsr;
+}
+
+std::vector<TLorentzVector> H4LTools::MuonFsr(){
+    std::vector<TLorentzVector> leplist;
+    std::vector<TLorentzVector> leplistfsr;
+    unsigned nlep = (*nMuon).Get()[0];
+    for(unsigned int i=0;i<nlep;i++){
+        TLorentzVector Lep;
+        Lep.SetPtEtaPhiM((*Muon_pt)[i],(*Muon_eta)[i],(*Muon_phi)[i],(*Muon_mass)[i]);
+        leplist.push_back(Lep);
+    }
+    leplistfsr = BatchFsrRecovery(leplist);
+    return leplistfsr;
+}
+std::vector<float> H4LTools::ElectronFsrPt(){
+    std::vector<float> lepPt;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = ElectronFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepPt.push_back(leplistfsr[i].Pt());
+    }
+    return lepPt;
+}
+
+std::vector<float> H4LTools::ElectronFsrEta(){
+    std::vector<float> lepEta;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = ElectronFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepEta.push_back(leplistfsr[i].Eta());
+    }
+    return lepEta;
+}
+
+std::vector<float> H4LTools::ElectronFsrPhi(){
+    std::vector<float> lepPhi;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = ElectronFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepPhi.push_back(leplistfsr[i].Phi());
+    }
+    return lepPhi;
+}
+
+std::vector<float> H4LTools::MuonFsrPt(){
+    std::vector<float> lepPt;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = MuonFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepPt.push_back(leplistfsr[i].Pt());
+    }
+    return lepPt;
+}
+
+std::vector<float> H4LTools::MuonFsrEta(){
+    std::vector<float> lepEta;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = MuonFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepEta.push_back(leplistfsr[i].Eta());
+    }
+    return lepEta;
+}
+
+std::vector<float> H4LTools::MuonFsrPhi(){
+    std::vector<float> lepPhi;
+    std::vector<TLorentzVector> leplistfsr;
+    leplistfsr = MuonFsr();
+    for (unsigned int i=0;i<leplistfsr.size();i++){
+        lepPhi.push_back(leplistfsr[i].Phi());
+    }
+    return lepPhi;
+}
 
 float H4LTools::ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers)
 {
@@ -617,9 +701,17 @@ bool H4LTools::ZZSelection(){
     if(jetidx.size()>0){
         Jet1.SetPtEtaPhiM((*Jet_pt)[jet1index],(*Jet_eta)[jet1index],(*Jet_phi)[jet1index],(*Jet_mass)[jet1index]);
         associated.push_back(SimpleParticle_t(0, Jet1));
+        pTj1 = Jet1.Pt();
+        etaj1 = Jet1.Eta();
+        phij1 = Jet1.Phi();
+        mj1 = Jet1.M();
         if(jetidx.size()>1){
            Jet2.SetPtEtaPhiM((*Jet_pt)[jet2index],(*Jet_eta)[jet2index],(*Jet_phi)[jet2index],(*Jet_mass)[jet2index]);
            associated.push_back(SimpleParticle_t(0, Jet2));
+           pTj2 = Jet2.Pt();
+           etaj2 = Jet2.Eta();
+           phij2 = Jet2.Phi();
+           mj2 = Jet2.M();
         }
     }
 

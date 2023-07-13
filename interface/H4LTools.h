@@ -95,6 +95,14 @@ class H4LTools {
       std::vector<unsigned int> goodFsrPhotons();
       unsigned doFsrRecovery(TLorentzVector Lep);
       std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
+      std::vector<TLorentzVector> ElectronFsr();
+      std::vector<TLorentzVector> MuonFsr();
+      std::vector<float> ElectronFsrPt();
+      std::vector<float> ElectronFsrEta();
+      std::vector<float> ElectronFsrPhi();
+      std::vector<float> MuonFsrPt();
+      std::vector<float> MuonFsrEta();
+      std::vector<float> MuonFsrPhi();
       std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
 
       TSpline *spline_g4;
@@ -120,6 +128,10 @@ class H4LTools {
       float getDg2Constant(float ZZMass);
       float getDL1Constant(float ZZMass);
       float getDL1ZgsConstant(float ZZMass);
+
+      int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu;
+      float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
+      float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
     private:
 
@@ -196,6 +208,42 @@ H4LTools::H4LTools(){
   spline_L1Zgs = (TSpline*) gConstant_L1Zgs->Get("sp_tgfinal_HZZ2e2mu_SM_photoncut_over_tgfinal_HZZ2e2mu_L1Zgs");
   gConstant_L1Zgs->Close();
   delete gConstant_L1Zgs;
+
+  cut2e2mu = 0;
+  cut4e = 0;
+  cut4mu = 0;
+  cutZZ2e2mu = 0;
+  cutZZ4e = 0;
+  cutZZ4mu = 0;
+  cutm4l2e2mu = 0;
+  cutm4l4e = 0;
+  cutm4l4mu = 0;
+
+  pTL1 = -999;
+  etaL1 = -999;
+  phiL1 = -999;
+  massL1 = -999;
+  pTL2 = -999;
+  etaL2 = -999;
+  phiL2 = -999;
+  massL2 = -999;
+  pTL3 = -999;
+  etaL3 = -999;
+  phiL3 = -999;
+  massL3 = -999;
+  pTL4 = -999;
+  etaL4 = -999;
+  phiL4 = -999;
+  massL4 = -999;
+
+  pTj1 = -99;
+  etaj1 = -99;
+  phij1 = -99;
+  mj1 = -99;
+  pTj2 = -99;
+  etaj2 = -99;
+  phij2 = -99;
+  mj2 = -99;
 }
 #endif
 
