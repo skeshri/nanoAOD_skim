@@ -120,7 +120,6 @@ class HZZAnalysisCppProducer(Module):
     # this function gets the pointers to Value and ArrayReaders and sets
     # them in the C++ worker class
     def initReaders(self, tree):
-        self.nElectron = tree.valueReader("nElectron")
         self.Electron_pt = tree.arrayReader("Electron_pt")
         self.Electron_eta = tree.arrayReader("Electron_eta")
         self.Electron_phi = tree.arrayReader("Electron_phi")
@@ -130,10 +129,9 @@ class HZZAnalysisCppProducer(Module):
         self.Electron_sip3d = tree.arrayReader("Electron_sip3d")
         self.Electron_mvaFall17V2Iso_WP90 = tree.arrayReader("Electron_mvaFall17V2Iso_WP90")
         self.Electron_pdgId = tree.arrayReader("Electron_pdgId")
-        self.worker.SetElectrons(self.nElectron, self.Electron_pt, self.Electron_eta, self.Electron_phi, self.Electron_mass,self.Electron_dxy, self.Electron_dz, self.Electron_sip3d, 
+        self.worker.SetElectrons(self.Electron_pt, self.Electron_eta, self.Electron_phi, self.Electron_mass,self.Electron_dxy, self.Electron_dz, self.Electron_sip3d, 
                                  self.Electron_mvaFall17V2Iso_WP90,self.Electron_pdgId)
 
-        self.nMuon = tree.valueReader("nMuon")
         self.Muon_pt = tree.arrayReader("Muon_pt")
         self.Muon_eta = tree.arrayReader("Muon_eta")
         self.Muon_phi = tree.arrayReader("Muon_phi")
@@ -150,24 +148,21 @@ class HZZAnalysisCppProducer(Module):
         self.Muon_charge = tree.arrayReader("Muon_charge")
         self.Muon_pfRelIso03_all = tree.arrayReader("Muon_pfRelIso03_all")
         self.Muon_genPartIdx = tree.arrayReader("Muon_genPartIdx")
-        self.worker.SetMuons(self.nMuon, self.Muon_pt, self.Muon_eta, self.Muon_phi, self.Muon_mass, self.Muon_isGlobal, self.Muon_isTracker,
+        self.worker.SetMuons(self.Muon_pt, self.Muon_eta, self.Muon_phi, self.Muon_mass, self.Muon_isGlobal, self.Muon_isTracker,
                               self.Muon_dxy, self.Muon_dz, self.Muon_sip3d, self.Muon_ptErr, self.Muon_nTrackerLayers, self.Muon_isPFcand, self.Muon_pdgId,self.Muon_charge, self.Muon_pfRelIso03_all, self.Muon_genPartIdx)
         
-        self.nFsrPhoton = tree.valueReader("nFsrPhoton")
         self.FsrPhoton_pt = tree.arrayReader("FsrPhoton_pt")
         self.FsrPhoton_eta = tree.arrayReader("FsrPhoton_eta")
         self.FsrPhoton_phi = tree.arrayReader("FsrPhoton_phi")
         self.FsrPhoton_dROverEt2 = tree.arrayReader("FsrPhoton_dROverEt2")
         self.FsrPhoton_relIso03 = tree.arrayReader("FsrPhoton_relIso03")
         self.FsrPhoton_muonIdx = tree.arrayReader("FsrPhoton_muonIdx")
-        self.worker.SetFsrPhotons(self.nFsrPhoton,self.FsrPhoton_dROverEt2,self.FsrPhoton_eta,self.FsrPhoton_phi,self.FsrPhoton_pt,
+        self.worker.SetFsrPhotons(self.FsrPhoton_dROverEt2,self.FsrPhoton_eta,self.FsrPhoton_phi,self.FsrPhoton_pt,
                                   self.FsrPhoton_relIso03)
 
-        self.nGenPart = tree.valueReader("nGenPart")
         self.GenPart_pt = tree.arrayReader("GenPart_pt")
-        self.worker.SetGenParts(self.nGenPart,self.GenPart_pt)
+        self.worker.SetGenParts(self.GenPart_pt)
 
-        self.nJet = tree.valueReader("nJet")
         self.Jet_pt = tree.arrayReader("Jet_pt")
         self.Jet_eta = tree.arrayReader("Jet_eta")
         self.Jet_phi = tree.arrayReader("Jet_phi")
@@ -175,7 +170,7 @@ class HZZAnalysisCppProducer(Module):
         self.Jet_btagDeepC = tree.arrayReader("Jet_btagDeepB")
         self.Jet_jetId = tree.arrayReader("Jet_jetId")
         self.Jet_puId = tree.arrayReader("Jet_puId")
-        self.worker.SetJets(self.nJet,self.Jet_pt,self.Jet_eta,self.Jet_phi,self.Jet_mass,self.Jet_btagDeepC,self.Jet_jetId,self.Jet_puId)
+        self.worker.SetJets(self.Jet_pt,self.Jet_eta,self.Jet_phi,self.Jet_mass,self.Jet_btagDeepC,self.Jet_jetId,self.Jet_puId)
         # self._ttreereaderversion must be set AFTER all calls to
         # tree.valueReader or tree.arrayReader
         self._ttreereaderversion = tree._ttreereaderversion
@@ -189,7 +184,8 @@ class HZZAnalysisCppProducer(Module):
             self.initReaders(event._tree)
         # do NOT access other branches in python between the check/call to
         # initReaders and the call to C++ worker code
-
+        self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nGenPart,event.nFsrPhoton)
+        self.worker.Initialize()
         keepIt = False
 
         passedTrig=False
@@ -203,18 +199,21 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-        passedTrig = PassTrig(event, 2018)
-        if (passedTrig==False): 
+        passedTrig = PassTrig(event, 2017)
+        if (passedTrig==True):
             self.passtrigEvts += 1
+        else:
             return keepIt
+        self.worker.MuonPtCorrection(isMC)
 
-        Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()
+
+        """Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()
         Electron_Fsr_eta_vec = self.worker.ElectronFsrEta()
         Electron_Fsr_phi_vec = self.worker.ElectronFsrPhi()
         Muon_Fsr_pt_vec = self.worker.MuonFsrPt()
         Muon_Fsr_eta_vec = self.worker.MuonFsrEta()
         Muon_Fsr_phi_vec = self.worker.MuonFsrPhi()
-        self.worker.MuonPtCorrection(isMC)
+        
         
         Electron_Fsr_pt = []
         Electron_Fsr_eta = []
@@ -231,7 +230,7 @@ class HZZAnalysisCppProducer(Module):
             for i in range(len(Muon_Fsr_pt_vec)):
                 Muon_Fsr_pt.append(Muon_Fsr_pt_vec[i])
                 Muon_Fsr_eta.append(Muon_Fsr_eta_vec[i])
-                Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])
+                Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])"""
         foundZZCandidate = self.worker.ZZSelection()
         if (foundZZCandidate):
             keepIt = True
@@ -327,15 +326,15 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("etaj2",etaj2)
             self.out.fillBranch("phij2",phij2)
 
-            self.out.fillBranch("Electron_Fsr_pt",Electron_Fsr_pt)
+            """self.out.fillBranch("Electron_Fsr_pt",Electron_Fsr_pt)
             self.out.fillBranch("Electron_Fsr_eta",Electron_Fsr_eta)
             self.out.fillBranch("Electron_Fsr_phi",Electron_Fsr_phi)
 
             self.out.fillBranch("Muon_Fsr_pt",Muon_Fsr_pt)
             self.out.fillBranch("Muon_Fsr_eta",Muon_Fsr_eta)
-            self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)
+            self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)"""
         
-        with open("SyncLepton2018GGH.txt", 'a') as f:
+        """with open("SyncLepton2018GGH.txt", 'a') as f:
             if(foundZZCandidate):
                 f.write(str('%.4f' % event.run)+":"+str('%.4f' % event.luminosityBlock)+":"+str('%.4f' % event.event)+":" \
                         +str('%.4f' % self.worker.pTL1)+":"+str('%.4f' % self.worker.etaL1)+":"+str('%.4f' % self.worker.phiL1)+":"+str('%.4f' % self.worker.massL1)+":" \
@@ -347,7 +346,7 @@ class HZZAnalysisCppProducer(Module):
                         +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
                         +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
                         +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
-                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+"\n")
+                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+"\n")"""
 
 
        
