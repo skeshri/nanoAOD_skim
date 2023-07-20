@@ -199,12 +199,15 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-        passedTrig = PassTrig(event, 2017)
+        passedTrig = PassTrig(event, 2018)
         if (passedTrig==True):
             self.passtrigEvts += 1
         else:
             return keepIt
         self.worker.MuonPtCorrection(isMC)
+        self.worker.LeptonSelection()
+        if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
+            pass
 
 
         """Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()

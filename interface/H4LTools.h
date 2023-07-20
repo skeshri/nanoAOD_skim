@@ -140,6 +140,24 @@ class H4LTools {
       bool flag4mu;
       bool flag2e2mu;
 
+      void LeptonSelection();
+      std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu, tighteleforjetidx, tightmuforjetidx;
+      std::vector<unsigned int> Electronindex;
+      std::vector<unsigned int> Muonindex;
+      std::vector<bool> AllEid;
+      std::vector<bool> AllMuid;
+      std::vector<TLorentzVector> Elelist;
+      std::vector<TLorentzVector> Mulist;
+      std::vector<TLorentzVector> ElelistFsr;
+      std::vector<TLorentzVector> MulistFsr;
+      std::vector<int> Elechg;
+      std::vector<int> Muchg;
+      std::vector<float> Muiso;
+      std::vector<bool> Eid;
+      std::vector<bool> muid;
+      
+      std::vector<int> TightEleindex;
+      std::vector<int> TightMuindex;
       void Initialize(){
         Zlist.clear();
         Zflavor.clear();
@@ -151,7 +169,10 @@ class H4LTools {
         Zlep1ptNoFsr.clear(); Zlep1etaNoFsr.clear(); Zlep1phiNoFsr.clear(); Zlep1massNoFsr.clear();
         Zlep2ptNoFsr.clear(); Zlep2etaNoFsr.clear(); Zlep2phiNoFsr.clear(); Zlep2massNoFsr.clear();
         jetidx.clear();
-
+        looseEle.clear(); looseMu.clear(); bestEle.clear(); bestMu.clear();  tighteleforjetidx.clear();  tightmuforjetidx.clear(); 
+        Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
+        Elechg.clear(); Muchg.clear(); Muiso.clear(); Eid.clear(); muid.clear(); TightEleindex.clear(); TightMuindex.clear();
+        
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0;
 
         pTL1 = -999; etaL1 = -999; phiL1 = -999; massL1 = -999;
@@ -248,7 +269,7 @@ class H4LTools {
 
 H4LTools::H4LTools(){
   std::string DATAPATH = "";
-  DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2017UL.txt";
+  DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
   calibrator = new RoccoR(DATAPATH);
   mela = new Mela(13.0, 125.0, TVar::SILENT);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  

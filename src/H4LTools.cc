@@ -307,20 +307,14 @@ void H4LTools::MuonPtCorrection(bool isMC){
     }
     return;
 }
+void H4LTools::LeptonSelection(){
 
-bool H4LTools::findZCandidate(){
-    
-    std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu, tighteleforjetidx, tightmuforjetidx;
     looseEle = goodLooseElectrons2012();
     looseMu = goodLooseMuons2012();
     bestEle = goodElectrons2015_noIso_noBdt(looseEle);
     bestMu = goodMuons2015_noIso_noPf(looseMu);
-    std::vector<unsigned int> Electronindex;
-    std::vector<unsigned int> Muonindex;
     Electronindex = bestEle;
     Muonindex = bestMu;
-    std::vector<bool> AllEid;
-    std::vector<bool> AllMuid;
     AllEid = passTight_BDT_Id();
     AllMuid = passTight_Id();
     for (unsigned int iuj=0;iuj<looseEle.size();iuj++){
@@ -330,18 +324,6 @@ bool H4LTools::findZCandidate(){
         if(AllMuid[looseMu[juj]]) tightmuforjetidx.push_back(looseMu[juj]);
     }
     jetidx = SelectedJets(tighteleforjetidx,tightmuforjetidx);
-    
-
-    TLorentzVector z1,z2;
-    std::vector<TLorentzVector> Elelist;
-    std::vector<TLorentzVector> Mulist;
-    std::vector<TLorentzVector> ElelistFsr;
-    std::vector<TLorentzVector> MulistFsr;
-    std::vector<int> Elechg;
-    std::vector<int> Muchg;
-    std::vector<float> Muiso;
-    std::vector<bool> Eid;
-    std::vector<bool> muid;
     
     for(unsigned int ie=0; ie<Electronindex.size();ie++){
         if((*Electron_pdgId)[Electronindex[ie]]>0){
@@ -372,9 +354,6 @@ bool H4LTools::findZCandidate(){
     
     ElelistFsr = BatchFsrRecovery(Elelist);
     MulistFsr = BatchFsrRecovery(Mulist);
-    
-    std::vector<int> TightEleindex;
-    std::vector<int> TightMuindex;
 
     for(unsigned int ae=0; ae<Eid.size();ae++){
         if(Eid[ae]==true){
@@ -402,6 +381,12 @@ bool H4LTools::findZCandidate(){
             nTightMuChgSum += Muchg[amu];
         }
     }
+    
+    
+}
+bool H4LTools::findZCandidate(){
+    
+    TLorentzVector z1,z2;
     
     if (nTightEle>=4) {
         cut4e++;
@@ -496,6 +481,7 @@ bool H4LTools::findZCandidate(){
 
 
 }
+
 
 bool H4LTools::ZZSelection(){
     
