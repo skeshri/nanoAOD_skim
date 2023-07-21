@@ -7,7 +7,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self):
+    def __init__(self,year):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -34,11 +34,11 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
-        self.worker = ROOT.H4LTools()
+        self.year = year
+        self.worker = ROOT.H4LTools(self.year)
         self.passtrigEvts = 0
         self.passZZEvts = 0
         pass
-
     def beginJob(self):
         pass
 
@@ -199,7 +199,7 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-        passedTrig = PassTrig(event, 2018)
+        passedTrig = PassTrig(event, self.year)
         if (passedTrig==True):
             self.passtrigEvts += 1
         else:
@@ -360,4 +360,4 @@ class HZZAnalysisCppProducer(Module):
 # define modules using the syntax 'name = lambda : constructor' to avoid
 # having them loaded when not needed
 
-H4LCppModule = lambda: HZZAnalysisCppProducer()
+#H4LCppModule() = lambda: HZZAnalysisCppProducer(year)

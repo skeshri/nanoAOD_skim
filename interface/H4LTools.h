@@ -12,7 +12,7 @@
 
 class H4LTools {
     public:
-      H4LTools();
+      H4LTools(int year);
       int elePtcut = 7;
       int MuPtcut = 5;
       int sip3dCut = 4;
@@ -267,9 +267,11 @@ class H4LTools {
 
 };
 
-H4LTools::H4LTools(){
+H4LTools::H4LTools(int year){
   std::string DATAPATH = "";
-  DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
+  std::cout<<"year"<<" "<<year<<std::endl;
+  if (year == 2018) DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
+  if (year == 2017) DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2017UL.txt";
   calibrator = new RoccoR(DATAPATH);
   mela = new Mela(13.0, 125.0, TVar::SILENT);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  
