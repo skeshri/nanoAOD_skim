@@ -120,57 +120,6 @@ class HZZAnalysisCppProducer(Module):
     # this function gets the pointers to Value and ArrayReaders and sets
     # them in the C++ worker class
     def initReaders(self, tree):
-        self.Electron_pt = tree.arrayReader("Electron_pt")
-        self.Electron_eta = tree.arrayReader("Electron_eta")
-        self.Electron_phi = tree.arrayReader("Electron_phi")
-        self.Electron_mass = tree.arrayReader("Electron_mass")
-        self.Electron_dxy = tree.arrayReader("Electron_dxy")
-        self.Electron_dz = tree.arrayReader("Electron_dz")
-        self.Electron_sip3d = tree.arrayReader("Electron_sip3d")
-        self.Electron_mvaFall17V2Iso_WP90 = tree.arrayReader("Electron_mvaFall17V2Iso_WP90")
-        self.Electron_pdgId = tree.arrayReader("Electron_pdgId")
-        self.worker.SetElectrons(self.Electron_pt, self.Electron_eta, self.Electron_phi, self.Electron_mass,self.Electron_dxy, self.Electron_dz, self.Electron_sip3d, 
-                                 self.Electron_mvaFall17V2Iso_WP90,self.Electron_pdgId)
-
-        self.Muon_pt = tree.arrayReader("Muon_pt")
-        self.Muon_eta = tree.arrayReader("Muon_eta")
-        self.Muon_phi = tree.arrayReader("Muon_phi")
-        self.Muon_mass = tree.arrayReader("Muon_mass")
-        self.Muon_isGlobal = tree.arrayReader("Muon_isGlobal")
-        self.Muon_isTracker = tree.arrayReader("Muon_isTracker")
-        self.Muon_dxy = tree.arrayReader("Muon_dxy")
-        self.Muon_dz = tree.arrayReader("Muon_dz")
-        self.Muon_sip3d = tree.arrayReader("Muon_sip3d")
-        self.Muon_ptErr = tree.arrayReader("Muon_ptErr")
-        self.Muon_nTrackerLayers = tree.arrayReader("Muon_nTrackerLayers")
-        self.Muon_isPFcand = tree.arrayReader("Muon_isPFcand")
-        self.Muon_pdgId = tree.arrayReader("Muon_pdgId")
-        self.Muon_charge = tree.arrayReader("Muon_charge")
-        self.Muon_pfRelIso03_all = tree.arrayReader("Muon_pfRelIso03_all")
-        self.Muon_genPartIdx = tree.arrayReader("Muon_genPartIdx")
-        self.worker.SetMuons(self.Muon_pt, self.Muon_eta, self.Muon_phi, self.Muon_mass, self.Muon_isGlobal, self.Muon_isTracker,
-                              self.Muon_dxy, self.Muon_dz, self.Muon_sip3d, self.Muon_ptErr, self.Muon_nTrackerLayers, self.Muon_isPFcand, self.Muon_pdgId,self.Muon_charge, self.Muon_pfRelIso03_all, self.Muon_genPartIdx)
-        
-        self.FsrPhoton_pt = tree.arrayReader("FsrPhoton_pt")
-        self.FsrPhoton_eta = tree.arrayReader("FsrPhoton_eta")
-        self.FsrPhoton_phi = tree.arrayReader("FsrPhoton_phi")
-        self.FsrPhoton_dROverEt2 = tree.arrayReader("FsrPhoton_dROverEt2")
-        self.FsrPhoton_relIso03 = tree.arrayReader("FsrPhoton_relIso03")
-        self.FsrPhoton_muonIdx = tree.arrayReader("FsrPhoton_muonIdx")
-        self.worker.SetFsrPhotons(self.FsrPhoton_dROverEt2,self.FsrPhoton_eta,self.FsrPhoton_phi,self.FsrPhoton_pt,
-                                  self.FsrPhoton_relIso03)
-
-        self.GenPart_pt = tree.arrayReader("GenPart_pt")
-        self.worker.SetGenParts(self.GenPart_pt)
-
-        self.Jet_pt = tree.arrayReader("Jet_pt")
-        self.Jet_eta = tree.arrayReader("Jet_eta")
-        self.Jet_phi = tree.arrayReader("Jet_phi")
-        self.Jet_mass = tree.arrayReader("Jet_mass")
-        self.Jet_btagDeepC = tree.arrayReader("Jet_btagDeepB")
-        self.Jet_jetId = tree.arrayReader("Jet_jetId")
-        self.Jet_puId = tree.arrayReader("Jet_puId")
-        self.worker.SetJets(self.Jet_pt,self.Jet_eta,self.Jet_phi,self.Jet_mass,self.Jet_btagDeepC,self.Jet_jetId,self.Jet_puId)
         # self._ttreereaderversion must be set AFTER all calls to
         # tree.valueReader or tree.arrayReader
         self._ttreereaderversion = tree._ttreereaderversion
@@ -180,14 +129,15 @@ class HZZAnalysisCppProducer(Module):
         go to next event)"""
         # do this check at every event, as other modules might have read
         # further branches
-        if event._tree._ttreereaderversion > self._ttreereaderversion:
-            self.initReaders(event._tree)
+        #if event._tree._ttreereaderversion > self._ttreereaderversion:
+        #    self.initReaders(event._tree)
         # do NOT access other branches in python between the check/call to
         # initReaders and the call to C++ worker code
-        self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nGenPart,event.nFsrPhoton)
         self.worker.Initialize()
+        self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nGenPart,event.nFsrPhoton)
+        
         keepIt = False
-
+        
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -204,6 +154,25 @@ class HZZAnalysisCppProducer(Module):
             self.passtrigEvts += 1
         else:
             return keepIt
+        electrons = Collection(event, "Electron")
+        muons = Collection(event, "Muon")
+        fsrPhotons = Collection(event, "FsrPhoton")
+        jets = Collection(event, "Jet")
+        genparts = Collection(event, "GenPart")
+        for xe in electrons:
+            self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
+                                      xe.dz, xe.sip3d, xe.mvaFall17V2Iso_WP90, xe.pdgId)
+        for xm in muons:
+            self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
+                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand, 
+                                 xm.pdgId, xm.charge, xm.pfRelIso03_all, xm.genPartIdx)
+        for xf in fsrPhotons:
+            self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
+        for xj in jets:
+            self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
+        for xg in genparts:
+            self.worker.SetGenParts(xg.pt)
+            
         self.worker.MuonPtCorrection(isMC)
         self.worker.LeptonSelection()
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
@@ -278,12 +247,10 @@ class HZZAnalysisCppProducer(Module):
             phij2 = self.worker.phij2
             mj2 = self.worker.mj2
 
-            ZZsystem = ROOT.TLorentzVector()
-            ZZsystem = self.worker.Z1 + self.worker.Z2
-            pT4l = ZZsystem.Pt()
-            eta4l = ZZsystem.Eta()
-            phi4l = ZZsystem.Phi()
-            mass4l = ZZsystem.M()
+            pT4l = self.worker.ZZsystem.Pt()
+            eta4l = self.worker.ZZsystem.Eta()
+            phi4l = self.worker.ZZsystem.Phi()
+            mass4l = self.worker.ZZsystem.M()
             self.out.fillBranch("mass4l",mass4l)
             self.out.fillBranch("pT4l",pT4l)
             self.out.fillBranch("eta4l",eta4l)

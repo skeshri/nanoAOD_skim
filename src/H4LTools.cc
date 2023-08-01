@@ -6,8 +6,8 @@
 std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
     std::vector<unsigned int> LooseElectronindex;
     //unsigned nE = (*nElectron).Get()[0];
-    for (unsigned int i=0; i<nElectron; i++){
-        if (((*Electron_pt)[i]>elePtcut)&&(fabs((*Electron_eta)[i])<2.5)){
+    for (unsigned int i=0; i<Electron_pt.size(); i++){
+        if ((Electron_pt[i]>elePtcut)&&(fabs(Electron_eta[i])<2.5)){
             LooseElectronindex.push_back(i);
         }
     }
@@ -18,8 +18,8 @@ std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
 std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
     std::vector<unsigned int> LooseMuonindex;
     //unsigned nMu = (*nMuon).Get()[0];
-    for (unsigned int i=0; i<nMuon; i++){
-        if ((Muon_Pt_Corrected[i]>MuPtcut)&&(fabs((*Muon_eta)[i])<2.4)&&(((*Muon_isGlobal)[i]||(*Muon_isTracker)[i]||(*Muon_isPFcand)[i]))){
+    for (unsigned int i=0; i<Muon_eta.size(); i++){
+        if ((Muon_Pt_Corrected[i]>MuPtcut)&&(fabs(Muon_eta[i])<2.4)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i]))){
             LooseMuonindex.push_back(i);
         }
     }
@@ -29,9 +29,9 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
 std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigned int> Muonindex){
     std::vector<unsigned int> bestMuonindex;
     for (unsigned int i=0; i<Muonindex.size(); i++){
-        if ((Muon_Pt_Corrected[Muonindex[i]]>MuPtcut)&&(fabs((*Muon_eta)[Muonindex[i]])<2.4)&&((*Muon_isGlobal)[Muonindex[i]]||(*Muon_isTracker)[Muonindex[i]])){
-            if ((*Muon_sip3d)[Muonindex[i]]<sip3dCut){
-                if((fabs((*Muon_dxy)[Muonindex[i]])<0.5)&&(fabs((*Muon_dz)[Muonindex[i]])<1)){
+        if ((Muon_Pt_Corrected[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<2.4)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])){
+            if (Muon_sip3d[Muonindex[i]]<sip3dCut){
+                if((fabs(Muon_dxy[Muonindex[i]])<0.5)&&(fabs(Muon_dz[Muonindex[i]])<1)){
                     bestMuonindex.push_back(Muonindex[i]);
                 }
             }
@@ -43,9 +43,9 @@ std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigne
 std::vector<unsigned int> H4LTools::goodElectrons2015_noIso_noBdt(std::vector<unsigned int> Electronindex){
     std::vector<unsigned int> bestElectronindex;
     for (unsigned int i=0; i<Electronindex.size(); i++){
-        if (((*Electron_pt)[Electronindex[i]])>elePtcut){
-            if((*Electron_sip3d)[Electronindex[i]]<sip3dCut){
-                if((fabs((*Electron_dxy)[Electronindex[i]])<0.5)&&(fabs((*Electron_dz)[Electronindex[i]])<1)){
+        if ((Electron_pt[Electronindex[i]])>elePtcut){
+            if(Electron_sip3d[Electronindex[i]]<sip3dCut){
+                if((fabs(Electron_dxy[Electronindex[i]])<0.5)&&(fabs(Electron_dz[Electronindex[i]])<1)){
                     bestElectronindex.push_back(Electronindex[i]);
                 }
             }
@@ -60,19 +60,19 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
     cutVal = 1000;
     mvaVal = -1;
     //unsigned nE = (*nElectron).Get()[0];
-    for (unsigned int i=0; i<nElectron; i++){
-        if((*Electron_pt)[i]<10){
-            if(fabs((*Electron_eta)[i])<0.8) cutVal = 0.9044286167;
-            if((fabs((*Electron_eta)[i])>=0.8)&&(fabs((*Electron_eta)[i])<1.479)) cutVal = 0.9094166886;
-            if(fabs((*Electron_eta)[i])>=1.479) cutVal = 0.9443653660;
+    for (unsigned int i=0; i<Electron_pt.size(); i++){
+        if(Electron_pt[i]<10){
+            if(fabs(Electron_eta[i])<0.8) cutVal = 0.9044286167;
+            if((fabs(Electron_eta[i])>=0.8)&&(fabs(Electron_eta[i])<1.479)) cutVal = 0.9094166886;
+            if(fabs(Electron_eta[i])>=1.479) cutVal = 0.9443653660;
         }
         else{
-            if(fabs((*Electron_eta)[i])<0.8) cutVal = 0.1968600840;
-            if((fabs((*Electron_eta)[i])>=0.8)&&(fabs((*Electron_eta)[i])<1.479)) cutVal = 0.0759172100;
-            if(fabs((*Electron_eta)[i])>=1.479) cutVal = -0.5169136775;
+            if(fabs(Electron_eta[i])<0.8) cutVal = 0.1968600840;
+            if((fabs(Electron_eta[i])>=0.8)&&(fabs(Electron_eta[i])<1.479)) cutVal = 0.0759172100;
+            if(fabs(Electron_eta[i])>=1.479) cutVal = -0.5169136775;
         }
 
-        mvaVal = (*Electron_mvaFall17V2Iso_WP90)[i];
+        mvaVal = Electron_mvaFall17V2Iso_WP90[i];
         if(mvaVal > cutVal){
             tightid.push_back(true);
         }
@@ -88,12 +88,12 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
 std::vector<bool> H4LTools::passTight_Id(){
     std::vector<bool> tightid;
     //unsigned nMu = (*nMuon).Get()[0];
-    for (unsigned int i=0; i<nMuon; i++){
+    for (unsigned int i=0; i<Muon_Pt_Corrected.size(); i++){
         if (Muon_Pt_Corrected[i]<200){
-            tightid.push_back((*Muon_isPFcand)[i]);
+            tightid.push_back(Muon_isPFcand[i]);
         }
         else{
-            tightid.push_back((*Muon_isPFcand)[i]||((((*Muon_ptErr)[i]/Muon_Pt_Corrected[i])<0.3)&&(fabs((*Muon_dxy)[i])<0.2)&&(fabs((*Muon_dz)[i])<0.5)&&((*Muon_nTrackerLayers)[i]>5)));
+            tightid.push_back(Muon_isPFcand[i]||(((Muon_ptErr[i]/Muon_Pt_Corrected[i])<0.3)&&(fabs(Muon_dxy[i])<0.2)&&(fabs(Muon_dz[i])<0.5)&&(Muon_nTrackerLayers[i]>5)));
         }
 
     }
@@ -104,8 +104,8 @@ std::vector<bool> H4LTools::passTight_Id(){
 std::vector<unsigned int> H4LTools::goodFsrPhotons(){
     std::vector<unsigned int> goodFsrPhoton;
     //unsigned nFsr = (*nFsrPhoton).Get()[0];
-    for (unsigned int i=0; i<nFsrPhoton; i++){
-        if(((*FsrPhoton_pt)[i]>2)&&(fabs((*FsrPhoton_eta)[i])<2.4)&&((*FsrPhoton_relIso03)[i]<0.8)){
+    for (unsigned int i=0; i<FsrPhoton_pt.size(); i++){
+        if((FsrPhoton_pt[i]>2)&&(fabs(FsrPhoton_eta[i])<2.4)&&(FsrPhoton_relIso03[i]<0.8)){
             goodFsrPhoton.push_back(i);
         }
     }
@@ -115,25 +115,25 @@ std::vector<unsigned int> H4LTools::goodFsrPhotons(){
 std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu){
     std::vector<unsigned int> goodJets;
     //unsigned nJ = (*nJet).Get()[0];
-    for(unsigned int i=0;i<nJet;i++){
+    for(unsigned int i=0;i<Jet_pt.size();i++){
         int overlaptag=0;
         TLorentzVector jettest;
-        jettest.SetPtEtaPhiM((*Jet_pt)[i],(*Jet_eta)[i],(*Jet_phi)[i],(*Jet_mass)[i]);
+        jettest.SetPtEtaPhiM(Jet_pt[i],Jet_eta[i],Jet_phi[i],Jet_mass[i]);
         for(unsigned int ie=0;ie<ele.size();ie++){
             TLorentzVector eletest;
-            eletest.SetPtEtaPhiM((*Electron_pt)[ele[ie]],(*Electron_eta)[ele[ie]],(*Electron_phi)[ele[ie]],(*Electron_mass)[ele[ie]]);
+            eletest.SetPtEtaPhiM(Electron_pt[ele[ie]],Electron_eta[ele[ie]],Electron_phi[ele[ie]],Electron_mass[ele[ie]]);
             if(eletest.DeltaR(jettest)<0.4) overlaptag++;
         }
         for(unsigned int im=0;im<mu.size();im++){
             TLorentzVector mutest;
-            mutest.SetPtEtaPhiM((*Muon_pt)[mu[im]],(*Muon_eta)[mu[im]],(*Muon_phi)[mu[im]],(*Muon_mass)[mu[im]]);
+            mutest.SetPtEtaPhiM(Muon_pt[mu[im]],Muon_eta[mu[im]],Muon_phi[mu[im]],Muon_mass[mu[im]]);
             if(mutest.DeltaR(jettest)<0.4) overlaptag++;
         }
     
       if(overlaptag==0){
-        if(((*Jet_pt)[i]>30)&&(fabs((*Jet_eta)[i])<4.7)){
+        if((Jet_pt[i]>30)&&(fabs(Jet_eta[i])<4.7)){
             //std::cout<<"jetindex: "<<i<<"jetID "<<(*Jet_jetId)[i]<<" puID "<<(*Jet_puId)[i]<<std::endl;
-            if(((*Jet_jetId)[i]>0)&&((*Jet_puId)[i]==7))
+            if((Jet_jetId[i]>0)&&(Jet_puId[i]==7))
             {
                 goodJets.push_back(i);
             }
@@ -153,7 +153,7 @@ unsigned H4LTools::doFsrRecovery(TLorentzVector Lep){
     dRlOverPt = 999;
     for(unsigned int i=0;i<BestFsrPhotons.size();i++){
         TLorentzVector fsrcand;
-        fsrcand.SetPtEtaPhiM((*FsrPhoton_pt)[BestFsrPhotons[i]],(*FsrPhoton_eta)[BestFsrPhotons[i]],(*FsrPhoton_phi)[BestFsrPhotons[i]],0);
+        fsrcand.SetPtEtaPhiM(FsrPhoton_pt[BestFsrPhotons[i]],FsrPhoton_eta[BestFsrPhotons[i]],FsrPhoton_phi[BestFsrPhotons[i]],0);
         float dRlC,dRlOverPtC;
         dRlC = fsrcand.DeltaR(Lep);
         dRlOverPtC = dRl/(fsrcand.Pt()*fsrcand.Pt());
@@ -182,7 +182,7 @@ std::vector<TLorentzVector> H4LTools::BatchFsrRecovery(std::vector<TLorentzVecto
             continue;
         }
         TLorentzVector FsrPhoton;
-        FsrPhoton.SetPtEtaPhiM((*FsrPhoton_pt)[Fsrtag],(*FsrPhoton_eta)[Fsrtag],(*FsrPhoton_phi)[Fsrtag],0);
+        FsrPhoton.SetPtEtaPhiM(FsrPhoton_pt[Fsrtag],FsrPhoton_eta[Fsrtag],FsrPhoton_phi[Fsrtag],0);
         TLorentzVector LepFsrRecovery;
         LepFsrRecovery = FsrPhoton + LepList[i];
         LepFsrList.push_back(LepFsrRecovery);
@@ -193,9 +193,9 @@ std::vector<TLorentzVector> H4LTools::ElectronFsr(){
     std::vector<TLorentzVector> leplist;
     std::vector<TLorentzVector> leplistfsr;
     //unsigned nlep = (*nElectron).Get()[0];
-    for(unsigned int i=0;i<nElectron;i++){
+    for(unsigned int i=0;i<Electron_pt.size();i++){
         TLorentzVector Lep;
-        Lep.SetPtEtaPhiM((*Electron_pt)[i],(*Electron_eta)[i],(*Electron_phi)[i],(*Electron_mass)[i]);
+        Lep.SetPtEtaPhiM(Electron_pt[i],Electron_eta[i],Electron_phi[i],Electron_mass[i]);
         leplist.push_back(Lep);
     }
     leplistfsr = BatchFsrRecovery(leplist);
@@ -206,9 +206,9 @@ std::vector<TLorentzVector> H4LTools::MuonFsr(){
     std::vector<TLorentzVector> leplist;
     std::vector<TLorentzVector> leplistfsr;
     //unsigned nlep = (*nMuon).Get()[0];
-    for(unsigned int i=0;i<nMuon;i++){
+    for(unsigned int i=0;i<Muon_pt.size();i++){
         TLorentzVector Lep;
-        Lep.SetPtEtaPhiM((*Muon_pt)[i],(*Muon_eta)[i],(*Muon_phi)[i],(*Muon_mass)[i]);
+        Lep.SetPtEtaPhiM(Muon_pt[i],Muon_eta[i],Muon_phi[i],Muon_mass[i]);
         leplist.push_back(Lep);
     }
     leplistfsr = BatchFsrRecovery(leplist);
@@ -300,15 +300,15 @@ float H4LTools::ApplyRoccoR(bool isMC, int charge, float pt, float eta, float ph
 void H4LTools::MuonPtCorrection(bool isMC){
     //unsigned nMu = (*nMuon).Get()[0];
     Muon_Pt_Corrected.clear();
-    for (unsigned int i=0; i<nMuon; i++){
+    for (unsigned int i=0; i<Muon_pt.size(); i++){
         float scalefactor;
-        scalefactor = ApplyRoccoR(isMC, (*Muon_charge)[i],(*Muon_pt)[i],(*Muon_eta)[i],(*Muon_phi)[i],(*GenPart_pt)[(*Muon_genPartIdx)[i]],(*Muon_nTrackerLayers)[i]);
-        Muon_Pt_Corrected.push_back(((*Muon_pt)[i])*scalefactor);
+        scalefactor = ApplyRoccoR(isMC, Muon_charge[i],Muon_pt[i],Muon_eta[i],Muon_phi[i],GenPart_pt[Muon_genPartIdx[i]],Muon_nTrackerLayers[i]);
+        Muon_Pt_Corrected.push_back((Muon_pt[i])*scalefactor);
     }
     return;
 }
 void H4LTools::LeptonSelection(){
-
+    
     looseEle = goodLooseElectrons2012();
     looseMu = goodLooseMuons2012();
     bestEle = goodElectrons2015_noIso_noBdt(looseEle);
@@ -326,33 +326,33 @@ void H4LTools::LeptonSelection(){
     jetidx = SelectedJets(tighteleforjetidx,tightmuforjetidx);
     
     for(unsigned int ie=0; ie<Electronindex.size();ie++){
-        if((*Electron_pdgId)[Electronindex[ie]]>0){
+        if(Electron_pdgId[Electronindex[ie]]>0){
             Elechg.push_back(-1);
         }
         else{
             Elechg.push_back(1);
         }
         TLorentzVector Ele;
-        Ele.SetPtEtaPhiM((*Electron_pt)[Electronindex[ie]],(*Electron_eta)[Electronindex[ie]],(*Electron_phi)[Electronindex[ie]],(*Electron_mass)[Electronindex[ie]]);
+        Ele.SetPtEtaPhiM(Electron_pt[Electronindex[ie]],Electron_eta[Electronindex[ie]],Electron_phi[Electronindex[ie]],Electron_mass[Electronindex[ie]]);
         Elelist.push_back(Ele);
         Eid.push_back(AllEid[Electronindex[ie]]);
     }
 
     for(unsigned int imu=0; imu<Muonindex.size();imu++){
-        if((*Muon_pdgId)[Muonindex[imu]]>0){
+        if(Muon_pdgId[Muonindex[imu]]>0){
             Muchg.push_back(-1);
         }
         else{
             Muchg.push_back(1);
         }
         TLorentzVector Mu;
-        Mu.SetPtEtaPhiM(Muon_Pt_Corrected[Muonindex[imu]],(*Muon_eta)[Muonindex[imu]],(*Muon_phi)[Muonindex[imu]],(*Muon_mass)[Muonindex[imu]]);
+        Mu.SetPtEtaPhiM(Muon_Pt_Corrected[Muonindex[imu]],Muon_eta[Muonindex[imu]],Muon_phi[Muonindex[imu]],Muon_mass[Muonindex[imu]]);
         Mulist.push_back(Mu);
         muid.push_back(AllMuid[Muonindex[imu]]);
-        Muiso.push_back((*Muon_pfRelIso03_all)[Muonindex[imu]]);
+        Muiso.push_back(Muon_pfRelIso03_all[Muonindex[imu]]);
     }
     
-    ElelistFsr = BatchFsrRecovery(Elelist);
+    ElelistFsr = BatchFsrRecovery(Elelist); 
     MulistFsr = BatchFsrRecovery(Mulist);
 
     for(unsigned int ae=0; ae<Eid.size();ae++){
@@ -370,9 +370,9 @@ void H4LTools::LeptonSelection(){
         FsrMuonidx = doFsrRecovery(Mulist[amu]);
         if(FsrMuonidx<900){
             TLorentzVector fsrmuon;
-            fsrmuon.SetPtEtaPhiM((*FsrPhoton_pt)[FsrMuonidx],(*FsrPhoton_eta)[FsrMuonidx],(*FsrPhoton_phi)[FsrMuonidx],0);
+            fsrmuon.SetPtEtaPhiM(FsrPhoton_pt[FsrMuonidx],FsrPhoton_eta[FsrMuonidx],FsrPhoton_phi[FsrMuonidx],0);
             if(Mulist[amu].DeltaR(fsrmuon)>0.01){
-              RelIsoNoFsr = RelIsoNoFsr - (*FsrPhoton_pt)[FsrMuonidx]/Mulist[amu].Pt();  
+              RelIsoNoFsr = RelIsoNoFsr - FsrPhoton_pt[FsrMuonidx]/Mulist[amu].Pt();  
             }
         }
         if((muid[amu]==true)&&(RelIsoNoFsr<0.35)){
@@ -470,6 +470,13 @@ bool H4LTools::findZCandidate(){
                 }
             }
         }
+    }
+    for (unsigned int znofsr = 0; znofsr<Zlist.size(); znofsr++){
+        TLorentzVector Zlep1nofsr,Zlep2nofsr,Zcannofsr;
+        Zlep1nofsr.SetPtEtaPhiM(Zlep1ptNoFsr[znofsr],Zlep1etaNoFsr[znofsr],Zlep1phiNoFsr[znofsr],Zlep1massNoFsr[znofsr]);
+        Zlep2nofsr.SetPtEtaPhiM(Zlep2ptNoFsr[znofsr],Zlep2etaNoFsr[znofsr],Zlep2phiNoFsr[znofsr],Zlep2massNoFsr[znofsr]);
+        Zcannofsr = Zlep1nofsr + Zlep2nofsr;
+        Zlistnofsr.push_back(Zcannofsr);
     }
     
     if (Zlist.size()>0){
@@ -639,9 +646,12 @@ bool H4LTools::ZZSelection(){
     
     Z1 = Zlist[Z1index];
     Z2 = Zlist[Z2index];
+
+    Z1nofsr = Zlistnofsr[Z1index];
+    Z2nofsr = Zlistnofsr[Z2index];
     
-    TLorentzVector ZZsystem;
     ZZsystem = Z1+Z2;
+    ZZsystemnofsr = Z1nofsr+Z2nofsr;
     float massZZ;
     massZZ = ZZsystem.M();
     if ((massZZ>105)&&(massZZ<160)){
@@ -663,7 +673,7 @@ bool H4LTools::ZZSelection(){
         {
             jet1index = jetidx[0];
             jet2index = jetidx[1];
-            if((*Jet_pt)[jetidx[1]]>(*Jet_pt)[jetidx[0]])
+            if(Jet_pt[jetidx[1]]>Jet_pt[jetidx[0]])
             {
                 jet1index = jetidx[1];
                 jet2index = jetidx[0];
@@ -673,16 +683,16 @@ bool H4LTools::ZZSelection(){
         {
             jet1index = jetidx[0];
             jet2index = jetidx[1];
-            if((*Jet_pt)[jetidx[1]]>(*Jet_pt)[jetidx[0]])
+            if(Jet_pt[jetidx[1]]>Jet_pt[jetidx[0]])
             {
                 jet1index = jetidx[1];
                 jet2index = jetidx[0];
             }
             for (unsigned int pj=2;pj<jetidx.size();pj++){
-                if(((*Jet_pt)[jetidx[pj]]>jet1index)&&((*Jet_pt)[jetidx[pj]]>jet2index)){
+                if((Jet_pt[jetidx[pj]]>jet1index)&&(Jet_pt[jetidx[pj]]>jet2index)){
                     jet1index = jetidx[pj];
                 }
-                if((*Jet_pt)[jetidx[pj]]>jet2index){
+                if(Jet_pt[jetidx[pj]]>jet2index){
                     jet2index = jetidx[pj];
                 }
             }
@@ -691,14 +701,14 @@ bool H4LTools::ZZSelection(){
     TLorentzVector Jet1,Jet2;
     SimpleParticleCollection_t associated;
     if(jetidx.size()>0){
-        Jet1.SetPtEtaPhiM((*Jet_pt)[jet1index],(*Jet_eta)[jet1index],(*Jet_phi)[jet1index],(*Jet_mass)[jet1index]);
+        Jet1.SetPtEtaPhiM(Jet_pt[jet1index],Jet_eta[jet1index],Jet_phi[jet1index],Jet_mass[jet1index]);
         associated.push_back(SimpleParticle_t(0, Jet1));
         pTj1 = Jet1.Pt();
         etaj1 = Jet1.Eta();
         phij1 = Jet1.Phi();
         mj1 = Jet1.M();
         if(jetidx.size()>1){
-           Jet2.SetPtEtaPhiM((*Jet_pt)[jet2index],(*Jet_eta)[jet2index],(*Jet_phi)[jet2index],(*Jet_mass)[jet2index]);
+           Jet2.SetPtEtaPhiM(Jet_pt[jet2index],Jet_eta[jet2index],Jet_phi[jet2index],Jet_mass[jet2index]);
            associated.push_back(SimpleParticle_t(0, Jet2));
            pTj2 = Jet2.Pt();
            etaj2 = Jet2.Eta();
