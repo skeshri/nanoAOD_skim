@@ -43,31 +43,36 @@ class HZZAnalysisCppProducer(Module):
         pass
 
     def endJob(self):
-        print("PassTrig: "+str(self.passtrigEvts)+" Events")
-        print("Pass4eCut: "+str(self.worker.cut4e)+" Events")
-        print("PassmZ1mZ2Cut_4e: "+str(self.worker.cutZZ4e)+" Events")
-        print("Passm4l_105_160_Cut_4e: "+str(self.worker.cutm4l4e)+" Events")
-        print("Pass4muCut: "+str(self.worker.cut4mu)+" Events")
-        print("PassmZ1mZ2Cut_4mu: "+str(self.worker.cutZZ4mu)+" Events")
-        print("Passm4l_105_160_Cut_4mu: "+str(self.worker.cutm4l4mu)+" Events")
-        print("Pass2e2muCut: "+str(self.worker.cut2e2mu)+" Events")
-        print("PassmZ1mZ2Cut_2e2mu: "+str(self.worker.cutZZ2e2mu)+" Events")
-        print("Passm4l_105_160_Cut_2e2mu: "+str(self.worker.cutm4l2e2mu)+" Events")
-        print("PassZZSelection: "+str(self.passZZEvts)+" Events")
+        print("\n========== Print Cut flow table  ====================\n")
+        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("Pass4eCut: ", str(self.worker.cut4e), " Events"))
+        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_4e: ", str(self.worker.cutZZ4e), " Events"))
+        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_4e: ", str(self.worker.cutm4l4e), " Events"))
+        print("{:27}:{:7} {}".format("Pass4muCut: ", str(self.worker.cut4mu), " Events"))
+        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_4mu: ", str(self.worker.cutZZ4mu), " Events"))
+        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_4mu: ", str(self.worker.cutm4l4mu), " Events"))
+        print("{:27}:{:7} {}".format("Pass2e2muCut: ", str(self.worker.cut2e2mu), " Events"))
+        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_2e2mu: ", str(self.worker.cutZZ2e2mu), " Events"))
+        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_2e2mu: ", str(self.worker.cutm4l2e2mu), " Events"))
+        print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZEvts), " Events"))
 
-        print("==================   2l2q    ==============")
-        print("PassTrig: "+str(self.passtrigEvts)+" Events")
-        print("Pass2eCut: "+str(self.worker.cut2e)+" Events")
-        print("Pass2muCut: "+str(self.worker.cut2mu)+" Events")
-        print("Pass2lCut: "+str(self.worker.cut2l)+" Events")
-        print("Pass2l1JCut: "+str(self.worker.cut2l1J)+" Events")
-        print("Pass2l2jCut: "+str(self.worker.cut2l2j)+" Events")
-        print("Pass2l1Jor2jCut: "+str(self.worker.cut2l1Jor2j)+" Events")
+        print("\n==================   2l2q    ==============\n")
+        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("Pass2eCut: ", str(self.worker.cut2e), " Events"))
+        print("{:27}:{:7} {}".format("Pass2muCut: ", str(self.worker.cut2mu), " Events"))
+        print("{:27}:{:7} {}".format("Pass2lCut: ", str(self.worker.cut2l), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l1JCut: ", str(self.worker.cut2l1J), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l2jCut: ", str(self.worker.cut2l2j), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l1Jor2jCut: ", str(self.worker.cut2l1Jor2j), " Events"))
+
+        print("\n========== END: Print Cut flow table  ====================\n")
         pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.initReaders(inputTree)  # initReaders must be called in beginFile
         self.out = wrappedOutputTree
+
+        # common branches for 4l, 2l2q, 2l2nu channels
         self.out.branch("mass4l",  "F")
         self.out.branch("pT4l",  "F")
         self.out.branch("eta4l",  "F")
@@ -119,6 +124,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("Muon_Fsr_pt",  "F", lenVar = "nMuon")
         self.out.branch("Muon_Fsr_eta",  "F", lenVar = "nMuon")
         self.out.branch("Muon_Fsr_phi",  "F", lenVar = "nMuon")
+
+        # Branches dedicated for 2l2q channel
 
         with open("SyncLepton2018GGH.txt", 'w') as f:
             f.write("Sync data list:"+"\n")
@@ -208,12 +215,11 @@ class HZZAnalysisCppProducer(Module):
         if (foundZZCandidate_2l2q):
             keepIt = True
             self.passZZEvts += 1
-            pTZ1 = self.worker.Z1.Pt()
-            self.out.fillBranch("pTZ1",pTZ1)
+        #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
+        #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
 
-        if (foundZZCandidate):
+        if (foundZZCandidate or foundZZCandidate_2l2q):
             keepIt = True
-            self.passZZEvts += 1
             pTZ1 = self.worker.Z1.Pt()
             etaZ1 = self.worker.Z1.Eta()
             phiZ1 = self.worker.Z1.Phi()
@@ -222,6 +228,19 @@ class HZZAnalysisCppProducer(Module):
             etaZ2 = self.worker.Z2.Eta()
             phiZ2 = self.worker.Z2.Phi()
             massZ2 = self.worker.Z2.M()
+
+            self.out.fillBranch("pTZ1",pTZ1)
+            self.out.fillBranch("etaZ1",etaZ1)
+            self.out.fillBranch("phiZ1",phiZ1)
+            self.out.fillBranch("massZ1",massZ1)
+            self.out.fillBranch("pTZ2",pTZ2)
+            self.out.fillBranch("etaZ2",etaZ2)
+            self.out.fillBranch("phiZ2",phiZ2)
+            self.out.fillBranch("massZ2",massZ2)
+
+        if (foundZZCandidate):
+            keepIt = True
+            self.passZZEvts += 1
             D_CP = self.worker.D_CP
             D_0m = self.worker.D_0m
             D_0hp = self.worker.D_0hp
@@ -262,14 +281,6 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pT4l",pT4l)
             self.out.fillBranch("eta4l",eta4l)
             self.out.fillBranch("phi4l",phi4l)
-            self.out.fillBranch("massZ1",massZ1)
-            self.out.fillBranch("pTZ1",pTZ1)
-            self.out.fillBranch("etaZ1",etaZ1)
-            self.out.fillBranch("phiZ1",phiZ1)
-            self.out.fillBranch("massZ2",massZ2)
-            self.out.fillBranch("pTZ2",pTZ2)
-            self.out.fillBranch("etaZ2",etaZ2)
-            self.out.fillBranch("phiZ2",phiZ2)
             self.out.fillBranch("D_CP",D_CP)
             self.out.fillBranch("D_0m",D_0m)
             self.out.fillBranch("D_0hp",D_0hp)
@@ -302,31 +313,6 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pTj2",pTj2)
             self.out.fillBranch("etaj2",etaj2)
             self.out.fillBranch("phij2",phij2)
-
-            """self.out.fillBranch("Electron_Fsr_pt",Electron_Fsr_pt)
-            self.out.fillBranch("Electron_Fsr_eta",Electron_Fsr_eta)
-            self.out.fillBranch("Electron_Fsr_phi",Electron_Fsr_phi)
-
-            self.out.fillBranch("Muon_Fsr_pt",Muon_Fsr_pt)
-            self.out.fillBranch("Muon_Fsr_eta",Muon_Fsr_eta)
-            self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)"""
-
-        """with open("SyncLepton2018GGH.txt", 'a') as f:
-            if(foundZZCandidate):
-                f.write(str('%.4f' % event.run)+":"+str('%.4f' % event.luminosityBlock)+":"+str('%.4f' % event.event)+":" \
-                        +str('%.4f' % self.worker.pTL1)+":"+str('%.4f' % self.worker.etaL1)+":"+str('%.4f' % self.worker.phiL1)+":"+str('%.4f' % self.worker.massL1)+":" \
-                        +str('%.4f' % self.worker.pTL2)+":"+str('%.4f' % self.worker.etaL2)+":"+str('%.4f' % self.worker.phiL2)+":"+str('%.4f' % self.worker.massL2)+":" \
-                        +str('%.4f' % self.worker.pTL3)+":"+str('%.4f' % self.worker.etaL3)+":"+str('%.4f' % self.worker.phiL3)+":"+str('%.4f' % self.worker.massL3)+":" \
-                        +str('%.4f' % self.worker.pTL4)+":"+str('%.4f' % self.worker.etaL4)+":"+str('%.4f' % self.worker.phiL4)+":"+str('%.4f' % self.worker.massL4)+"\n")
-            else:
-                f.write(str('%.4f' % event.run)+":"+str('%.4f' % event.luminosityBlock)+":"+str('%.4f' % event.event)+":" \
-                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
-                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
-                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":" \
-                        +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+"\n")"""
-
-
-
 
         return keepIt
 

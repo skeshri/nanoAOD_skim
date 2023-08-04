@@ -891,15 +891,15 @@ bool H4LTools::ZZSelection_2l2q(){
 
     if (nTightEle>=2) {
         cut2e++;
-        // flag2e = true;
+        cut2l++;
+        flag2e = true;
+        flag2l = true;
     }
     else if (nTightMu>=2){
         cut2mu++;
-        // flag2mu = true;
-    }
-    else if ((nTightMu>=2) || (nTightEle>=2)){
         cut2l++;
-        // flag2l = true;
+        flag2mu = true;
+        flag2l = true;
     }
 
     bool foundZZCandidate = false;
@@ -935,30 +935,26 @@ bool H4LTools::ZZSelection_2l2q(){
 
     int Z1index,Z2index;
     Z1index = Z1CanIndex[0];
-    // Z2index = Z2CanIndex[0];
-
     Z1 = Zlist[Z1index];
-
-
-
-    // TLorentzVector FsrPhoton;
-    // FsrPhoton.SetPtEtaPhiM(FsrPhoton_pt[Fsrtag], FsrPhoton_eta[Fsrtag], FsrPhoton_phi[Fsrtag], 0);
-
-    // Z2 = Zlist[Z1index];    // FIXME: Update this with jet information.
+    Z1nofsr = Zlistnofsr[Z1index];
 
     if (FatJetidx.size() > 0 || jetidx.size()>=2)
     {
         foundZZCandidate = true;
 
-        std::cout << "Zlist size: " << Zlist.size() << std::endl;
-        std::cout << "jetidx size: " << jetidx.size() << std::endl;
-        std::cout << "FatJetidx size: " << FatJetidx.size() << std::endl;
+        // std::cout << "Zlist size: " << Zlist.size() << std::endl;
+        // std::cout << "jetidx size: " << jetidx.size() << std::endl;
+        // std::cout << "FatJetidx size: " << FatJetidx.size() << std::endl;
 
         if (FatJetidx.size() > 0)
         {
             Z2.SetPtEtaPhiM(FatJet_pt[0], FatJet_eta[0], FatJet_phi[0], FatJet_SDmass[0]);
             cut2l1J++;
             cut2l1Jor2j++;
+
+            Z2_1.SetPtEtaPhiM(Jet_pt[0], Jet_eta[0], Jet_phi[0], Jet_mass[0]);
+            Z2_2.SetPtEtaPhiM(Jet_pt[1], Jet_eta[1], Jet_phi[1], Jet_mass[1]);
+            Z2_2j = Z2_1 + Z2_2;
         }
         else
         {
@@ -970,9 +966,6 @@ bool H4LTools::ZZSelection_2l2q(){
             cut2l2j++;
             cut2l1Jor2j++;
         }
-
-        Z1nofsr = Zlistnofsr[Z1index];
-        // Z2nofsr = Zlistnofsr[Z2index];
 
         ZZsystem = Z1 + Z2;
         ZZsystemnofsr = Z1nofsr + Z2; // FIXME: Update this with jet information.

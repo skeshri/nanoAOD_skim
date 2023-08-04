@@ -198,6 +198,10 @@ class H4LTools {
       bool flag4mu;
       bool flag2e2mu;
 
+      bool flag2e;
+      bool flag2mu;
+      bool flag2l;
+
       void LeptonSelection();
       std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu, tighteleforjetidx, tightmuforjetidx;
       std::vector<unsigned int> Electronindex;
@@ -225,6 +229,7 @@ class H4LTools {
         Jet_pt.clear();Jet_phi.clear();Jet_eta.clear();Jet_mass.clear();Jet_btagDeepC.clear();
         Jet_jetId.clear();Jet_puId.clear();
         FatJet_pt.clear();FatJet_phi.clear();FatJet_eta.clear();FatJet_SDmass.clear();FatJet_btagDeepB.clear(); FatJet_PNZvsQCD.clear();
+
         FatJet_jetId.clear();
         FsrPhoton_dROverEt2.clear();FsrPhoton_phi.clear();FsrPhoton_eta.clear();FsrPhoton_pt.clear();FsrPhoton_relIso03.clear();
         GenPart_pt.clear();
@@ -255,6 +260,7 @@ class H4LTools {
         pTj2 = -99;  etaj2 = -99;  phij2 = -99;  mj2 = -99;
 
         flag4e=false; flag4mu=false; flag2e2mu=false;
+        flag2e=false; flag2mu=false; flag2l=false;
       }
 
       TSpline *spline_g4;
