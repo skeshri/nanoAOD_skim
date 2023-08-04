@@ -15,22 +15,22 @@ class HZZAnalysisCppProducer(Module):
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
-            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/H4LTools.cc+O" % base)
             else:
-                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/RoccoR.cc+O" % base)
             else:
-                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
@@ -54,6 +54,15 @@ class HZZAnalysisCppProducer(Module):
         print("PassmZ1mZ2Cut_2e2mu: "+str(self.worker.cutZZ2e2mu)+" Events")
         print("Passm4l_105_160_Cut_2e2mu: "+str(self.worker.cutm4l2e2mu)+" Events")
         print("PassZZSelection: "+str(self.passZZEvts)+" Events")
+
+        print("==================   2l2q    ==============")
+        print("PassTrig: "+str(self.passtrigEvts)+" Events")
+        print("Pass2eCut: "+str(self.worker.cut2e)+" Events")
+        print("Pass2muCut: "+str(self.worker.cut2mu)+" Events")
+        print("Pass2lCut: "+str(self.worker.cut2l)+" Events")
+        print("Pass2l1JCut: "+str(self.worker.cut2l1J)+" Events")
+        print("Pass2l2jCut: "+str(self.worker.cut2l2j)+" Events")
+        print("Pass2l1Jor2jCut: "+str(self.worker.cut2l1Jor2j)+" Events")
         pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -135,9 +144,9 @@ class HZZAnalysisCppProducer(Module):
         # initReaders and the call to C++ worker code
         self.worker.Initialize()
         self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nGenPart,event.nFsrPhoton)
-        
+
         keepIt = False
-        
+
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -158,52 +167,50 @@ class HZZAnalysisCppProducer(Module):
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
         jets = Collection(event, "Jet")
+        FatJets = Collection(event, "FatJet")
         genparts = Collection(event, "GenPart")
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso_WP90, xe.pdgId)
         for xm in muons:
             self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
-                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand, 
+                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all, xm.genPartIdx)
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
+        for xj in FatJets:
+            self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
         for xg in genparts:
             self.worker.SetGenParts(xg.pt)
-            
+
         self.worker.MuonPtCorrection(isMC)
         self.worker.LeptonSelection()
-        if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
+        foundZZCandidate = False    # for 4l
+        foundZZCandidate_2l2q = False # for 2l2q
+        foundZZCandidate_2l2nu = False # for 2l2nu
+
+        if ((self.worker.nTightEle + self.worker.nTightMu == 2) and (not self.worker.nTightMu == 1)):
+            # This event should belong to either 2l2q or 2l2nu
+            # nTightEle + nTightMu == 2 => 2l2q or 2l2nu => (2,0), (0,2), (1,1)
+            # => Reject (1,1) combination: ( (nTightEle + nTightMu == 2) and (not nTightEle == 1)) # 2nd part is to avoid the situation where we get 1 electron and 1 muon
+            # foundZZCandidate_2l2q = False
+            # print("Inside the 2l2q loop")
+            foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
+            foundZZCandidate_2l2nu = False
+            # print("Inside the 2l2q loop: END")
             pass
+        elif (self.worker.nTightEle + self.worker.nTightMu >= 4):
+            # This event should belong to 4l; nTightEle + nTightMu >= 4
+            foundZZCandidate = self.worker.ZZSelection_4l()
 
+        if (foundZZCandidate_2l2q):
+            keepIt = True
+            self.passZZEvts += 1
+            pTZ1 = self.worker.Z1.Pt()
+            self.out.fillBranch("pTZ1",pTZ1)
 
-        """Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()
-        Electron_Fsr_eta_vec = self.worker.ElectronFsrEta()
-        Electron_Fsr_phi_vec = self.worker.ElectronFsrPhi()
-        Muon_Fsr_pt_vec = self.worker.MuonFsrPt()
-        Muon_Fsr_eta_vec = self.worker.MuonFsrEta()
-        Muon_Fsr_phi_vec = self.worker.MuonFsrPhi()
-        
-        
-        Electron_Fsr_pt = []
-        Electron_Fsr_eta = []
-        Electron_Fsr_phi = []
-        Muon_Fsr_pt = []
-        Muon_Fsr_eta = []
-        Muon_Fsr_phi = []
-        if len(Electron_Fsr_pt_vec)>0:
-            for i in range(len(Electron_Fsr_pt_vec)):
-                Electron_Fsr_pt.append(Electron_Fsr_pt_vec[i])
-                Electron_Fsr_eta.append(Electron_Fsr_eta_vec[i])
-                Electron_Fsr_phi.append(Electron_Fsr_phi_vec[i])
-        if len(Muon_Fsr_pt_vec)>0:
-            for i in range(len(Muon_Fsr_pt_vec)):
-                Muon_Fsr_pt.append(Muon_Fsr_pt_vec[i])
-                Muon_Fsr_eta.append(Muon_Fsr_eta_vec[i])
-                Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])"""
-        foundZZCandidate = self.worker.ZZSelection()
         if (foundZZCandidate):
             keepIt = True
             self.passZZEvts += 1
@@ -303,7 +310,7 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("Muon_Fsr_pt",Muon_Fsr_pt)
             self.out.fillBranch("Muon_Fsr_eta",Muon_Fsr_eta)
             self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)"""
-        
+
         """with open("SyncLepton2018GGH.txt", 'a') as f:
             if(foundZZCandidate):
                 f.write(str('%.4f' % event.run)+":"+str('%.4f' % event.luminosityBlock)+":"+str('%.4f' % event.event)+":" \
@@ -319,8 +326,8 @@ class HZZAnalysisCppProducer(Module):
                         +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+"\n")"""
 
 
-       
-        
+
+
         return keepIt
 
 
