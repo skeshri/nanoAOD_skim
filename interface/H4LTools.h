@@ -273,6 +273,9 @@ class H4LTools {
       TLorentzVector Z1;
       TLorentzVector Z1nofsr;
       TLorentzVector Z2;
+      TLorentzVector Z2_2j;
+      TLorentzVector Z2_1;
+      TLorentzVector Z2_2;
       TLorentzVector Z2nofsr;
       TLorentzVector ZZsystem;
       TLorentzVector ZZsystemnofsr;

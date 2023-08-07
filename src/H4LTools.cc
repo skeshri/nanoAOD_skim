@@ -948,13 +948,18 @@ bool H4LTools::ZZSelection_2l2q(){
 
         if (FatJetidx.size() > 0)
         {
-            Z2.SetPtEtaPhiM(FatJet_pt[0], FatJet_eta[0], FatJet_phi[0], FatJet_SDmass[0]);
-            cut2l1J++;
-            cut2l1Jor2j++;
 
+            TLorentzVector Z2; //AV
+            Z2.SetPtEtaPhiM(FatJet_pt[0], FatJet_eta[0], FatJet_phi[0], FatJet_SDmass[0]);
+            
+            TLorentzVector Z2_1;//AV
+            TLorentzVector Z2_2;//AV
             Z2_1.SetPtEtaPhiM(Jet_pt[0], Jet_eta[0], Jet_phi[0], Jet_mass[0]);
             Z2_2.SetPtEtaPhiM(Jet_pt[1], Jet_eta[1], Jet_phi[1], Jet_mass[1]);
             Z2_2j = Z2_1 + Z2_2;
+
+            cut2l1J++;
+            cut2l1Jor2j++;
         }
         else
         {
@@ -962,7 +967,7 @@ bool H4LTools::ZZSelection_2l2q(){
             TLorentzVector Z2_2;
             Z2_1.SetPtEtaPhiM(Jet_pt[0], Jet_eta[0], Jet_phi[0], Jet_mass[0]);
             Z2_2.SetPtEtaPhiM(Jet_pt[1], Jet_eta[1], Jet_phi[1], Jet_mass[1]);
-            Z2 = Z2_1 + Z2_2;
+            Z2_2j = Z2_1 + Z2_2;
             cut2l2j++;
             cut2l1Jor2j++;
         }
