@@ -54,7 +54,7 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    ```
 
 5. batch job submission.
-   1. Crab-job submission   
+   1. Crab-job submission
       ```bash
       cd crab/
       voms-proxy-init -voms cms --valid 200:00
@@ -66,10 +66,12 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
       1. In the file `condor_setup.py`, specify the correct input text file from which you need to take input NanoAOD DAS names. Also, updated the output EOS path. Then do the following:
 
          ```bash
-         cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
+         cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
          # Edit condor_setup.py, then
-         python condor_setup.py
+         python3 condor_setup_lxplus.py
          # Set proxy before submitting the condor jobs.
          voms-proxy-init -voms cms --valid 200:00
+         cp /tmp/x509up_u48539 ~/
+         export X509_USER_PROXY=~/x509up_u48539
          condor_submit <Files-created-from-above-command>.jdl
          ```

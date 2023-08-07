@@ -951,10 +951,6 @@ bool H4LTools::ZZSelection_2l2q(){
             Z2.SetPtEtaPhiM(FatJet_pt[0], FatJet_eta[0], FatJet_phi[0], FatJet_SDmass[0]);
             cut2l1J++;
             cut2l1Jor2j++;
-
-            Z2_1.SetPtEtaPhiM(Jet_pt[0], Jet_eta[0], Jet_phi[0], Jet_mass[0]);
-            Z2_2.SetPtEtaPhiM(Jet_pt[1], Jet_eta[1], Jet_phi[1], Jet_mass[1]);
-            Z2_2j = Z2_1 + Z2_2;
         }
         else
         {
