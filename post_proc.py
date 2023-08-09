@@ -16,7 +16,7 @@ testfile = "root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/G
 # 2l2nu ggH Sample 1000 GeV
 # testfile = "root://cms-xrd-global.cern.ch/"
 
-entriesToRun = 100 # 0 if need to run over all entries else put number of entries to run
+entriesToRun = 0 # 0 if need to run over all entries else put number of entries to run
 isMCTrueFalse = True
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
 DownloadFileToLocalThenRun=True
