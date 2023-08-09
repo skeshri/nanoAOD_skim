@@ -148,13 +148,14 @@ std::vector<unsigned int> H4LTools::SelectedFatJets(std::vector<unsigned int> el
 {
     std::vector<unsigned int> goodJets;
     // unsigned nJ = (*nJet).Get()[0];
+    // std::cout<<"DEBUG: FatJet_pt.size() = " << FatJet_pt.size() << std::endl;
     for (unsigned int i = 0; i < FatJet_pt.size(); i++)
     {
       int overlaptag = 0;
       TLorentzVector jettest;
       if (FatJet_pt[i] < 200)
         continue;
-      if (fabs(FatJet_eta[i]) < 4.7)
+      if (fabs(FatJet_eta[i]) > 2.4)
         continue;
 
       jettest.SetPtEtaPhiM(FatJet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i]);
@@ -182,6 +183,8 @@ std::vector<unsigned int> H4LTools::SelectedFatJets(std::vector<unsigned int> el
         }
       }
     }
+    // std::cout<<"DEBUG: goodJets.size() = " << goodJets.size() << std::endl;
+
     return goodJets;
 }
 //  END: Pre-selection for Fat-jets

@@ -29,7 +29,7 @@ TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
 Initial_path = '/eos/user/r/rasharma/post_doc_ihep/h2l2Q/'
 Initial_path += StringToChange
 condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
-condor_queue = "microcentury"
+condor_queue = "workday"
 """
 Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours
 Condor queue options
