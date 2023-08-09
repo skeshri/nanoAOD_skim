@@ -88,6 +88,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pTZ2",  "F")
         self.out.branch("etaZ2",  "F")
         self.out.branch("phiZ2",  "F")
+        self.out.branch("massZ2_2j",  "F")
         self.out.branch("D_CP",  "F")
         self.out.branch("D_0m",  "F")
         self.out.branch("D_0hp",  "F")
@@ -221,6 +222,8 @@ class HZZAnalysisCppProducer(Module):
             self.passZZEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
         #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
+            massZ2_2j = self.worker.Z2_2j.M()
+            self.out.fillBranch("massZ2_2j",massZ2_2j)
 
         if (foundZZCandidate or foundZZCandidate_2l2q):
             keepIt = True
