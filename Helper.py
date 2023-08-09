@@ -2,19 +2,34 @@ import ROOT
 
 PI=3.14159
 def PassTrig(event,year=2018):
-    
+
     TriggerList = []
     PassTrig = False
-    if (year == 2018):
-        TriggerList.append(event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
-        TriggerList.append(event.HLT_DoubleEle25_CaloIdL_MW)
-        TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
-        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
-        TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
-        TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)
+
+    # FIXME: Need to think about generalisation of the trigger paths
+
+    # if (year == 2018):  # Trigger list for 2l2q channel
+    #     TriggerList.append(event.HLT_Ele32_WPTight_Gsf)
+    #     TriggerList.append(event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
+    #     TriggerList.append(event.HLT_DoubleEle25_CaloIdL_MW)
+    #     TriggerList.append(event.HLT_IsoMu24)
+    #     TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
+    #     TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)
+    #     TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
+    #     TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+
+    if (year == 2018 ):  # Trigger list for 2l2q channel
         TriggerList.append(event.HLT_Ele32_WPTight_Gsf)
+        TriggerList.append(event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
         TriggerList.append(event.HLT_IsoMu24)
-    
+        TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
+        TriggerList.append(event.HLT_TripleMu_10_5_5_DZ) # Not in 4l list
+        TriggerList.append(event.HLT_TripleMu_12_10_5) # Not in 4l list
+        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL) # Not in 4l list
+        TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) # Not in 4l list
+        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+
     for i in range(len(TriggerList)):
         PassTrig = PassTrig | TriggerList[i]
 
@@ -91,7 +106,7 @@ def passTight_BDT_Id(electrons,year = '2018'):
     Tight_Id = []
     cutVal = 1000
     mvaVal = -1
-    
+
     for x in electrons:
         if (year == '2018'):
             if (x.pt<=10):
@@ -104,7 +119,7 @@ def passTight_BDT_Id(electrons,year = '2018'):
                 if (abs(x.eta) >= 1.479): cutVal = -0.5169136775
 
             mvaVal = x.mvaFall17V2Iso_WP90
-            
+
         if (year == '2017'):
             if (x.pt<=10):
                 if (abs(x.eta) < 0.8): cutVal = 0.9128577458
@@ -114,7 +129,7 @@ def passTight_BDT_Id(electrons,year = '2018'):
                 if (abs(x.eta) < 0.8): cutVal = 0.1559788054
                 if ((abs(x.eta) >= 0.8)&(abs(x.eta) <1.479)): cutVal = 0.0273863727
                 if (abs(x.eta) >= 1.479): cutVal = -0.5532483665
-            
+
             mvaVal = x.mvaFall17V2Iso_WP90
         if (year == '2016'):
             if (x.pt<=10):
@@ -125,14 +140,14 @@ def passTight_BDT_Id(electrons,year = '2018'):
                 if (abs(x.eta) < 0.8): cutVal = 0.3272075608
                 if ((abs(x.eta) >= 0.8)&(abs(x.eta) <1.479)): cutVal = 0.2468345995
                 if (abs(x.eta) >= 1.479): cutVal = -0.5955762814
-            
+
             mvaVal = x.mvaFall17V2Iso_WP90
 
         if mvaVal > cutVal:
             Tight_Id.append(True)
         else:
             Tight_Id.append(False)
-    
+
     return Tight_Id
 
 def passTight_Id(muons):
