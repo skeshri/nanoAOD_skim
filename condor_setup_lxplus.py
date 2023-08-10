@@ -29,7 +29,7 @@ TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
 Initial_path = '/eos/user/r/rasharma/post_doc_ihep/h2l2Q/'
 Initial_path += StringToChange
 condor_file_name = 'submit_condor_jobs_lnujj_'+StringToChange
-condor_queue = "microcentury"
+condor_queue = "workday"
 """
 Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours
 Condor queue options
@@ -189,11 +189,11 @@ outScript.write("\n");
 outScript.close();
 os.system("chmod 777 "+condor_file_name+".sh");
 
-print("===> Set Proxy Using:")
+print("\n#===> Set Proxy Using:")
 print("voms-proxy-init --voms cms --valid 168:00")
-print("# It is assumed that the proxy is created in file: /tmp/x509up_u48539. Update this in below two lines:")
+print("\n# It is assumed that the proxy is created in file: /tmp/x509up_u48539. Update this in below two lines:")
 print("cp /tmp/x509up_u48539 ~/")
 print("export X509_USER_PROXY=~/x509up_u48539")
-print("Submit jobs:")
+print("\n#Submit jobs:")
 print("condor_submit "+condor_file_name+".jdl")
 #os.system("condor_submit "+condor_file_name+".jdl")
