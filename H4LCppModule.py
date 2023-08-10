@@ -37,6 +37,7 @@ class HZZAnalysisCppProducer(Module):
         self.year = year
         self.worker = ROOT.H4LTools(self.year)
         self.passtrigEvts = 0
+        self.noCutsEvts = 0
         self.passZZEvts = 0
         pass
     def beginJob(self):
@@ -44,6 +45,7 @@ class HZZAnalysisCppProducer(Module):
 
     def endJob(self):
         print("\n========== Print Cut flow table  ====================\n")
+        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
         print("{:27}:{:7} {}".format("Pass4eCut: ", str(self.worker.cut4e), " Events"))
         print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_4e: ", str(self.worker.cutZZ4e), " Events"))
@@ -57,6 +59,7 @@ class HZZAnalysisCppProducer(Module):
         print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZEvts), " Events"))
 
         print("\n==================   2l2q    ==============\n")
+        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
         print("{:27}:{:7} {}".format("Pass2eCut: ", str(self.worker.cut2e), " Events"))
         print("{:27}:{:7} {}".format("Pass2muCut: ", str(self.worker.cut2mu), " Events"))
@@ -166,6 +169,7 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
+        self.noCutsEvts += 1
         passedTrig = PassTrig(event, self.year)
         if (passedTrig==True):
             self.passtrigEvts += 1

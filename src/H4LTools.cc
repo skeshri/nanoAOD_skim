@@ -948,8 +948,6 @@ bool H4LTools::ZZSelection_2l2q(){
 
         if (FatJetidx.size() > 0)
         {
-
-            TLorentzVector Z2; //AV
             Z2.SetPtEtaPhiM(FatJet_pt[0], FatJet_eta[0], FatJet_phi[0], FatJet_SDmass[0]);
             
             TLorentzVector Z2_1;//AV
