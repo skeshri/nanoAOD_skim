@@ -941,6 +941,19 @@ bool H4LTools::ZZSelection_2l2q(){
     Z1 = Zlist[Z1index];
     Z1nofsr = Zlistnofsr[Z1index];
 
+    if (Z1.M() < 40.0 || Z1.M() > 180)
+    {
+        return foundZZCandidate;
+    }
+    cut2l_m40_180++;
+    if (flag2e)
+        cut2e_m40_180++;
+    if (flag2mu)
+        cut2mu_m40_180++;
+
+    jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
+    FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
+
     if (FatJetidx.size() > 0 || jetidx.size()>=2)
     {
         foundZZCandidate = true;

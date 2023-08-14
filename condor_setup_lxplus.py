@@ -20,6 +20,7 @@ def main(args):
     EOS_Output_path = args.eos_output_path
     condor_file_name = args.condor_file_name
     condor_queue = args.condor_queue
+    condor_log_path = args.condor_log_path
 
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
@@ -39,7 +40,7 @@ def main(args):
 
     # Create directories for storing log files and output files at EOS.
     import fileshelper
-    dirsToCreate = fileshelper.FileHelper('condor_logs/'+submission_name, EOS_Output_path)
+    dirsToCreate = fileshelper.FileHelper( (condor_log_path + '/condor_logs/'+submission_name).replace("//","/"), EOS_Output_path)
     output_log_path = dirsToCreate.create_log_dir_with_date()
     storeDir = dirsToCreate.create_store_area(EOS_Output_path)
     dirName = dirsToCreate.dir_name
@@ -191,6 +192,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
     parser.add_argument("--input_file", default='sample_list_v9_2018_campaign.dat', help="Input file from where to read DAS names.")
     parser.add_argument("--eos_output_path", default='/eos/user/r/rasharma/post_doc_ihep/h2l2Q/', help="Initial path for operations.")
+    parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="microcentury", help="""
                         Condor queue options: (Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours)

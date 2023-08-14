@@ -295,6 +295,7 @@ class H4LTools {
 
       int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu;
       int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j;
+      int cut2e_m40_180, cut2mu_m40_180, cut2l_m40_180;
       float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
       float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
@@ -418,6 +419,9 @@ H4LTools::H4LTools(int year){
   cut2l1J = 0;
   cut2l2j = 0;
   cut2l1Jor2j = 0;
+  cut2e_m40_180 = 0;
+  cut2mu_m40_180 = 0;
+  cut2l_m40_180 = 0;
 
 }
 #endif

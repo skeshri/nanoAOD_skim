@@ -29,9 +29,11 @@ def PassTrig(event,year=2018):
         TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
         TriggerList.append(event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ) # Not in 4l list
         TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_DoubleEle25_CaloIdL_MW) # Not in AN
+        TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ) # Not in AN
 
     for i in range(len(TriggerList)):
-        PassTrig = PassTrig | TriggerList[i]
+        PassTrig = PassTrig or TriggerList[i]
 
     return PassTrig
 
