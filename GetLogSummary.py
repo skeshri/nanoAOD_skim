@@ -13,6 +13,9 @@ patterns = {
     "Pass2eCut": re.compile(r'Pass2eCut:\s+:(\d+)\s+Events'),
     "Pass2muCut": re.compile(r'Pass2muCut:\s+:(\d+)\s+Events'),
     "Pass2lCut": re.compile(r'Pass2lCut:\s+:(\d+)\s+Events'),
+    "40 < m_ee < 180": re.compile(r'Pass2eCut \(40 < mll < 180\):\s+:(\d+)\s+Events'),
+    "40 < m_mumu < 180": re.compile(r'Pass2muCut \(40 < mll < 180\):\s+:(\d+)\s+Events'),
+    "40 < mll < 180": re.compile(r'Pass2lCut \(40 < mll < 180\):\s+:(\d+)\s+Events'),
     "Pass2l1JCut": re.compile(r'Pass2l1JCut:\s+:(\d+)\s+Events'),
     "Pass2l2jCut": re.compile(r'Pass2l2jCut:\s+:(\d+)\s+Events'),
     "Pass2l1Jor2jCut": re.compile(r'Pass2l1Jor2jCut:\s+:(\d+)\s+Events')
