@@ -72,7 +72,7 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
             if(fabs(Electron_eta[i])>=1.479) cutVal = -0.5169136775;
         }
 
-        mvaVal = Electron_mvaFall17V2Iso_WP90[i];
+        mvaVal = Electron_mvaFall17V2Iso[i];
         if(mvaVal > cutVal){
             tightid.push_back(true);
         }
@@ -331,6 +331,7 @@ void H4LTools::LeptonSelection(){
         TLorentzVector Ele;
         Ele.SetPtEtaPhiM(Electron_pt[Electronindex[ie]],Electron_eta[Electronindex[ie]],Electron_phi[Electronindex[ie]],Electron_mass[Electronindex[ie]]);
         Elelist.push_back(Ele);
+        Eiso.push_back(Electron_pfRelIso03_all[Electronindex[ie]]);
         Eid.push_back(AllEid[Electronindex[ie]]);
     }
 
@@ -352,7 +353,18 @@ void H4LTools::LeptonSelection(){
     MulistFsr = BatchFsrRecovery(Mulist);
 
     for(unsigned int ae=0; ae<Eid.size();ae++){
-        if(Eid[ae]==true){
+        float RelEleIsoNoFsr;
+        RelEleIsoNoFsr = Eiso[ae]; 
+        unsigned int FsrEleidx;
+        FsrEleidx = doFsrRecovery(Elelist[ae]);
+        if(FsrEleidx<900){
+            TLorentzVector fsrele;
+            fsrele.SetPtEtaPhiM(FsrPhoton_pt[FsrEleidx],FsrPhoton_eta[FsrEleidx],FsrPhoton_phi[FsrEleidx],0);
+            if(Elelist[ae].DeltaR(fsrele)>0.01){
+              RelEleIsoNoFsr = RelEleIsoNoFsr - FsrPhoton_pt[FsrEleidx]/Elelist[ae].Pt();  
+            }
+        }
+        if((Eid[ae]==true)&&(RelEleIsoNoFsr<0.35)){
             nTightEle++;
             TightEleindex.push_back(ae);
             nTightEleChgSum += Elechg[ae];

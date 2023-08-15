@@ -1,13 +1,14 @@
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
 import ROOT
+import yaml
 import os
 from Helper import *
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year):
+    def __init__(self,year,cfgFile):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -35,9 +36,13 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
         self.year = year
-        self.worker = ROOT.H4LTools(self.year)
+        with open(cfgFile, 'r') as ymlfile:
+          cfg = yaml.load(ymlfile)
+          RoccoRPath = cfg['RoccoRPath']
+        self.worker = ROOT.H4LTools(self.year, RoccoRPath)
         self.passtrigEvts = 0
         self.passZZEvts = 0
+        self.cfgFile = cfgFile
         pass
     def beginJob(self):
         pass
@@ -149,7 +154,7 @@ class HZZAnalysisCppProducer(Module):
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
         isMC = True
-        passedTrig = PassTrig(event, self.year)
+        passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
             self.passtrigEvts += 1
         else:
@@ -161,7 +166,7 @@ class HZZAnalysisCppProducer(Module):
         genparts = Collection(event, "GenPart")
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
-                                      xe.dz, xe.sip3d, xe.mvaFall17V2Iso_WP90, xe.pdgId)
+                                      xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
         for xm in muons:
             self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand, 
