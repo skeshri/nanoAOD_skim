@@ -32,6 +32,25 @@ def PassTrig(event,year=2018):
         TriggerList.append(event.HLT_DoubleEle25_CaloIdL_MW) # Not in AN
         TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ) # Not in AN
 
+    if (year == 2017):
+        TriggerList.append(event.HLT_Ele35_WPTight_Gsf)
+        TriggerList.append(event.HLT_Ele38_WPTight_Gsf)
+        TriggerList.append(event.HLT_Ele40_WPTight_Gsf)
+        TriggerList.append(event.HLT_IsoMu27)
+                                          # Dilepton
+        TriggerList.append(event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL)
+        TriggerList.append(event.HLT_DoubleEle33_CaloIdL_MW)
+        TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8)
+        TriggerList.append(event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8)
+        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL)
+        TriggerList.append(event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ)
+        TriggerList.append(event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ)
+        TriggerList.append(event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL)
+        TriggerList.append(event.HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ)
+
+
     for i in range(len(TriggerList)):
         PassTrig = PassTrig or TriggerList[i]
 

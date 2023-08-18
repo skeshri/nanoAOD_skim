@@ -1,10 +1,18 @@
+import argparse
 import os
 import re
 
-DEBUG = False
+# Set up the parser
+parser = argparse.ArgumentParser(description="Process some logs.")
+parser.add_argument("-d", "--directory", type=str, help="Path to the directory containing the *.stdout files", required=True)
+parser.add_argument("--debug", action="store_true", help="Enable debug mode")
 
-# Define the path to the directory containing the *.stdout files
-log_files_dir = 'condor_logs/Run2018_v9/230808_225816'
+# Parse the arguments
+args = parser.parse_args()
+
+# Use the parsed arguments
+DEBUG = args.debug
+log_files_dir = args.directory
 
 # Regular expression patterns to match the desired lines
 patterns = {
