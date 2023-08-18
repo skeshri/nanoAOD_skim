@@ -1,0 +1,26 @@
+Triggers:
+ - event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL
+ - event.HLT_DoubleEle25_CaloIdL_MW
+ - event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8
+ - event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ
+ - event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ
+ - event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ
+ - event.HLT_Ele32_WPTight_Gsf
+ - event.HLT_IsoMu24
+
+RoccoRPath:
+  KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt
+
+Triggers_2l2q:
+  - event.HLT_Ele32_WPTight_Gsf
+  - event.HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL
+  - event.HLT_IsoMu24
+  - event.HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8
+  - event.HLT_TripleMu_10_5_5_DZ # Not in 4l list
+  - event.HLT_TripleMu_12_10_5 # Not in 4l list
+  - event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL # Not in 4l list
+  - event.HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ
+  - event.HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ # Not in 4l list
+  - event.HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ
+  - event.HLT_DoubleEle25_CaloIdL_MW # Not in AN
+  - event.HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ # Not in AN
