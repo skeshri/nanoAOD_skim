@@ -4,7 +4,7 @@ import re
 DEBUG = False
 
 # Define the path to the directory containing the *.stdout files
-log_files_dir = 'condor_logs/Run2018_v9/230808_225816'
+log_files_dir = 'condor_logs/Run2018_v9/230815_155234/'
 
 # Regular expression patterns to match the desired lines
 patterns = {
@@ -49,4 +49,4 @@ for filename in os.listdir(log_files_dir):
 # Print the sum of events for each category
 if DEBUG: print("\n\n")
 for category, events in category_sums.items():
-    print(f"{category:17}: {events:>7} Events")
+    print("{category:17}: {events:>7} Events".format(category=category, events=events))
