@@ -57,4 +57,4 @@ for filename in os.listdir(log_files_dir):
 # Print the sum of events for each category
 if DEBUG: print("\n\n")
 for category, events in category_sums.items():
-    print(f"{category:17}: {events:>7} Events")
+    print("{category:17}: {events:>7} Events".format(category=category, events=events))
