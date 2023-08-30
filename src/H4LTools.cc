@@ -37,7 +37,6 @@ std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigne
             }
         }
     }
-
     return bestMuonindex;
 }
 std::vector<unsigned int> H4LTools::goodElectrons2015_noIso_noBdt(std::vector<unsigned int> Electronindex){
@@ -72,7 +71,7 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
             if(fabs(Electron_eta[i])>=1.479) cutVal = -0.5169136775;
         }
 
-        mvaVal = Electron_mvaFall17V2Iso_WP90[i];
+        mvaVal = Electron_mvaFall17V2Iso[i];
         if(mvaVal > cutVal){
             tightid.push_back(true);
         }
@@ -331,7 +330,6 @@ float H4LTools::ApplyRoccoR(bool isMC, int charge, float pt, float eta, float ph
         else{
             TRandom3 rand;
             rand.SetSeed(abs(static_cast<int>(sin(phi)*100000)));
-
             double u1;
             u1 = rand.Uniform(1.);
             scale_factor = calibrator->kSmearMC(charge, pt, eta, phi, nLayers, u1);
@@ -354,7 +352,6 @@ void H4LTools::MuonPtCorrection(bool isMC){
     return;
 }
 void H4LTools::LeptonSelection(){
-
     looseEle = goodLooseElectrons2012();
     looseMu = goodLooseMuons2012();
     bestEle = goodElectrons2015_noIso_noBdt(looseEle);
@@ -382,6 +379,7 @@ void H4LTools::LeptonSelection(){
         TLorentzVector Ele;
         Ele.SetPtEtaPhiM(Electron_pt[Electronindex[ie]],Electron_eta[Electronindex[ie]],Electron_phi[Electronindex[ie]],Electron_mass[Electronindex[ie]]);
         Elelist.push_back(Ele);
+        Eiso.push_back(Electron_pfRelIso03_all[Electronindex[ie]]);
         Eid.push_back(AllEid[Electronindex[ie]]);
     }
 
@@ -403,7 +401,18 @@ void H4LTools::LeptonSelection(){
     MulistFsr = BatchFsrRecovery(Mulist);
 
     for(unsigned int ae=0; ae<Eid.size();ae++){
-        if(Eid[ae]==true){
+        float RelEleIsoNoFsr;
+        RelEleIsoNoFsr = Eiso[ae];
+        unsigned int FsrEleidx;
+        FsrEleidx = doFsrRecovery(Elelist[ae]);
+        if(FsrEleidx<900){
+            TLorentzVector fsrele;
+            fsrele.SetPtEtaPhiM(FsrPhoton_pt[FsrEleidx],FsrPhoton_eta[FsrEleidx],FsrPhoton_phi[FsrEleidx],0);
+            if(Elelist[ae].DeltaR(fsrele)>0.01){
+              RelEleIsoNoFsr = RelEleIsoNoFsr - FsrPhoton_pt[FsrEleidx]/Elelist[ae].Pt();
+            }
+        }
+        if((Eid[ae]==true)&&(RelEleIsoNoFsr<0.35)){
             nTightEle++;
             TightEleindex.push_back(ae);
             nTightEleChgSum += Elechg[ae];
@@ -448,8 +457,6 @@ bool H4LTools::findZCandidate(){
         flag2e2mu = true;
     }
 
-    // std::cout << "nTightEle: " << nTightEle << "\tnTightMu: " << nTightMu << std::endl;
-    // std::cout << "TightEleindex.size(): " << TightEleindex.size() << std::endl;
 
     if(TightEleindex.size()>1){
         for(unsigned int ke=0; ke<(TightEleindex.size()-1);ke++){
@@ -556,7 +563,6 @@ bool H4LTools::ZZSelection_4l(){
     if(Zlist.size()<2){
         return foundZZCandidate;
     }
-
     //Find ZZ candidate
     std::vector<int> Z1CanIndex;
     std::vector<int> Z2CanIndex;
@@ -636,7 +642,6 @@ bool H4LTools::ZZSelection_4l(){
                     Za = lepM1 + lepN2;
                     Zb = lepN1 + lepM2;
                 }
-
                 else{
                     Za = lepM1 + lepN1;
                     Zb = lepN2 + lepM2;
@@ -656,7 +661,6 @@ bool H4LTools::ZZSelection_4l(){
                 Z1CanIndex.push_back(m);
                 Z2CanIndex.push_back(n);
             }
-
             else{
                 Z1CanIndex.push_back(n);
                 Z2CanIndex.push_back(m);
@@ -699,7 +703,6 @@ bool H4LTools::ZZSelection_4l(){
 
     Z1nofsr = Zlistnofsr[Z1index];
     Z2nofsr = Zlistnofsr[Z2index];
-
     ZZsystem = Z1+Z2;
     ZZsystemnofsr = Z1nofsr+Z2nofsr;
     float massZZ;
@@ -808,7 +811,6 @@ bool H4LTools::ZZSelection_4l(){
     mela->setCurrentCandidateFromIndex(0);
     mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
     mela->computeP(me_0plus_JHU, true);
-
     mela->setProcess(TVar::H0minus, TVar::JHUGen, TVar::ZZGG);
     mela->computeP(p0minus_VAJHU, true);
     // additional probabilities   GG_SIG_ghg2_1_ghz2_1_JHUGen
@@ -884,8 +886,6 @@ bool H4LTools::ZZSelection_4l(){
 	D_L1Zg = me_0plus_JHU / (me_0plus_JHU + ((p_GG_SIG_ghg2_1_ghza1prime2_1E4_JHUGen/1e8) * pow(getDL1ZgsConstant(massZZ),2)));
     mela->resetInputEvent();
     return foundZZCandidate;
-
-
 }
 
 bool H4LTools::ZZSelection_2l2q(){

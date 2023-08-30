@@ -7,19 +7,20 @@
 #include <TLorentzVector.h>
 #include <TSpline.h>
 #include <vector>
+#include "yaml-cpp/yaml.h"
 #include "RoccoR.h"
 #include "../JHUGenMELA/MELA/interface/Mela.h"
 
 class H4LTools {
     public:
-      H4LTools(int year);
+      H4LTools(int year, std::string DATAPATH);
       int elePtcut = 7;
       int MuPtcut = 5;
       int sip3dCut = 4;
       float Zmass = 91.1876;
 
       void SetElectrons(float Electron_pt_, float Electron_eta_, float Electron_phi_, float Electron_mass_, float Electron_dxy_,float Electron_dz_,
-                        float Electron_sip3d_, bool Electron_mvaFall17V2Iso_WP90_, int Electron_pdgId_){
+                        float Electron_sip3d_, float Electron_mvaFall17V2Iso_, int Electron_pdgId_, float Electron_pfRelIso03_all_){
         Electron_pt.push_back(Electron_pt_);
         Electron_phi.push_back(Electron_phi_);
         Electron_eta.push_back(Electron_eta_);
@@ -27,8 +28,9 @@ class H4LTools {
         Electron_dxy.push_back(Electron_dxy_);
         Electron_dz.push_back(Electron_dz_);
         Electron_sip3d.push_back(Electron_sip3d_);
-        Electron_mvaFall17V2Iso_WP90.push_back(Electron_mvaFall17V2Iso_WP90_);
+        Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
         Electron_pdgId.push_back(Electron_pdgId_);
+        Electron_pfRelIso03_all.push_back(Electron_pfRelIso03_all_);
       }
 
 
@@ -127,7 +129,6 @@ class H4LTools {
         FsrPhoton_eta = FsrPhoton_eta_;
         FsrPhoton_pt = FsrPhoton_pt_;
         FsrPhoton_relIso03 = FsrPhoton_relIso03_;
-
       }*/
       void SetGenParts(float GenPart_pt_){
         GenPart_pt.push_back(GenPart_pt_);
@@ -193,7 +194,6 @@ class H4LTools {
       int nTightMu;
       int nTightEleChgSum;
       int nTightMuChgSum;
-
       bool flag4e;
       bool flag4mu;
       bool flag2e2mu;
@@ -214,7 +214,7 @@ class H4LTools {
       std::vector<TLorentzVector> MulistFsr;
       std::vector<int> Elechg;
       std::vector<int> Muchg;
-      std::vector<float> Muiso;
+      std::vector<float> Muiso,Eiso;
       std::vector<bool> Eid;
       std::vector<bool> muid;
 
@@ -222,7 +222,7 @@ class H4LTools {
       std::vector<int> TightMuindex;
       void Initialize(){
         Electron_pt.clear();Electron_phi.clear();Electron_eta.clear();Electron_mass.clear();Electron_dxy.clear();Electron_dz.clear();Electron_sip3d.clear();
-        Electron_mvaFall17V2Iso_WP90.clear();Electron_pdgId.clear();
+        Electron_mvaFall17V2Iso.clear();Electron_pdgId.clear();Electron_pfRelIso03_all.clear();
         Muon_pt.clear();Muon_phi.clear();Muon_eta.clear();Muon_mass.clear();Muon_dxy.clear();Muon_dz.clear();Muon_sip3d.clear();Muon_ptErr.clear();Muon_pfRelIso03_all.clear();
         Muon_nTrackerLayers.clear();Muon_genPartIdx.clear();Muon_pdgId.clear();Muon_charge.clear();
         Muon_isTracker.clear();Muon_isGlobal.clear();Muon_isPFcand.clear();
@@ -244,10 +244,11 @@ class H4LTools {
         Zlep2ptNoFsr.clear(); Zlep2etaNoFsr.clear(); Zlep2phiNoFsr.clear(); Zlep2massNoFsr.clear();
         jetidx.clear();
         FatJetidx.clear();
+
         Muon_Pt_Corrected.clear();
         looseEle.clear(); looseMu.clear(); bestEle.clear(); bestMu.clear();  tighteleforjetidx.clear();  tightmuforjetidx.clear();
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear();
-        Elechg.clear(); Muchg.clear(); Muiso.clear(); Eid.clear(); muid.clear(); TightEleindex.clear(); TightMuindex.clear();
+        Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); TightEleindex.clear(); TightMuindex.clear();
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0;
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0;
 
@@ -294,8 +295,8 @@ class H4LTools {
       float getDL1ZgsConstant(float ZZMass);
 
       int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu;
-      int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j;
       int cut2e_m40_180, cut2mu_m40_180, cut2l_m40_180;
+      int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j;
       float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
       float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
@@ -303,7 +304,7 @@ class H4LTools {
 
     private:
       std::vector<float> Electron_pt,Electron_phi,Electron_eta,Electron_mass,Electron_dxy,Electron_dz,Electron_sip3d;
-      std::vector<bool> Electron_mvaFall17V2Iso_WP90;
+      std::vector<float> Electron_mvaFall17V2Iso,Electron_pfRelIso03_all;
       std::vector<int> Electron_pdgId;
 
       std::vector<float> Jet_pt,Jet_phi,Jet_eta,Jet_mass,Jet_btagDeepC;
@@ -378,11 +379,8 @@ class H4LTools {
 
 };
 
-H4LTools::H4LTools(int year){
-  std::string DATAPATH = "";
+H4LTools::H4LTools(int year, std::string DATAPATH){
   std::cout<<"year"<<" "<<year<<std::endl;
-  if (year == 2018) DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2018UL.txt";
-  if (year == 2017) DATAPATH += "KalmanMuonCalibrationsProducer/data/roccor.Run2.v5/RoccoR2017UL.txt";
   calibrator = new RoccoR(DATAPATH);
   mela = new Mela(13.0, 125.0, TVar::SILENT);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
