@@ -186,13 +186,15 @@ class HZZAnalysisCppProducer(Module):
             genparts = Collection(event, "GenPart")
             for xg in genparts:
                 self.worker.SetGenParts(xg.pt)
+            for xm in muons:
+                self.worker.SetMuonsGen(xm.genPartIdx)
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
         for xm in muons:
             self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand, 
-                                 xm.pdgId, xm.charge, xm.pfRelIso03_all, xm.genPartIdx)
+                                 xm.pdgId, xm.charge, xm.pfRelIso03_all)
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
