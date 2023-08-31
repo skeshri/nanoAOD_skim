@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile):
+    def __init__(self,year,cfgFile,isMC):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -39,10 +39,20 @@ class HZZAnalysisCppProducer(Module):
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
           RoccoRPath = cfg['RoccoRPath']
-        self.worker = ROOT.H4LTools(self.year, RoccoRPath)
+          self.worker = ROOT.H4LTools(self.year, RoccoRPath)
+          self.worker.InitializeElecut(cfg['Electron']['pTcut'],cfg['Electron']['Etacut'],cfg['Electron']['Sip3dcut'],cfg['Electron']['Loosedxycut'],cfg['Electron']['Loosedzcut'],
+                                       cfg['Electron']['Isocut'],cfg['Electron']['BDTWP']['LowEta']['LowPT'],cfg['Electron']['BDTWP']['MedEta']['LowPT'],cfg['Electron']['BDTWP']['HighEta']['LowPT'],
+                                       cfg['Electron']['BDTWP']['LowEta']['HighPT'],cfg['Electron']['BDTWP']['MedEta']['HighPT'],cfg['Electron']['BDTWP']['HighEta']['HighPT'])
+          self.worker.InitializeMucut(cfg['Muon']['pTcut'],cfg['Muon']['Etacut'],cfg['Muon']['Sip3dcut'],cfg['Muon']['Loosedxycut'],cfg['Muon']['Loosedzcut'],cfg['Muon']['Isocut'],
+                                       cfg['Muon']['Tightdxycut'],cfg['Muon']['Tightdzcut'],cfg['Muon']['TightTrackerLayercut'],cfg['Muon']['TightpTErrorcut'],cfg['Muon']['HighPtBound'])
+          self.worker.InitializeFsrPhotonCut(cfg['FsrPhoton']['pTcut'],cfg['FsrPhoton']['Etacut'],cfg['FsrPhoton']['Isocut'],cfg['FsrPhoton']['dRlcut'],cfg['FsrPhoton']['dRlOverPtcut'])
+          self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
+          self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
+        
         self.passtrigEvts = 0
         self.passZZEvts = 0
         self.cfgFile = cfgFile
+        self.isMC = isMC
         pass
     def beginJob(self):
         pass
@@ -50,12 +60,21 @@ class HZZAnalysisCppProducer(Module):
     def endJob(self):
         print("PassTrig: "+str(self.passtrigEvts)+" Events")
         print("Pass4eCut: "+str(self.worker.cut4e)+" Events")
+        print("Pass4eGhostRemoval: "+str(self.worker.cutghost4e)+" Events")
+        print("Pass4eLepPtCut: "+str(self.worker.cutLepPt4e)+" Events")
+        print("Pass4eQCDSupress: "+str(self.worker.cutQCD4e)+" Events")
         print("PassmZ1mZ2Cut_4e: "+str(self.worker.cutZZ4e)+" Events")
         print("Passm4l_105_160_Cut_4e: "+str(self.worker.cutm4l4e)+" Events")
         print("Pass4muCut: "+str(self.worker.cut4mu)+" Events")
+        print("Pass4muGhostRemoval: "+str(self.worker.cutghost4mu)+" Events")
+        print("Pass4muLepPtCut: "+str(self.worker.cutLepPt4mu)+" Events")
+        print("Pass4muQCDSupress: "+str(self.worker.cutQCD4mu)+" Events")
         print("PassmZ1mZ2Cut_4mu: "+str(self.worker.cutZZ4mu)+" Events")
         print("Passm4l_105_160_Cut_4mu: "+str(self.worker.cutm4l4mu)+" Events")
         print("Pass2e2muCut: "+str(self.worker.cut2e2mu)+" Events")
+        print("Pass2e2muGhostRemoval: "+str(self.worker.cutghost2e2mu)+" Events")
+        print("Pass2e2muLepPtCut: "+str(self.worker.cutLepPt2e2mu)+" Events")
+        print("Pass2e2muQCDSupress: "+str(self.worker.cutQCD2e2mu)+" Events")
         print("PassmZ1mZ2Cut_2e2mu: "+str(self.worker.cutZZ2e2mu)+" Events")
         print("Passm4l_105_160_Cut_2e2mu: "+str(self.worker.cutm4l2e2mu)+" Events")
         print("PassZZSelection: "+str(self.passZZEvts)+" Events")
@@ -153,7 +172,7 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
-        isMC = True
+        isMC = self.isMC
         passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
             self.passtrigEvts += 1
@@ -163,7 +182,10 @@ class HZZAnalysisCppProducer(Module):
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
         jets = Collection(event, "Jet")
-        genparts = Collection(event, "GenPart")
+        if isMC:
+            genparts = Collection(event, "GenPart")
+            for xg in genparts:
+                self.worker.SetGenParts(xg.pt)
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
@@ -175,8 +197,7 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
-        for xg in genparts:
-            self.worker.SetGenParts(xg.pt)
+        
             
         self.worker.MuonPtCorrection(isMC)
         self.worker.LeptonSelection()

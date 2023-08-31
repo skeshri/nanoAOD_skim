@@ -37,7 +37,7 @@ testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17Na
 testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/270000/C01084F4-328D-0146-B71E-B167AB6A7E86.root")
 
 entriesToRun = 0 # 0 if need to run over all entries else put number of entries to run
-isMCTrueFalse = True
+isMCTrueFalse = False
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
 DownloadFileToLocalThenRun=True
 if testfilelist[0].find("UL18") != -1:
@@ -46,7 +46,9 @@ if testfilelist[0].find("UL18") != -1:
 if testfilelist[0].find("UL17") != -1:
     year = 2017
     cfgFile = 'Input_2017.yml'
-H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile)
+if testfilelist[0].find("pythia") != -1:
+    isMCTrueFalse = True
+H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile,isMCTrueFalse)
 #p=PostProcessor(".",[testfile],"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
 p=PostProcessor(".",testfilelist,"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125_cpp.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
 
