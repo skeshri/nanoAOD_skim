@@ -161,12 +161,14 @@ class H4LTools {
       /*void SetGenParts(TTreeReaderArray<float> *GenPart_pt_){
         GenPart_pt = GenPart_pt_;
       }*/
-      void SetObjectNum(unsigned nElectron_,unsigned nMuon_,unsigned nJet_,unsigned nGenPart_,unsigned nFsrPhoton_){
+      void SetObjectNum(unsigned nElectron_,unsigned nMuon_,unsigned nJet_,unsigned nFsrPhoton_){
         nElectron = nElectron_; 
         nMuon = nMuon_;
         nJet = nJet_;
-        nGenPart = nGenPart_;
         nFsrPhoton = nFsrPhoton_;
+      }
+      void SetObjectNumGen(unsigned nGenPart_){
+        nGenPart = nGenPart_;
       }
 
       std::vector<unsigned int> goodLooseElectrons2012();

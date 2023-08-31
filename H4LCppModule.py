@@ -158,8 +158,10 @@ class HZZAnalysisCppProducer(Module):
         # do NOT access other branches in python between the check/call to
         # initReaders and the call to C++ worker code
         self.worker.Initialize()
-        self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nGenPart,event.nFsrPhoton)
-        
+        isMC = self.isMC
+        self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nFsrPhoton)
+        if isMC:
+            self.worker.SetObjectNumGen(event.nGenPart)
         keepIt = False
         
         passedTrig=False
@@ -172,7 +174,6 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
-        isMC = self.isMC
         passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
             self.passtrigEvts += 1
@@ -200,7 +201,6 @@ class HZZAnalysisCppProducer(Module):
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
         
-            
         self.worker.MuonPtCorrection(isMC)
         self.worker.LeptonSelection()
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
