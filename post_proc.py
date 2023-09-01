@@ -20,7 +20,7 @@ testfile = "root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/G
 #testfile = "root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/VBF_HToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/80000/3F65CE54-8477-C64E-B0BB-BD77E870AB54.root"
 #testfile = "root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/GluGluHToZZTo2L2Q_M1000_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/280000/7F817CD1-84C1-5347-AEEA-F069CAE84799.root"
 testfilelist = []
-#testfilelist.append(testfile)
+testfilelist.append("root://cms-xrd-global.cern.ch//store/data/Run2018B/SingleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9_GT36-v1/2430000/87FA9714-D8D3-1345-BFF5-3B417B1ADC64.root")
 testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/4743B911-1EA3-7E46-959B-93F466ED622F.root")
 testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/130000/DE3F93DE-DAF6-DD4A-AC3B-13ACE92EAD68.root")
 testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/2430000/336F0076-347C-AC40-B1B4-E31E14323B81.root")
@@ -37,16 +37,24 @@ testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17Na
 testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v2/270000/C01084F4-328D-0146-B71E-B167AB6A7E86.root")
 
 entriesToRun = 0 # 0 if need to run over all entries else put number of entries to run
-isMCTrueFalse = True
+isMCTrueFalse = False
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
 DownloadFileToLocalThenRun=True
+if testfilelist[0].find("2018") != -1:
+    year = 2018
+    cfgFile = 'Input_2018.yml'
+if testfilelist[0].find("2017") != -1:
+    year = 2017
+    cfgFile = 'Input_2017.yml'
 if testfilelist[0].find("UL18") != -1:
     year = 2018
     cfgFile = 'Input_2018.yml'
 if testfilelist[0].find("UL17") != -1:
     year = 2017
     cfgFile = 'Input_2017.yml'
-H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile)
+if testfilelist[0].find("pythia") != -1:
+    isMCTrueFalse = True
+H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile,isMCTrueFalse)
 #p=PostProcessor(".",[testfile],"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
 p=PostProcessor(".",testfilelist,"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125_cpp.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
 
