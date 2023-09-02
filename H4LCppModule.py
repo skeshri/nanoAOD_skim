@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile):
+    def __init__(self, isMC, year,cfgFile):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -36,6 +36,7 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
         self.year = year
+	self.isMC = isMC
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
           RoccoRPath = cfg['RoccoRPath']
@@ -97,6 +98,10 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("etaZ2",  "F")
         self.out.branch("phiZ2",  "F")
         self.out.branch("massZ2_2j",  "F")
+        self.out.branch("phiZ2_2j",  "F")
+        self.out.branch("etaZ2_2j",  "F")
+        self.out.branch("pTZ2_2j",  "F")
+        self.out.branch("EneZ2_2j",  "F")
         self.out.branch("D_CP",  "F")
         self.out.branch("D_0m",  "F")
         self.out.branch("D_0hp",  "F")
@@ -176,7 +181,6 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
-        isMC = True
         self.noCutsEvts += 1
         passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
@@ -202,10 +206,10 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
         for xj in FatJets:
             self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
-        for xg in genparts:
+	for xg in genparts:
             self.worker.SetGenParts(xg.pt)
 
-        self.worker.MuonPtCorrection(isMC)
+        self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
         foundZZCandidate = False    # for 4l
         foundZZCandidate_2l2q = False # for 2l2q
@@ -233,8 +237,16 @@ class HZZAnalysisCppProducer(Module):
             self.passZZEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
         #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
-            massZ2_2j = self.worker.Z2_2j.M()
+            massZ2_2j = self.worker.Z2_2j.M()  #Anusree
+            phiZ2_2j = self.worker.Z2_2j.Phi()
+            etaZ2_2j = self.worker.Z2_2j.Eta()
+            pTZ2_2j = self.worker.Z2_2j.Pt()
+            EneZ2_2j = self.worker.Z2_2j.E()
             self.out.fillBranch("massZ2_2j",massZ2_2j)
+            self.out.fillBranch("phiZ2_2j",phiZ2_2j)
+            self.out.fillBranch("etaZ2_2j",etaZ2_2j)
+            self.out.fillBranch("pTZ2_2j",pTZ2_2j)
+            self.out.fillBranch("EneZ2_2j",EneZ2_2j)
 
         if (foundZZCandidate or foundZZCandidate_2l2q):
             keepIt = True
