@@ -989,10 +989,15 @@ bool H4LTools::ZZSelection_2l2q(){
 
         ZZsystem = Z1 + Z2;
         ZZsystemnofsr = Z1nofsr + Z2; // FIXME: Update this with jet information.
+        
+        ZZ_2jsystem = Z1 + Z2_2j;
+        ZZ_2jsystemnofsr = Z1nofsr + Z2_2j;        
 
         float massZZ;
         massZZ = ZZsystem.M();
-
+        
+        float massZZ_2j;
+        massZZ_2j = ZZ_2jsystem.M();
     }
 
     return foundZZCandidate;
