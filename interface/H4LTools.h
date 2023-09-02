@@ -278,6 +278,8 @@ class H4LTools {
       TLorentzVector Z2nofsr;
       TLorentzVector ZZsystem;
       TLorentzVector ZZsystemnofsr;
+      TLorentzVector ZZ_2jsystem;
+      TLorentzVector ZZ_2jsystemnofsr;
 
       RoccoR  *calibrator;
       Mela* mela;
