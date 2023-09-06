@@ -39,6 +39,7 @@ testfilelist.append("root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL17Na
 entriesToRun = 0 # 0 if need to run over all entries else put number of entries to run
 isMC = True
 outputbranchsel = "keep_and_drop.txt"
+
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
 DownloadFileToLocalThenRun=True
 if testfilelist[0].find("2018") != -1:
@@ -53,8 +54,8 @@ if testfilelist[0].find("UL18") != -1:
 if testfilelist[0].find("UL17") != -1:
     year = 2017
     cfgFile = 'Input_2017.yml'
-if testfilelist[0].find("pythia") != -1:
-    isMC = True
+if testfilelist[0].find("/data/") != -1:
+    isMC = False
     outputbranchsel = "keep_and_drop_data.txt"
 
 H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile,isMC)
