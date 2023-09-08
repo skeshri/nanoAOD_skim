@@ -102,6 +102,9 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("etaZ2_2j",  "F")
         self.out.branch("pTZ2_2j",  "F")
         self.out.branch("EneZ2_2j",  "F")
+        self.out.branch("phiZ2_met",  "F")
+        self.out.branch("pTZ2_met",  "F")
+        self.out.branch("EneZ2_met",  "F")
         self.out.branch("D_CP",  "F")
         self.out.branch("D_0m",  "F")
         self.out.branch("D_0hp",  "F")
@@ -193,6 +196,7 @@ class HZZAnalysisCppProducer(Module):
         jets = Collection(event, "Jet")
         FatJets = Collection(event, "FatJet")
         genparts = Collection(event, "GenPart")
+        met = Collection(events, "MET")
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
@@ -208,7 +212,7 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
 	for xg in genparts:
             self.worker.SetGenParts(xg.pt)
-
+        self.worker.SetMET(met.pt,met.phi,met.sumEt)
         self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
         foundZZCandidate = False    # for 4l
@@ -218,7 +222,7 @@ class HZZAnalysisCppProducer(Module):
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
             pass
 
-        if ((self.worker.nTightEle + self.worker.nTightMu == 2) and (not self.worker.nTightMu == 1)):
+        if ((self.worker.nTightEle + self.worker.nTightMu == 2) and (not self.worker.nTightMu == 1) and (self.worker.MET_sumEt < 150)):
             # This event should belong to either 2l2q or 2l2nu \
             # nTightEle + nTightMu == 2 => 2l2q or 2l2nu => (2,0), (0,2), (1,1)
             # => Reject (1,1) combination: ( (nTightEle + nTightMu == 2) and (not nTightEle == 1))
@@ -231,13 +235,16 @@ class HZZAnalysisCppProducer(Module):
         elif (self.worker.nTightEle + self.worker.nTightMu >= 4):
             # This event should belong to 4l; nTightEle + nTightMu >= 4
             foundZZCandidate = self.worker.ZZSelection_4l()
+        elif ((self.worker.nTightEle + self.worker.nTightMu >= 4) and (self.worker.MET_sumEt > 150)):
+            # This event should belong to 4l; nTightEle + nTightMu >= 4
+            foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
 
         if (foundZZCandidate_2l2q):
             keepIt = True
             self.passZZEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
         #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
-            massZ2_2j = self.worker.Z2_2j.M()  #Anusree
+            massZ2_2j = self.worker.Z2_2j.M()  
             phiZ2_2j = self.worker.Z2_2j.Phi()
             etaZ2_2j = self.worker.Z2_2j.Eta()
             pTZ2_2j = self.worker.Z2_2j.Pt()
@@ -248,7 +255,19 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pTZ2_2j",pTZ2_2j)
             self.out.fillBranch("EneZ2_2j",EneZ2_2j)
 
-        if (foundZZCandidate or foundZZCandidate_2l2q):
+        if (foundZZCandidate_2l2nu):
+            keepIt = True
+            self.passZZEvts += 1
+        #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
+        #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
+            phiZ2_met = self.worker.Z2_met.Phi()
+            pTZ2_met = self.worker.Z2_met.Pt()
+            EneZ2_met = self.worker.Z2_met.sumEt()
+            self.out.fillBranch("phiZ2_met",phiZ2_met)
+            self.out.fillBranch("pTZ2_2j",pTZ2_2j)
+            self.out.fillBranch("EneZ2_met",EneZ2_met)
+
+        if (foundZZCandidate or foundZZCandidate_2l2q or foundZZCandidate_2l2nu):
             keepIt = True
             self.passZZEvts += 1
 
