@@ -76,6 +76,16 @@ class HZZAnalysisCppProducer(Module):
         print("{:27}:{:7} {}".format("Pass2l1JCut: ", str(self.worker.cut2l1J), " Events"))
         print("{:27}:{:7} {}".format("Pass2l2jCut: ", str(self.worker.cut2l2j), " Events"))
         print("{:27}:{:7} {}".format("Pass2l1Jor2jCut: ", str(self.worker.cut2l1Jor2j), " Events"))
+        
+        print("\n==================   2l2nu    ==============\n")
+        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
+        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("Pass2e_metCut: ", str(self.worker.cut2e_met), " Events"))
+        print("{:27}:{:7} {}".format("Pass2mu_metCut: ", str(self.worker.cut2mu_met), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l_metCut: ", str(self.worker.cut2l_met), " Events"))
+        print("{:27}:{:7} {}".format("Pass2e_metCut (40 < mll < 180): ", str(self.worker.cut2e_met_m40_180), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l_metCut (40 < mll < 180): ", str(self.worker.cut2l_met_m40_180), " Events"))
+        print("{:27}:{:7} {}".format("Pass2l1metCut: ", str(self.worker.cut2l1met), " Events"))
 
         print("\n========== END: Print Cut flow table  ====================\n")
         pass
@@ -212,6 +222,7 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
 	for xg in genparts:
             self.worker.SetGenParts(xg.pt)
+       # for xn in MET:
         self.worker.SetMET(met.pt,met.phi,met.sumEt)
         self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
