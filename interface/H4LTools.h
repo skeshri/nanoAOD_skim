@@ -201,6 +201,11 @@ class H4LTools {
       bool flag2e;
       bool flag2mu;
       bool flag2l;
+      bool flag2e_met;
+      bool flag2mu_met;
+      bool flag2l_met;      
+
+
 
       void LeptonSelection();
       std::vector<unsigned int> looseEle,looseMu,bestEle,bestMu, tighteleforjetidx, tightmuforjetidx;
@@ -262,6 +267,7 @@ class H4LTools {
 
         flag4e=false; flag4mu=false; flag2e2mu=false;
         flag2e=false; flag2mu=false; flag2l=false;
+        flag2e_met=false; flag2mu_met=false; flag2l_met=false;
       }
 
       TSpline *spline_g4;
@@ -271,15 +277,19 @@ class H4LTools {
       bool findZCandidate();
       bool ZZSelection_4l();
       bool ZZSelection_2l2q();
+      bool ZZSelection_2l2nu();
       TLorentzVector Z1;
       TLorentzVector Z1nofsr;
       TLorentzVector Z2;
       TLorentzVector Z2_2j;
+      TLorentzVector Z2_met;
       TLorentzVector Z2nofsr;
       TLorentzVector ZZsystem;
       TLorentzVector ZZsystemnofsr;
       TLorentzVector ZZ_2jsystem;
       TLorentzVector ZZ_2jsystemnofsr;
+      TLorentzVector ZZ_metsystem;
+      TLorentzVector ZZ_metsystemnofsr;
 
       RoccoR  *calibrator;
       Mela* mela;
@@ -298,7 +308,9 @@ class H4LTools {
 
       int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu;
       int cut2e_m40_180, cut2mu_m40_180, cut2l_m40_180;
-      int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j;
+      int cut2l_met_m40_180, cut2e_met_m40_180, cut2mu_met_m40_180;
+      int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j, cut2l1met;
+      int cut2e_met, cut2mu_met, cut2l_met;
       float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
       float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
