@@ -21,7 +21,6 @@ def main(args):
     condor_file_name = args.condor_file_name
     condor_queue = args.condor_queue
     condor_log_path = args.condor_log_path
-    createTarFile = args.createTarFile
 
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
@@ -47,9 +46,9 @@ def main(args):
     dirName = dirsToCreate.dir_name
 
     # create tarball of present working CMSSW base directory
-    if createTarFile: os.system('rm -f CMSSW*.tgz')
+    os.system('rm -f CMSSW*.tgz')
     import makeTarFile
-    if createTarFile: makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
+    makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
     print("copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n")
     os.system('cp ' + CMSSWRel+".tgz" + ' '+storeDir+'/' + CMSSWRel+".tgz")
 
@@ -146,7 +145,6 @@ def main(args):
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'scramv1 b ProjectRename');
     outScript.write("\n"+'eval `scram runtime -sh`');
-    outScript.write("\n"+'sed -i "s/ifRunningOnCondor = .*/ifRunningOnCondor = True/g" '+post_proc_to_run);
     outScript.write("\n"+'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" '+post_proc_to_run);
     outScript.write("\n"+'echo "========================================="');
     outScript.write("\n"+'echo "cat post_proc.py"');
@@ -177,8 +175,8 @@ def main(args):
     print("\n#===> Set Proxy Using:")
     print("voms-proxy-init --voms cms --valid 168:00")
     print("\n# It is assumed that the proxy is created in file: /tmp/x509up_u48539. Update this in below two lines:")
-    print("cp /tmp/x509up_u153104 ~/")
-    print("export X509_USER_PROXY=~/x509up_u153104")
+    print("cp /tmp/x509up_u48539 ~/")
+    print("export X509_USER_PROXY=~/x509up_u48539")
     print("\n#Submit jobs:")
     print("condor_submit "+condor_file_name+".jdl")
     #os.system("condor_submit "+condor_file_name+".jdl")
@@ -191,10 +189,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Condor Job Submission", formatter_class=PreserveWhitespaceFormatter)
     parser.add_argument("--submission_name", default="Run2018_v9", help="String to be changed by user.")
     parser.add_argument("--use_custom_eos", default=False, action='store_true', help="Use custom EOS.")
-    parser.add_argument("--createTarFile", default=True, action='store_false', help="Use custom EOS.")
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
     parser.add_argument("--input_file", default='sample_list_v9_2018_campaign.dat', help="Input file from where to read DAS names.")
-    parser.add_argument("--eos_output_path", default='/eos/user/a/avijay/Higgs_020723', help="Initial path for operations.")
+    parser.add_argument("--eos_output_path", default='/eos/user/r/rasharma/post_doc_ihep/h2l2Q/', help="Initial path for operations.")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="microcentury", help="""
