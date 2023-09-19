@@ -995,89 +995,13 @@ bool H4LTools::ZZSelection_2l2q(){
 
         float massZZ;
         massZZ = ZZsystem.M();
-     
+        
         float massZZ_2j;
         massZZ_2j = ZZ_2jsystem.M();
     }
 
     return foundZZCandidate;
 }
-//////new implementation////////////////////////////////////////////////////////////
-bool H4LTools::ZZSelection_2l2nu(){
-    if (nTightEle>=2) {
-        cut2e_met++; 
-        cut2l_met++;
-        flag2e_met = true;       
-        flag2l_met = true;
-    }
-    else if (nTightMu>=2){
-        cut2mu_met++;
-        cut2l_met++;
-        flag2mu_met = true;
-        flag2l_met = true;
-    }
-    bool foundZZCandidate = false;   
-    if(!findZCandidate()){
-        return foundZZCandidate;
-    }
-    if((nTightMu+nTightEle)<2){
-        return foundZZCandidate;
-    }
-    if (abs(nTightEleChgSum) != 0 and abs(nTightMuChgSum) != 0)
-    {
-        return foundZZCandidate;
-    }
-       
-    if(Zlist.size()<1){
-        return foundZZCandidate;
-    }
-    // Find ZZ candidate
-    std::vector<int> Z1CanIndex;
-    std::vector<int> Z2CanIndex;
-    for (unsigned int m=0; m<(Zlist.size()); m++){   
-        Z1CanIndex.push_back(m);
-    }
-    
-    int Z1index,Z2index;
-    Z1index = Z1CanIndex[0];
-    Z1 = Zlist[Z1index];
-    Z1nofsr = Zlistnofsr[Z1index];
- 
-    if (Z1.M() < 40.0 || Z1.M() > 180)
-    {     
-        return foundZZCandidate;
-    }
-
-    cut2l_met_m40_180++;
-    if (flag2e_met)
-        cut2e_met_m40_180++;
-    if (flag2mu)
-        cut2mu_met_m40_180++;
-
-    jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
-    FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
-    
-    if (MET_sumEt > 150)
-    {
-     foundZZCandidate = true;
-     Z2_met.SetPtPhiMt(MET_pt[0], MET_phi[0], MET_sumEt[0]);
-     cut2l1met++;
-    }
-    ZZ_metsystem = Z1 + Z2_met;
-    ZZ_metsystemnofsr = Z1nofsr + Z2_met;
-    
-    float METZZ_met;
-    METZZ_met = ZZ_metsystem.sumEt();    
-    
-    
-    return foundZZCandidate;
-}
-     
-///////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 float H4LTools::getDg4Constant(float ZZMass){
     return spline_g4->Eval(ZZMass);
