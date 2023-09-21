@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile,isMC):
+    def __init__(self,year,cfgFile,isMC,isFSR):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -53,6 +53,7 @@ class HZZAnalysisCppProducer(Module):
         self.passZZEvts = 0
         self.cfgFile = cfgFile
         self.isMC = isMC
+        self.worker.isFSR = isFSR
         pass
     def beginJob(self):
         pass
@@ -275,10 +276,27 @@ class HZZAnalysisCppProducer(Module):
             phij2 = self.worker.phij2
             mj2 = self.worker.mj2
 
+            if pTL2>pTL1:
+                pTL1, pTl2 = pTL2, pTL1
+                etaL1, etaL2 = etaL2, etaL1
+                phiL1, phiL2 = phiL2, phiL1
+                massL1,massL2 = massL2, massL1
+            if pTL4>pTL3:
+                pTL3, pTL4 = pTL4, pTL3
+                etaL3, etaL4 = etaL4, etaL3
+                phiL3, phiL4 = phiL4, phiL3
+                massL3, massL4 = massL4, massL3
+                
+
             pT4l = self.worker.ZZsystem.Pt()
             eta4l = self.worker.ZZsystem.Eta()
             phi4l = self.worker.ZZsystem.Phi()
             mass4l = self.worker.ZZsystem.M()
+            if self.worker.isFSR==False:
+                pT4l = self.worker.ZZsystemnofsr.Pt()
+                eta4l = self.worker.ZZsystemnofsr.Eta()
+                phi4l = self.worker.ZZsystemnofsr.Phi()
+                mass4l = self.worker.ZZsystemnofsr.M()
             self.out.fillBranch("mass4l",mass4l)
             self.out.fillBranch("pT4l",pT4l)
             self.out.fillBranch("eta4l",eta4l)
