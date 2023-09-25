@@ -26,12 +26,17 @@ def main(args):
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
 
+    if EOS_Output_path == "":
+        # Get the username and its initial and set the path as /eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples
+        username = os.environ['USER']
+        user_initials = username[0:1]
+        EOS_Output_path = '/eos/user/'+user_initials+'/'+username+'/nanoAOD_ntuples'
     EOS_Output_path += submission_name
     condor_file_name = 'submit_condor_jobs_lnujj_'+submission_name
 
     # Create log files
     import infoCreaterGit
-    SumamryOfCurrentSubmission = input("\n\nWrite summary for current job submission: ")
+    SumamryOfCurrentSubmission = raw_input("\n\nWrite summary for current job submission: ")
     infoLogFiles = infoCreaterGit.BasicInfoCreater('summary.dat',SumamryOfCurrentSubmission)
     infoLogFiles.generate_git_patch_and_log()
 
@@ -193,8 +198,9 @@ if __name__ == "__main__":
     parser.add_argument("--use_custom_eos", default=False, action='store_true', help="Use custom EOS.")
     parser.add_argument("--createTarFile", default=True, action='store_false', help="Use custom EOS.")
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
-    parser.add_argument("--input_file", default='sample_list_v9_2018_campaign.dat', help="Input file from where to read DAS names.")
-    parser.add_argument("--eos_output_path", default='/eos/user/a/avijay/Higgs_020723', help="Initial path for operations.")
+    # input_file mandatory
+    parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
+    parser.add_argument("--eos_output_path", default='', help="Initial path for operations.")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="microcentury", help="""

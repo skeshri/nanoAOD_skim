@@ -1,6 +1,8 @@
+"""From the root file having cut-flow histogram, print the cut-flow table."""
+
 import ROOT
 
-# Set ROOT to run in batch mode 
+# Set ROOT to run in batch mode
 ROOT.gROOT.SetBatch(True)
 
 def print_bins_noSort(hist):
@@ -18,10 +20,10 @@ def print_bins(hist):
         bin_content = hist.GetBinContent(i)
         bin_label = xaxis.GetBinLabel(i)
         bins_info.append((bin_label, bin_content))
-    
+
     # Sort the bins_info list based on bin content
     sorted_bins = sorted(bins_info, key=lambda x: x[1], reverse=True)
-    
+
     prev_bin_content = None
     print("Bin {:33}: {:15}  {}%".format("Cut string name", "nEvents left", "change"))
     for bin_label, bin_content in sorted_bins:
@@ -47,19 +49,19 @@ def print_bins(hist):
 def print_histogram(hist):
     print("Histogram Name: {}".format(hist.GetName()))
     print("Entries: {}, Total Sum: {:.6e}".format(hist.GetEntries(), hist.GetSumOfWeights()))
-    
+
     print("Bin Contents:")
     print_bins(hist)
 
 def print_cutflow_histogram():
-    file = ROOT.TFile("/eos/user/g/guoj/Sample/2L2Q/UL_Legacy/2018/GluGluHToZZTo2L2Q_M1000_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8__v16_L1v1-v1_0.root")  
-    cutflow = file.Get("cutflow")  
-    
+    file = ROOT.TFile("/eos/user/g/guoj/Sample/2L2Q/UL_Legacy/2018/GluGluHToZZTo2L2Q_M1000_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8__v16_L1v1-v1_0.root")
+    cutflow = file.Get("cutflow")
+
     if cutflow:
         print_histogram(cutflow)
     else:
         print("Histogram not found.")
-    
+
     file.Close()
 
 print_cutflow_histogram()
