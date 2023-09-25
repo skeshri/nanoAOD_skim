@@ -44,17 +44,23 @@ if testfilelist[0].find("/data/") != -1:
 if testfilelist[0].find("UL18") != -1 or testfilelist[0].find("UL2018") != -1: # UL2018 for identification of 2018 UL data and UL18 for identification of 2018 UL MC
     year = 2018
     cfgFile = 'Input_2018.yml'
+    jsonFileName="golden_Json/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt"
 
 if testfilelist[0].find("UL17") != -1 or testfilelist[0].find("UL2017") != -1:
     year = 2017
     cfgFile = 'Input_2017.yml'
+    jsonFileName="golden_Json/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt"
+
 
 H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR)
-print("outputbranchsel = ",outputbranchsel)
-print("isMC = ",isMC)
-print("isFSR = ",isFSR)
+print("Input json file: {}".format(jsonFileName))
+print("Input cfg file: {}".format(cfgFile))
+print("output branch: {}".format(outputbranchsel))
+print("isMC: {}".format(isMC))
+print("isFSR: {}".format(isFSR))
+
 #p=PostProcessor(".",[testfile],"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel="keep_and_drop.txt")
-p=PostProcessor(".",testfilelist,"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125_cpp.root",maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun,outputbranchsel=outputbranchsel)
+p=PostProcessor(".",testfilelist,"",None,[H4LCppModule()],provenance=True,fwkJobReport=False,haddFileName="nano_M125_cpp.root", jsonInput=jsonFileName, maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel=outputbranchsel)
 
 p.run()
 print "DONE"
