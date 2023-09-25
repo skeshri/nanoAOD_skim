@@ -253,6 +253,7 @@ class H4LTools {
         FsrPhoton_dROverEt2.clear();FsrPhoton_phi.clear();FsrPhoton_eta.clear();FsrPhoton_pt.clear();FsrPhoton_relIso03.clear();
         GenPart_pt.clear();
         Zlist.clear();
+        Zlistnofsr.clear();
         Zflavor.clear();
         Zlep1index.clear();
         Zlep2index.clear();
@@ -279,7 +280,8 @@ class H4LTools {
 
         flag4e=false; flag4mu=false; flag2e2mu=false;
       }
-
+      bool isFSR=true;
+      unsigned int Zsize=0;
       TSpline *spline_g4;
       TSpline *spline_g2;
       TSpline *spline_L1;
