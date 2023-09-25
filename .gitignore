@@ -140,3 +140,21 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# user added...
+br.sm1
+br.sm2
+*.dat
+*.DAT
+*.txt
+*.tbl
+*.LHgrid
+*.pcm
+*.cxx*
+*.o
+*.in
+*.out
+*.d
+*maincc
+*linkdef.h
+JHUGenMELA/

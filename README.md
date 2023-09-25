@@ -23,10 +23,9 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
 
    ```bash
    cd $CMSSW_BASE/src
-   git clone git@github.com:YujiLee301/nanoAOD_skim.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
+   git clone git@github.com:ram1123/nanoAOD_skim.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
-   git submodule init
-   git submodule update
+   git checkout HZZ_Analysis
    cd -
    cmsenv
    # patch PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim/nanoAOD_tools.patch
@@ -41,7 +40,7 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    find PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim/.git/ -name "*.py*" -delete
    ```
 
-4. Step: 4: interactive running
+4. Step: 4: Get the MELA package
 
    ```bash
    cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
@@ -49,27 +48,32 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    sh JHUGenMELA/MELA/setup.sh -j 8
    cd JHUGenMELA/MELA
    make
+   ```
+
+4. Step: 4: interactive running
+
+   ```bash
    cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
    python post_proc.py
    ```
 
 5. batch job submission.
-   1. Crab-job submission   
+   1. Step: 5 (a): Condor-job submission (recommended)
+      1. In the file `condor_setup.py`, specify the correct input text file (present inside directory `input_data_Files`) from which you need to take input NanoAOD DAS names. Also, updated the output EOS path. Then do the following:
+
+         ```bash
+         cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
+         # Edit condor_setup.py, then
+         python condor_setup.py --input-file sample_list_v9.dat
+         # Set proxy before submitting the condor jobs.
+         voms-proxy-init -voms cms --valid 200:00
+         condor_submit <Files-created-from-above-command>.jdl
+         ```
+
+   1. Step: 5(b): Crab-job submission (Not tested recently)
       ```bash
       cd crab/
       voms-proxy-init -voms cms --valid 200:00
       source /cvmfs/cms.cern.ch/crab3/crab.sh
       crab submit -c crab_cfg.py
       ```
-
-   2. Step: 5 (b): Condor-job submission
-      1. In the file `condor_setup.py`, specify the correct input text file from which you need to take input NanoAOD DAS names. Also, updated the output EOS path. Then do the following:
-
-         ```bash
-         cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_vvVBS
-         # Edit condor_setup.py, then
-         python condor_setup.py
-         # Set proxy before submitting the condor jobs.
-         voms-proxy-init -voms cms --valid 200:00
-         condor_submit <Files-created-from-above-command>.jdl
-         ```

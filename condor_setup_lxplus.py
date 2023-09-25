@@ -6,7 +6,7 @@ import argparse
 import os
 import sys
 
-sys.path.append("Utils/python_utils/.")
+sys.path.append("Utils/.")
 
 from color_style import style
 
