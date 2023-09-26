@@ -13,7 +13,7 @@ ifRunningOnCondor = False
 testfilelist = []
 
 if ifRunningOnCondor:
-    testfile = "root://cms-xrd-global.cern.ch//store/mc/RunIISummer20UL18NanoAODv9/GluGluHToZZTo4L_M125_TuneCP5_13TeV_powheg2_JHUGenV7011_pythia8/NANOAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/120000/3ED05633-EBB7-4A44-8F9D-CD956490BCFD.root"
+    testfile = "root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/NANOAOD/UL2018_MiniAODv2_NanoAODv9_GT36-v1/2820000/06EFD7A6-A6F1-E145-B1F8-C6794FE4EDDD.root"
     testfilelist.append(testfile)
 
 else:
