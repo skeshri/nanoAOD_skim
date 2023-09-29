@@ -50,6 +50,8 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
 
+          self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
+
         self.passtrigEvts = 0
         self.noCutsEvts = 0
         self.passZZEvts = 0
@@ -105,6 +107,10 @@ class HZZAnalysisCppProducer(Module):
         self.out = wrappedOutputTree
 
         # common branches for 4l, 2l2q, 2l2nu channels
+        # boolean branch for 4l, 2l2q, 2l2nu channels
+        self.out.branch("passZZ4lSelection",  "O")
+        self.out.branch("passZZ2l2qSelection",  "O")
+        self.out.branch("passZZ2l2nuSelection",  "O")
         self.out.branch("mass4l",  "F")
         self.out.branch("pT4l",  "F")
         self.out.branch("eta4l",  "F")
@@ -236,7 +242,7 @@ class HZZAnalysisCppProducer(Module):
 
         self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
-        foundZZCandidate = False    # for 4l
+        foundZZCandidate_4l = False    # for 4l
         foundZZCandidate_2l2q = False # for 2l2q
         foundZZCandidate_2l2nu = False # for 2l2nu
 
@@ -255,9 +261,12 @@ class HZZAnalysisCppProducer(Module):
             pass
         elif (self.worker.nTightEle + self.worker.nTightMu >= 4):
             # This event should belong to 4l; nTightEle + nTightMu >= 4
-            foundZZCandidate = self.worker.ZZSelection_4l()
+            foundZZCandidate_4l = self.worker.ZZSelection_4l()
 
         if (foundZZCandidate_2l2q):
+
+            passZZ2l2qSelection = True
+            self.out.fillBranch("passZZ2l2qSelection",passZZ2l2qSelection)
             keepIt = True
             self.passZZEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
@@ -273,7 +282,7 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pTZ2_2j",pTZ2_2j)
             self.out.fillBranch("EneZ2_2j",EneZ2_2j)
 
-        if (foundZZCandidate or foundZZCandidate_2l2q):
+        if (foundZZCandidate_4l or foundZZCandidate_2l2q):
             keepIt = True
             self.passZZEvts += 1
 
@@ -295,8 +304,10 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("phiZ2",phiZ2)
             self.out.fillBranch("massZ2",massZ2)
 
-        if (foundZZCandidate):
+        if (foundZZCandidate_4l):
             keepIt = True
+            passZZ4lSelection = True
+            self.out.fillBranch("passZZ4lSelection",passZZ4lSelection)
             # self.passZZEvts += 1
             D_CP = self.worker.D_CP
             D_0m = self.worker.D_0m

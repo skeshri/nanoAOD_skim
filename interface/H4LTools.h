@@ -18,6 +18,8 @@ class H4LTools {
       float eleLoosedxycut,eleLoosedzcut,MuLoosedxycut,MuLoosedzcut,MuTightdxycut,MuTightdzcut,MuTightTrackerLayercut,MuTightpTErrorcut,MuHighPtBound,eleIsocut,MuIsocut;
       float fsrphotonPtcut,fsrphotonEtacut,fsrphotonIsocut,fsrphotondRlcut,fsrphotondRlOverPtcut, JetPtcut,JetEtacut;
       float eleBDTWPLELP,eleBDTWPMELP,eleBDTWPHELP,eleBDTWPLEHP,eleBDTWPMEHP,eleBDTWPHEHP;
+      float HZZ2l2q_Leading_Lep_pT, HZZ2l2q_SubLeading_Lep_pT, HZZ2l2q_Lep_eta, HZZ2l2q_MZLepcutdown, HZZ2l2q_MZLepcutup;
+
       void InitializeElecut(float elePtcut_,float eleEtacut_,float elesip3dCut_,float eleLoosedxycut_,float eleLoosedzcut_,float eleIsocut_,float eleBDTWPLELP_,float eleBDTWPMELP_, float eleBDTWPHELP_,float eleBDTWPLEHP_,float eleBDTWPMEHP_,float eleBDTWPHEHP_){
         elePtcut = elePtcut_;
         eleEtacut = eleEtacut_;
@@ -32,7 +34,17 @@ class H4LTools {
         eleBDTWPMEHP = eleBDTWPMEHP_;
         eleBDTWPHEHP = eleBDTWPHEHP_;
       }
-      void InitializeMucut(float MuPtcut_,float MuEtacut_,float Musip3dCut_,float MuLoosedxycut_,float MuLoosedzcut_,float MuIsocut_,float MuTightdxycut_,float MuTightdzcut_,float MuTightTrackerLayercut_,float MuTightpTErrorcut_,float MuHighPtBound_){
+
+      void Initialize2l2qEvtCut(float HZZ2l2q_Leading_Lep_pT_, float HZZ2l2q_SubLeading_Lep_pT_, float HZZ2l2q_Lep_eta_, float HZZ2l2q_MZLepcutdown_, float HZZ2l2q_MZLepcutup_) {
+        HZZ2l2q_Leading_Lep_pT = HZZ2l2q_Leading_Lep_pT_;
+        HZZ2l2q_SubLeading_Lep_pT = HZZ2l2q_SubLeading_Lep_pT_;
+        HZZ2l2q_Lep_eta = HZZ2l2q_Lep_eta_;
+        HZZ2l2q_MZLepcutdown = HZZ2l2q_MZLepcutdown_;
+        HZZ2l2q_MZLepcutup = HZZ2l2q_MZLepcutup_;
+      }
+
+      void InitializeMucut(float MuPtcut_, float MuEtacut_, float Musip3dCut_, float MuLoosedxycut_, float MuLoosedzcut_, float MuIsocut_, float MuTightdxycut_, float MuTightdzcut_, float MuTightTrackerLayercut_, float MuTightpTErrorcut_, float MuHighPtBound_)
+      {
         MuPtcut = MuPtcut_;
         MuEtacut = MuEtacut_;
         Musip3dCut = Musip3dCut_;
