@@ -959,6 +959,12 @@ bool H4LTools::ZZSelection_2l2q(){
         return foundZZCandidate;
     }
 
+    // Add tighter lepton pT cut as required by the 2l2q analysis
+    if ( Zlep1pt[0] < HZZ2l2q_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2q_SubLeading_Lep_pT )
+    {
+        return foundZZCandidate;
+    }
+
     //Find ZZ candidate
     std::vector<int> Z1CanIndex;
     std::vector<int> Z2CanIndex;

@@ -103,3 +103,13 @@ Jet:
     30
   Etacut:
     4.7
+
+HZZ2l2q:
+  Leading_Lep_pT: 40
+  SubLeading_Lep_pT: 24
+  Lep_eta: 2.4
+  MZLepcut:
+    down:
+      60
+    up:
+      120
