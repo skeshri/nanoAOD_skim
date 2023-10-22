@@ -9,8 +9,7 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import 
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
 
 # Custom module imports
-from H4Lmodule import *
-from H4LCppModule import *
+from HHWWgg_AnalysisModule import *
 from JetSFMaker import *
 
 def parse_arguments():
@@ -80,8 +79,9 @@ def main():
         jsonFileName = "golden_Json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
         sfFileName = "DeepCSV_102XSF_V2.csv"
 
-    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR)
-    modulesToRun.extend([H4LCppModule()])
+    # H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR)
+    HHWWgg_AnalysisModule = lambda: HHWWgg_AnalysisProducer()
+    modulesToRun.extend([HHWWgg_AnalysisModule`()])
 
     print("Input json file: {}".format(jsonFileName))
     print("Input cfg file: {}".format(cfgFile))
