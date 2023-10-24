@@ -1,5 +1,5 @@
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
-from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection
+from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection,Object
 import ROOT
 import yaml
 import os
@@ -161,12 +161,12 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("phij2",  "F")
 
 
-        self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron")
-        self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron")
-        self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron")
-        self.out.branch("Muon_Fsr_pt",  "F", lenVar = "nMuon")
-        self.out.branch("Muon_Fsr_eta",  "F", lenVar = "nMuon")
-        self.out.branch("Muon_Fsr_phi",  "F", lenVar = "nMuon")
+        self.out.branch("Electron_Fsr_pt",  "F", lenVar = "0")
+        self.out.branch("Electron_Fsr_eta",  "F", lenVar = "0")
+        self.out.branch("Electron_Fsr_phi",  "F", lenVar = "0")
+        self.out.branch("Muon_Fsr_pt",  "F", lenVar = "0")
+        self.out.branch("Muon_Fsr_eta",  "F", lenVar = "0")
+        self.out.branch("Muon_Fsr_phi",  "F", lenVar = "0")
 
         # Branches dedicated for 2l2q channel
 
@@ -216,6 +216,7 @@ class HZZAnalysisCppProducer(Module):
         else:
             return keepIt
         electrons = Collection(event, "Electron")
+        #electrons = Object(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
         jets = Collection(event, "Jet")
@@ -248,8 +249,9 @@ class HZZAnalysisCppProducer(Module):
 
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
             pass
-
+            
         if ((self.worker.nTightEle + self.worker.nTightMu == 2) and (not self.worker.nTightMu == 1)):
+       # if ((self.worker.nTightEle + self.worker.nTightMu <= 2)):
             # This event should belong to either 2l2q or 2l2nu \
             # nTightEle + nTightMu == 2 => 2l2q or 2l2nu => (2,0), (0,2), (1,1)
             # => Reject (1,1) combination: ( (nTightEle + nTightMu == 2) and (not nTightEle == 1))

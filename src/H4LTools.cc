@@ -8,6 +8,7 @@ std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
     for (unsigned int i=0; i<Electron_pt.size(); i++){
         if ((Electron_pt[i]>elePtcut)&&(fabs(Electron_eta[i])<eleEtacut)){
             LooseElectronindex.push_back(i);
+            //std::cout << nElectron << std::endl;
         }
     }
 
@@ -19,6 +20,7 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
     for (unsigned int i=0; i<Muon_eta.size(); i++){
         if ((Muon_Pt_Corrected[i]>MuPtcut)&&(fabs(Muon_eta[i])<MuEtacut)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i]))){
             LooseMuonindex.push_back(i);
+      //      std::cout << nMuon << std::endl;
         }
     }
 
@@ -44,6 +46,7 @@ std::vector<unsigned int> H4LTools::goodElectrons2015_noIso_noBdt(std::vector<un
             if(Electron_sip3d[Electronindex[i]]<elesip3dCut){
                 if((fabs(Electron_dxy[Electronindex[i]])<eleLoosedxycut)&&(fabs(Electron_dz[Electronindex[i]])<eleLoosedzcut)){
                     bestElectronindex.push_back(Electronindex[i]);
+                    //std::cout << nElectron << std::endl;
                 }
             }
         }
@@ -62,6 +65,7 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
             if(fabs(Electron_eta[i])<0.8) cutVal = eleBDTWPLELP;
             if((fabs(Electron_eta[i])>=0.8)&&(fabs(Electron_eta[i])<1.479)) cutVal = eleBDTWPMELP;
             if(fabs(Electron_eta[i])>=1.479) cutVal = eleBDTWPHELP;
+          //  std::cout << nElectron << std::endl;
         }
         else{
             if(fabs(Electron_eta[i])<0.8) cutVal = eleBDTWPLEHP;
@@ -72,6 +76,7 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
         mvaVal = Electron_mvaFall17V2Iso[i];
         if(mvaVal > cutVal){
             tightid.push_back(true);
+            //std::cout << nElectron << std::endl;
         }
         else{
             tightid.push_back(false);
@@ -985,9 +990,10 @@ bool H4LTools::ZZSelection_2l2q(){
     cut2l_m40_180++;
     if (flag2e)
         cut2e_m40_180++;
+    //    std::cout << nElectron << std::endl;
     if (flag2mu)
         cut2mu_m40_180++;
-
+    //std::cout << nMuon << std::endl;
     jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
     FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
 
