@@ -44,16 +44,16 @@ def ZZSelection(Electrons, Muons, Eid, muid):
             nTightEle += 1
             TightEleindex.append(a)
             nTightEleChgSum += Elechg[a]
-    
+
     for a in range(len(muid)):
         if((muid[a]==1)&Muiso[a]<0.35):
             nTightMu += 1
             TightMuindex.append(a)
             nTightMuChgSum += Muchg[a]
-    
+
     if((nTightMu+nTightEle)<4):
         return foundZZCandidate, z1, z2
-    
+
     if((abs(nTightEleChgSum)+abs(nTightMuChgSum))>(nTightMu+nTightEle-4)):
         return foundZZCandidate, z1, z2
 
@@ -120,7 +120,7 @@ def ZZSelection(Electrons, Muons, Eid, muid):
 
     if(len(Zlist)<2):
         return foundZZCandidate, SelectedEleIndex, SelectedMuIndex
-    
+
     #Find ZZ candidates
     Z1CanIndex = []
     Z2CanIndex = []
@@ -132,10 +132,10 @@ def ZZSelection(Electrons, Muons, Eid, muid):
             if (Zlist[m].DeltaR(Zlist[n])<0.02): continue #ghost removal
             nPassPt20 = (Zlep1pt[m]>20) | (Zlep2pt[m]>20) | (Zlep1pt[n]>20) | (Zlep2pt[n]>20)
             nPassPt10 = 0
-            if (Zlep1pt[m]>10): nPassPt10 += 1 
-            if (Zlep2pt[m]>10): nPassPt10 += 1 
-            if (Zlep1pt[n]>10): nPassPt10 += 1 
-            if (Zlep2pt[n]>10): nPassPt10 += 1 
+            if (Zlep1pt[m]>10): nPassPt10 += 1
+            if (Zlep2pt[m]>10): nPassPt10 += 1
+            if (Zlep1pt[n]>10): nPassPt10 += 1
+            if (Zlep2pt[n]>10): nPassPt10 += 1
             if (nPassPt10 < 2): continue
             if (nPassPt20 == False): continue #lep Pt requirements
 
@@ -232,10 +232,10 @@ def ZZSelection(Electrons, Muons, Eid, muid):
             if(abs(Zlist[Z1CanIndex[i]].M()-Zmass)<abs(Zlist[Z1index].M())):
                 Z1index = Z1CanIndex[i]
                 Z2index = Z2CanIndex[i]
-    
+
     z1 = Zlist[Z1index]
-    z2 = Zlist[Z2index]       
-        
+    z2 = Zlist[Z2index]
+
 
 
     return foundZZCandidate, z1, z2

@@ -16,22 +16,22 @@ class HZZAnalysisCppProducer(Module):
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load C++ module")
-            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/H4LTools.cc+O" % base)
             else:
-                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim" 
+            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
                     ".L %s/src/RoccoR.cc+O" % base)
             else:
-                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools" 
+                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools"
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/RoccoR.h" % base)
@@ -48,7 +48,7 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeFsrPhotonCut(cfg['FsrPhoton']['pTcut'],cfg['FsrPhoton']['Etacut'],cfg['FsrPhoton']['Isocut'],cfg['FsrPhoton']['dRlcut'],cfg['FsrPhoton']['dRlOverPtcut'])
           self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
-        
+
         self.passtrigEvts = 0
         self.passZZEvts = 0
         self.cfgFile = cfgFile
@@ -164,7 +164,7 @@ class HZZAnalysisCppProducer(Module):
         if isMC:
             self.worker.SetObjectNumGen(event.nGenPart)
         keepIt = False
-        
+
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -195,13 +195,13 @@ class HZZAnalysisCppProducer(Module):
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
         for xm in muons:
             self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
-                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand, 
+                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all)
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
-        
+
         self.worker.MuonPtCorrection(isMC)
         self.worker.LeptonSelection()
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
@@ -214,8 +214,8 @@ class HZZAnalysisCppProducer(Module):
         Muon_Fsr_pt_vec = self.worker.MuonFsrPt()
         Muon_Fsr_eta_vec = self.worker.MuonFsrEta()
         Muon_Fsr_phi_vec = self.worker.MuonFsrPhi()
-        
-        
+
+
         Electron_Fsr_pt = []
         Electron_Fsr_eta = []
         Electron_Fsr_phi = []
@@ -286,7 +286,7 @@ class HZZAnalysisCppProducer(Module):
                 etaL3, etaL4 = etaL4, etaL3
                 phiL3, phiL4 = phiL4, phiL3
                 massL3, massL4 = massL4, massL3
-                
+
 
             pT4l = self.worker.ZZsystem.Pt()
             eta4l = self.worker.ZZsystem.Eta()
@@ -349,7 +349,7 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("Muon_Fsr_pt",Muon_Fsr_pt)
             self.out.fillBranch("Muon_Fsr_eta",Muon_Fsr_eta)
             self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)"""
-        
+
         """with open("SyncLepton2018GGH.txt", 'a') as f:
             if(foundZZCandidate):
                 f.write(str('%.4f' % event.run)+":"+str('%.4f' % event.luminosityBlock)+":"+str('%.4f' % event.event)+":" \
@@ -365,8 +365,8 @@ class HZZAnalysisCppProducer(Module):
                         +str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+":"+str('%.4f'%-1.0000)+"\n")"""
 
 
-       
-        
+
+
         return keepIt
 
 

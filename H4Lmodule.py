@@ -76,11 +76,11 @@ class HZZAnalysisProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0;
-        
+
         HLTs = Collection(event, "HLT")
         if (Helper.PassTrig(HLTs)): passedTrig = True
         else: return keepIt
-            
+
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         taus = Collection(event, "Tau")
@@ -90,7 +90,7 @@ class HZZAnalysisProducer(Module):
         AllMuons = Helper.goodLooseMuons2012(muons,muPtCut)
         AllTaus =  Helper.goodLooseTaus2012(taus,tauPtCut)
         AllPhotons = Helper.goodLoosePhotons2015(photons,phoPtCut)
-        
+
         #loose leptons
         recoMuons = Helper.goodMuons2015_noIso_noPf(AllMuons,muPtCut,sip3dCut)
         recoElectrons = Helper.goodElectrons2015_noIso_noBdt(AllElectrons, elecPtcut, sip3dCut)
@@ -104,7 +104,7 @@ class HZZAnalysisProducer(Module):
         Z2 = ROOT.TLorentzVector()
 
         foundZZCandidate, Z1, Z2 = Utils.ZZSelection(recoElectrons, recoMuons, Ele_tight_ID, Mu_tight_ID)
-        
+
         if (foundZZCandidate):
             keepIt = True
             pTZ1 = Z1.Pt()
