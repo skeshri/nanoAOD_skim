@@ -19,6 +19,7 @@ def parse_arguments():
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
     parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
+    parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
     return parser.parse_args()
 
 
@@ -83,6 +84,7 @@ def main():
     H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR)
     modulesToRun.extend([H4LCppModule()])
 
+    print("systematic info: {}".format(args.NOsyst))
     print("Input json file: {}".format(jsonFileName))
     print("Input cfg file: {}".format(cfgFile))
     print("isMC: {}".format(isMC))
@@ -94,18 +96,21 @@ def main():
         # btagSF = lambda: btagSFProducer("UL"+str(year), algo="deepjet",selectedWPs=['L','M','T','shape_corr'], sfFileName=sfFileName)
         btagSF = lambda: btagSFProducer(era = "UL"+str(year), algo = "deepcsv")
         puidSF = lambda: JetSFMaker("%s" % year)
-        modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), puidSF()])
+        if (not args.NOsyst):
+            modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), puidSF()])
         # # modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), btagSF(), puidSF()])
 
-        if year == 2018: modulesToRun.extend([puAutoWeight_2018()])
-        if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
-        if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
+        if (not args.NOsyst):
+            if year == 2018: modulesToRun.extend([puAutoWeight_2018()])
+            if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
+            if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
 
         p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun, provenance=True,fwkJobReport=False,haddFileName="skimmed_nano_mc.root", maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop.txt")
     else:
         jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
         fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
-        modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
+        if (not args.NOsyst):
+            modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
         p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun, provenance=True, fwkJobReport=False,haddFileName="skimmed_nano_data.root", jsonInput=jsonFileName, maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop_data.txt")
 

@@ -52,9 +52,12 @@ class HZZAnalysisCppProducer(Module):
 
           self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
 
+        self.passZZEvts = 0 #new
         self.passtrigEvts = 0
         self.noCutsEvts = 0
-        self.passZZEvts = 0
+        self.passZZ4lEvts = 0
+        self.passZZ2l2qEvts = 0
+        self.passZZ2l2nuEvts = 0
         self.cfgFile = cfgFile
         self.isMC = isMC
         self.worker.isFSR = isFSR
@@ -84,7 +87,7 @@ class HZZAnalysisCppProducer(Module):
         print("Pass2e2muQCDSupress: "+str(self.worker.cutQCD2e2mu)+" Events")
         print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_2e2mu: ", str(self.worker.cutZZ2e2mu), " Events"))
         print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_2e2mu: ", str(self.worker.cutm4l2e2mu), " Events"))
-        print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZEvts), " Events"))
+        print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZ4lEvts), " Events"))
 
         print("\n==================   2l2q    ==============\n")
         print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
@@ -98,6 +101,7 @@ class HZZAnalysisCppProducer(Module):
         print("{:27}:{:7} {}".format("Pass2l1JCut: ", str(self.worker.cut2l1J), " Events"))
         print("{:27}:{:7} {}".format("Pass2l2jCut: ", str(self.worker.cut2l2j), " Events"))
         print("{:27}:{:7} {}".format("Pass2l1Jor2jCut: ", str(self.worker.cut2l1Jor2j), " Events"))
+        print("{:27}:{:7} {}".format("passZZSelection: ", str(self.passZZ2l2qEvts), " Events"))
 
         print("\n========== END: Print Cut flow table  ====================\n")
         pass
@@ -198,7 +202,7 @@ class HZZAnalysisCppProducer(Module):
         if isMC:
             self.worker.SetObjectNumGen(event.nGenPart)
         keepIt = False
-
+	keepIt_2l2q = False
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -215,6 +219,7 @@ class HZZAnalysisCppProducer(Module):
             self.passtrigEvts += 1
         else:
             return keepIt
+            return keepIt_2l2q
         electrons = Collection(event, "Electron")
         #electrons = Object(event, "Electron")
         muons = Collection(event, "Muon")
@@ -244,12 +249,15 @@ class HZZAnalysisCppProducer(Module):
         self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
         foundZZCandidate_4l = False    # for 4l
+        passZZ4lSelection = False
         foundZZCandidate_2l2q = False # for 2l2q
+        passZZ2l2qSelection = False
         foundZZCandidate_2l2nu = False # for 2l2nu
+        passZZ2l2nuSelection = False
 
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
             pass
-            
+
         if ((self.worker.nTightEle + self.worker.nTightMu == 2) and (not self.worker.nTightMu == 1)):
        # if ((self.worker.nTightEle + self.worker.nTightMu <= 2)):
             # This event should belong to either 2l2q or 2l2nu \
@@ -259,18 +267,22 @@ class HZZAnalysisCppProducer(Module):
             # foundZZCandidate_2l2q = False # print("Inside the 2l2q loop")
             foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
             foundZZCandidate_2l2nu = False
+           
             # print("Inside the 2l2q loop: END")
             pass
         elif (self.worker.nTightEle + self.worker.nTightMu >= 4):
+        #if (self.worker.nTightEle + self.worker.nTightMu >= 4):
             # This event should belong to 4l; nTightEle + nTightMu >= 4
             foundZZCandidate_4l = self.worker.ZZSelection_4l()
-
+            foundZZCandidate_2l2q = False
         if (foundZZCandidate_2l2q):
-
+            print("Hello found 2l2q candidate")
             passZZ2l2qSelection = True
+            print(passZZ2l2qSelection)
+            passZZ4lSelection = False
             self.out.fillBranch("passZZ2l2qSelection",passZZ2l2qSelection)
-            keepIt = True
-            self.passZZEvts += 1
+            keepIt_2l2q = True
+            self.passZZ2l2qEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD
         #     self.out.fillBranch("FatJet_PNZvsQCD",FatJet_PNZvsQCD)
             massZ2_2j = self.worker.Z2_2j.M()  #Anusree
@@ -283,10 +295,27 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("etaZ2_2j",etaZ2_2j)
             self.out.fillBranch("pTZ2_2j",pTZ2_2j)
             self.out.fillBranch("EneZ2_2j",EneZ2_2j)
-
+        else:
+            passZZ2l2qSelection = False
+  
         if (foundZZCandidate_4l or foundZZCandidate_2l2q):
-            keepIt = True
-            self.passZZEvts += 1
+            #keepIt = True
+            #print("inside loop 4l or 2l2q")
+            #print(passZZ2l2qSelection)
+            pTL1 = self.worker.pTL1
+            etaL1 = self.worker.etaL1
+            phiL1 = self.worker.phiL1
+            massL1 = self.worker.massL1
+            pTL2 = self.worker.pTL2
+            etaL2 = self.worker.etaL2
+            phiL2 = self.worker.phiL2
+            massL2 = self.worker.massL2
+
+            if pTL2>pTL1:
+                pTL1, pTl2 = pTL2, pTL1
+                etaL1, etaL2 = etaL2, etaL1
+                phiL1, phiL2 = phiL2, phiL1
+                massL1,massL2 = massL2, massL1
 
             pTZ1 = self.worker.Z1.Pt()
             etaZ1 = self.worker.Z1.Eta()
@@ -296,6 +325,15 @@ class HZZAnalysisCppProducer(Module):
             etaZ2 = self.worker.Z2.Eta()
             phiZ2 = self.worker.Z2.Phi()
             massZ2 = self.worker.Z2.M()
+
+            self.out.fillBranch("massL1",massL1)
+            self.out.fillBranch("pTL1",pTL1)
+            self.out.fillBranch("etaL1",etaL1)
+            self.out.fillBranch("phiL1",phiL1)
+            self.out.fillBranch("massL2",massL2)
+            self.out.fillBranch("pTL2",pTL2)
+            self.out.fillBranch("etaL2",etaL2)
+            self.out.fillBranch("phiL2",phiL2)
 
             self.out.fillBranch("pTZ1",pTZ1)
             self.out.fillBranch("etaZ1",etaZ1)
@@ -308,9 +346,12 @@ class HZZAnalysisCppProducer(Module):
 
         if (foundZZCandidate_4l):
             keepIt = True
+            keepIt_2l2q = False
+            self.passZZ4lEvts += 1
             passZZ4lSelection = True
+            print("Inside 4l loop: ",passZZ2l2qSelection)
             self.out.fillBranch("passZZ4lSelection",passZZ4lSelection)
-            # self.passZZEvts += 1
+            #self.passZZEvts += 1
             D_CP = self.worker.D_CP
             D_0m = self.worker.D_0m
             D_0hp = self.worker.D_0hp
@@ -318,14 +359,6 @@ class HZZAnalysisCppProducer(Module):
             D_L1 = self.worker.D_L1
             D_L1Zg = self.worker.D_L1Zg
 
-            pTL1 = self.worker.pTL1
-            etaL1 = self.worker.etaL1
-            phiL1 = self.worker.phiL1
-            massL1 = self.worker.massL1
-            pTL2 = self.worker.pTL2
-            etaL2 = self.worker.etaL2
-            phiL2 = self.worker.phiL2
-            massL2 = self.worker.massL2
             pTL3 = self.worker.pTL3
             etaL3 = self.worker.etaL3
             phiL3 = self.worker.phiL3
@@ -343,11 +376,6 @@ class HZZAnalysisCppProducer(Module):
             phij2 = self.worker.phij2
             mj2 = self.worker.mj2
 
-            if pTL2>pTL1:
-                pTL1, pTl2 = pTL2, pTL1
-                etaL1, etaL2 = etaL2, etaL1
-                phiL1, phiL2 = phiL2, phiL1
-                massL1,massL2 = massL2, massL1
             if pTL4>pTL3:
                 pTL3, pTL4 = pTL4, pTL3
                 etaL3, etaL4 = etaL4, etaL3
@@ -375,14 +403,6 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("D_L1",D_L1)
             self.out.fillBranch("D_L1Zg",D_L1Zg)
 
-            self.out.fillBranch("massL1",massL1)
-            self.out.fillBranch("pTL1",pTL1)
-            self.out.fillBranch("etaL1",etaL1)
-            self.out.fillBranch("phiL1",phiL1)
-            self.out.fillBranch("massL2",massL2)
-            self.out.fillBranch("pTL2",pTL2)
-            self.out.fillBranch("etaL2",etaL2)
-            self.out.fillBranch("phiL2",phiL2)
             self.out.fillBranch("massL3",massL3)
             self.out.fillBranch("pTL3",pTL3)
             self.out.fillBranch("etaL3",etaL3)
@@ -402,6 +422,8 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("phij2",phij2)
 
         return keepIt
+        return keepIt_2l2q
+
 
 
 # define modules using the syntax 'name = lambda : constructor' to avoid
