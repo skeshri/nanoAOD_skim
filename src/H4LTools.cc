@@ -17,7 +17,7 @@ std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
 std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
     std::vector<unsigned int> LooseMuonindex;
     for (unsigned int i=0; i<Muon_eta.size(); i++){
-        if ((Muon_Pt_Corrected[i]>MuPtcut)&&(fabs(Muon_eta[i])<MuEtacut)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i]))){
+        if ((Muon_pt[i]>MuPtcut)&&(fabs(Muon_eta[i])<MuEtacut)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i]))){
             LooseMuonindex.push_back(i);
         }
     }
@@ -27,7 +27,7 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
 std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigned int> Muonindex){
     std::vector<unsigned int> bestMuonindex;
     for (unsigned int i=0; i<Muonindex.size(); i++){
-        if ((Muon_Pt_Corrected[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<MuEtacut)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])){
+        if ((Muon_pt[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<MuEtacut)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])){
             if (Muon_sip3d[Muonindex[i]]<Musip3dCut){
                 if((fabs(Muon_dxy[Muonindex[i]])<MuLoosedxycut)&&(fabs(Muon_dz[Muonindex[i]])<MuLoosedzcut)){
                     bestMuonindex.push_back(Muonindex[i]);
@@ -86,12 +86,12 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
 std::vector<bool> H4LTools::passTight_Id(){
     std::vector<bool> tightid;
     //unsigned nMu = (*nMuon).Get()[0];
-    for (unsigned int i=0; i<Muon_Pt_Corrected.size(); i++){
-        if (Muon_Pt_Corrected[i]<MuHighPtBound){
+    for (unsigned int i=0; i<Muon_pt.size(); i++){
+        if (Muon_pt[i]<MuHighPtBound){
             tightid.push_back(Muon_isPFcand[i]);
         }
         else{
-            tightid.push_back(Muon_isPFcand[i]||(((Muon_ptErr[i]/Muon_Pt_Corrected[i])<MuTightpTErrorcut)&&(fabs(Muon_dxy[i])<MuTightdxycut)&&(fabs(Muon_dz[i])<MuTightdzcut)&&(Muon_nTrackerLayers[i]>MuTightTrackerLayercut)));
+            tightid.push_back(Muon_isPFcand[i]||(((Muon_ptErr[i]/Muon_pt[i])<MuTightpTErrorcut)&&(fabs(Muon_dxy[i])<MuTightdxycut)&&(fabs(Muon_dz[i])<MuTightdzcut)&&(Muon_nTrackerLayers[i]>MuTightTrackerLayercut)));
         }
 
     }
@@ -267,45 +267,6 @@ std::vector<float> H4LTools::MuonFsrPhi(){
     return lepPhi;
 }
 
-float H4LTools::ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers)
-{
-
-    float scale_factor;
-    if(isMC && nLayers > MuTightTrackerLayercut)
-    {
-        if(genPt > 0)
-            scale_factor = calibrator->kSpreadMC(charge, pt, eta, phi, genPt);
-        else{
-            TRandom3 rand;
-            rand.SetSeed(abs(static_cast<int>(sin(phi)*100000)));
-            
-            double u1;
-            u1 = rand.Uniform(1.);
-            //u1 = 0.5; //Sync
-            scale_factor = calibrator->kSmearMC(charge, pt, eta, phi, nLayers, u1);
-        }
-    }
-    else
-        scale_factor = calibrator->kScaleDT(charge, pt, eta, phi);
-    
-    return scale_factor;
-    
-}
-void H4LTools::MuonPtCorrection(bool isMC){
-    //unsigned nMu = (*nMuon).Get()[0];
-    Muon_Pt_Corrected.clear();
-    for (unsigned int i=0; i<Muon_pt.size(); i++){
-        float scalefactor;
-        if (isMC){
-        scalefactor = ApplyRoccoR(isMC, Muon_charge[i],Muon_pt[i],Muon_eta[i],Muon_phi[i],GenPart_pt[Muon_genPartIdx[i]],Muon_nTrackerLayers[i]);
-        }
-        else{
-        scalefactor = ApplyRoccoR(isMC, Muon_charge[i],Muon_pt[i],Muon_eta[i],Muon_phi[i],0,Muon_nTrackerLayers[i]);
-        }
-        Muon_Pt_Corrected.push_back((Muon_pt[i])*scalefactor);
-    }
-    return;
-}
 void H4LTools::LeptonSelection(){
     
     looseEle = goodLooseElectrons2012();
@@ -346,7 +307,7 @@ void H4LTools::LeptonSelection(){
             Muchg.push_back(1);
         }
         TLorentzVector Mu;
-        Mu.SetPtEtaPhiM(Muon_Pt_Corrected[Muonindex[imu]],Muon_eta[Muonindex[imu]],Muon_phi[Muonindex[imu]],Muon_mass[Muonindex[imu]]);
+        Mu.SetPtEtaPhiM(Muon_pt[Muonindex[imu]],Muon_eta[Muonindex[imu]],Muon_phi[Muonindex[imu]],Muon_mass[Muonindex[imu]]);
         Mulist.push_back(Mu);
         muid.push_back(AllMuid[Muonindex[imu]]);
         Muiso.push_back(Muon_pfRelIso03_all[Muonindex[imu]]);
@@ -553,7 +514,7 @@ bool H4LTools::ZZSelection(){
             if ((Zlep1chg[m]+Zlep1chg[n])==0){
                 TLorentzVector lepA,lepB,lepAB;
                 lepA.SetPtEtaPhiM(Zlep1ptNoFsr[m],Zlep1etaNoFsr[m],Zlep1phiNoFsr[m],Zlep1massNoFsr[m]);
-                lepB.SetPtEtaPhiM(Zlep1ptNoFsr[n],Zlep1etaNoFsr[n],Zlep1phiNoFsr[n],Zlep1massNoFsr[n]);
+                lepB.SetPtEtaPhiM(Zlep2ptNoFsr[n],Zlep2etaNoFsr[n],Zlep2phiNoFsr[n],Zlep2massNoFsr[n]);
                 lepAB = lepA + lepB;
                 if(lepAB.M()<4) continue;  //QCD Supressionas
             }

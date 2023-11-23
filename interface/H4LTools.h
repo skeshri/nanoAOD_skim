@@ -8,12 +8,11 @@
 #include <TSpline.h>
 #include <vector>
 #include "yaml-cpp/yaml.h"
-#include "RoccoR.h"
 #include "../JHUGenMELA/MELA/interface/Mela.h"
 
 class H4LTools {
     public:
-      H4LTools(int year, std::string DATAPATH);
+      H4LTools(int year);
       float elePtcut, MuPtcut, eleEtacut, MuEtacut, elesip3dCut, Musip3dCut,Zmass,MZ1cut,MZcutup,MZcutdown,MZZcut,HiggscutUp,HiggscutDown;
       float eleLoosedxycut,eleLoosedzcut,MuLoosedxycut,MuLoosedzcut,MuTightdxycut,MuTightdzcut,MuTightTrackerLayercut,MuTightpTErrorcut,MuHighPtBound,eleIsocut,MuIsocut;
       float fsrphotonPtcut,fsrphotonEtacut,fsrphotonIsocut,fsrphotondRlcut,fsrphotondRlOverPtcut, JetPtcut,JetEtacut;
@@ -263,7 +262,6 @@ class H4LTools {
         Zlep1ptNoFsr.clear(); Zlep1etaNoFsr.clear(); Zlep1phiNoFsr.clear(); Zlep1massNoFsr.clear();
         Zlep2ptNoFsr.clear(); Zlep2etaNoFsr.clear(); Zlep2phiNoFsr.clear(); Zlep2massNoFsr.clear();
         jetidx.clear();
-        Muon_Pt_Corrected.clear();
         looseEle.clear(); looseMu.clear(); bestEle.clear(); bestMu.clear();  tighteleforjetidx.clear();  tightmuforjetidx.clear(); 
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
         Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); TightEleindex.clear(); TightMuindex.clear();
@@ -295,11 +293,7 @@ class H4LTools {
       TLorentzVector ZZsystem;
       TLorentzVector ZZsystemnofsr;
 
-      RoccoR  *calibrator;
       Mela* mela;
-      float ApplyRoccoR(bool isMC, int charge, float pt, float eta, float phi, float genPt, float nLayers);
-      std::vector<float> Muon_Pt_Corrected;
-      void MuonPtCorrection(bool isMC);
       float me_0plus_JHU, me_qqZZ_MCFM, p0plus_m4l, bkg_m4l;
       float D_bkg_kin, D_bkg, D_g4, D_g1g4, D_0m, D_CP, D_0hp, D_int, D_L1, D_L1_int, D_L1Zg, D_L1Zgint;
       float D_bkg_kin_vtx_BS;
@@ -339,9 +333,8 @@ class H4LTools {
 
 };
 
-H4LTools::H4LTools(int year, std::string DATAPATH){
+H4LTools::H4LTools(int year){
   std::cout<<"year"<<" "<<year<<std::endl;
-  calibrator = new RoccoR(DATAPATH);
   mela = new Mela(13.0, 125.0, TVar::SILENT);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  
   TFile *gConstant_g4 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_g4.root");
