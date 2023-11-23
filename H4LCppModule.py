@@ -49,7 +49,6 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeFsrPhotonCut(cfg['FsrPhoton']['pTcut'],cfg['FsrPhoton']['Etacut'],cfg['FsrPhoton']['Isocut'],cfg['FsrPhoton']['dRlcut'],cfg['FsrPhoton']['dRlOverPtcut'])
           self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
-
           self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
 
         self.passtrigEvts = 0
@@ -183,14 +182,12 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("phij2",  "F")
 
 
-        self.out.branch("Electron_Fsr_pt",  "F", lenVar = "0")
-        self.out.branch("Electron_Fsr_eta",  "F", lenVar = "0")
-        self.out.branch("Electron_Fsr_phi",  "F", lenVar = "0")
-        self.out.branch("Muon_Fsr_pt",  "F", lenVar = "0")
-        self.out.branch("Muon_Fsr_eta",  "F", lenVar = "0")
-        self.out.branch("Muon_Fsr_phi",  "F", lenVar = "0")
-
-        # Branches dedicated for 2l2q channel
+        self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
+        self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron_Fsr")
+        self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron_Fsr")
+        self.out.branch("Muon_Fsr_pt",  "F", lenVar = "nMuon_Fsr")
+        self.out.branch("Muon_Fsr_eta",  "F", lenVar = "nMuon_Fsr")
+        self.out.branch("Muon_Fsr_phi",  "F", lenVar = "nMuon_Fsr")
 
         with open("SyncLepton2018GGH.txt", 'w') as f:
             f.write("Sync data list:"+"\n")
@@ -221,6 +218,7 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetObjectNumGen(event.nGenPart)
 
         keepIt = False
+
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -520,6 +518,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("passZZ4lSelection",passZZ4lSelection)
         self.out.fillBranch("passZZ2l2qSelection",passZZ2l2qSelection)
         self.out.fillBranch("passZZ2l2nuSelection",passZZ2l2nuSelection)
+
         return keepIt
 
 
