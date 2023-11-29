@@ -192,6 +192,8 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
 
         self.worker.LeptonSelection()
+        foundZCandidate = self.worker.findZCandidate()
+        self.worker.findZ1LCandidate()
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
             pass
 
