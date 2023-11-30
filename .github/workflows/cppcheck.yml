@@ -1,0 +1,17 @@
+name: C/C++ CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install cppcheck
+      run: sudo apt-get install cppcheck
+
+    - name: Run cppcheck
+      run: cppcheck --enable=all --std=c++11 --verbose --error-exitcode=1 .
