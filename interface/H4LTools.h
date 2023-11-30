@@ -18,7 +18,8 @@ class H4LTools {
       float fsrphotonPtcut,fsrphotonEtacut,fsrphotonIsocut,fsrphotondRlcut,fsrphotondRlOverPtcut, JetPtcut,JetEtacut;
       float eleBDTWPLELP,eleBDTWPMELP,eleBDTWPHELP,eleBDTWPLEHP,eleBDTWPMEHP,eleBDTWPHEHP;
       float mass3l;
-      bool passedZ1LSelection;
+      bool passedZ1LSelection, passedFullSelection, passedZXCRSelection;
+      int nfailedleptons;
       void InitializeElecut(float elePtcut_,float eleEtacut_,float elesip3dCut_,float eleLoosedxycut_,float eleLoosedzcut_,float eleIsocut_,float eleBDTWPLELP_,float eleBDTWPMELP_, float eleBDTWPHELP_,float eleBDTWPLEHP_,float eleBDTWPMEHP_,float eleBDTWPHEHP_){
         elePtcut = elePtcut_;
         eleEtacut = eleEtacut_;
@@ -243,7 +244,7 @@ class H4LTools {
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
         Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); istightele.clear(); istightmu.clear(); TightEleindex.clear(); TightMuindex.clear();
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0; mass3l = -99;
-        nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0; nTightZ = 0;
+        nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0; nTightZ = 0; nfailedleptons=0;
         Z1LZ1index = -1;
         
         pTL1 = -999; etaL1 = -999; phiL1 = -999; massL1 = -999;
@@ -255,7 +256,7 @@ class H4LTools {
         pTj2 = -99;  etaj2 = -99;  phij2 = -99;  mj2 = -99;
 
         flag4e=false; flag4mu=false; flag2e2mu=false;
-        passedZ1LSelection = false;
+        passedZ1LSelection = false; passedFullSelection = false; passedZXCRSelection = false;
       }
       bool isFSR=true;
       unsigned int Zsize=0;
