@@ -1,5 +1,13 @@
 # mymodule.py
 
+"""
+This module provides basic mathematical and greeting functions.
+
+It includes:
+- add: a function to add two numbers.
+- greet: a function to return a greeting message.
+"""
+
 def add(a, b):
     """
     Return the sum of two numbers.
