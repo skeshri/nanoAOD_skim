@@ -717,97 +717,172 @@ bool H4LTools::ZZSelection(){
     Z1index = Z1CanIndex[0];
     Z2index = Z2CanIndex[0];
     float Z2PtsumSR,Z2PtsumCR;
-    double minZ1DeltaM_CR=99999.9;double minZ1DeltaM_SR=99999.9;double max_D_bkg_kin_CR=0.0;
+    double minZ1DeltaM_CR=99999.9;double minZ1DeltaM_SR=99999.9;double max_D_bkg_kin_CR=0.0;double max_D_bkg_kin_SR=0.0;
     Z2PtsumSR = -1;Z2PtsumCR = -1;
     if(Z1CanIndex.size()>1){
         for(unsigned int iz=0;iz<Z1CanIndex.size();iz++){
-            if (Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]]) foundSRCandidate=true; //it is a global switch.
-            bool same4l = false;
-            bool foundZ11=false; bool foundZ12=false; bool foundZ21=false; bool foundZ22=false;
-            vector<int> lep_Hindex,lep_Hflavor;
-            lep_Hindex.clear();lep_Hflavor.clear();;
-            lep_Hindex.push_back(Zlep1index[Z1index]);
-            lep_Hindex.push_back(Zlep2index[Z1index]);
-            lep_Hindex.push_back(Zlep1index[Z2index]);
-            lep_Hindex.push_back(Zlep2index[Z2index]);
-            lep_Hflavor.push_back(Zflavor[Z1index]);
-            lep_Hflavor.push_back(Zflavor[Z1index]);
-            lep_Hflavor.push_back(Zflavor[Z2index]);
-            lep_Hflavor.push_back(Zflavor[Z2index]);
-            for(int l = 0; l < 4; l++){
-                if ((lep_Hindex[l]==Zlep1index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ11 = true;
-                if ((lep_Hindex[l]==Zlep2index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ12 = true;
-                if ((lep_Hindex[l]==Zlep1index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ21 = true;
-                if ((lep_Hindex[l]==Zlep2index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ22 = true;
-            }
-            same4l = (foundZ11 && foundZ12 && foundZ21 && foundZ22);
-            if (foundSRCandidate){ //SR has the priority
-                if (!(Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]])) continue;
-                if (Z1index==Z1CanIndex[iz]){
-                    if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumSR){
+            if(isFiducialAna){
+                if (Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]]) foundSRCandidate=true; //it is a global switch.
+                if (foundSRCandidate){ //SR has the priority
+                    if (!(Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]])) continue;
+                    if (Z1index==Z1CanIndex[iz]){
+                        if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumSR){
+                            Z1index = Z1CanIndex[iz];
+                            Z2index = Z2CanIndex[iz];
+                            Z2PtsumSR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        }
+                    }
+                    if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<minZ1DeltaM_SR){
                         Z1index = Z1CanIndex[iz];
                         Z2index = Z2CanIndex[iz];
                         Z2PtsumSR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
-                    }
+                        minZ1DeltaM_SR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
+                    }    
+                    passedFullSelection = true;
                 }
-                if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<minZ1DeltaM_SR){
-                    Z1index = Z1CanIndex[iz];
-                    Z2index = Z2CanIndex[iz];
-                    Z2PtsumSR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
-                    minZ1DeltaM_SR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
-                }    
-                passedFullSelection = true;
-            }
-            else if(same4l && (!foundSRCandidate)){
-                if (Z1index==Z1CanIndex[iz]){
-                    if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumCR){
+                else {
+                    if (Z1index==Z1CanIndex[iz]){
+                        if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumCR){
+                            Z1index = Z1CanIndex[iz];
+                            Z2index = Z2CanIndex[iz];
+                            Z2PtsumCR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        }
+                    }
+                    if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<minZ1DeltaM_CR){
                         Z1index = Z1CanIndex[iz];
                         Z2index = Z2CanIndex[iz];
                         Z2PtsumCR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
-                    }
+                        minZ1DeltaM_CR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
+                    }    
+                    passedZXCRSelection = true;
                 }
-                if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<fabs(Zlist[Z1index].M()-Zmass)){
-                    Z1index = Z1CanIndex[iz];
-                    Z2index = Z2CanIndex[iz];
-                    Z2PtsumCR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
-                    minZ1DeltaM_CR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
-                }    
+                
             }
             else{
-                SimpleParticleCollection_t daughtersCR;
-                SimpleParticleCollection_t associatedCR;
-                TLorentzVector Lep1CR,Lep2CR,Lep3CR,Lep4CR;
-                
-                Lep1CR.SetPtEtaPhiM(Zlep1pt[Z1CanIndex[iz]],Zlep1eta[Z1CanIndex[iz]],Zlep1phi[Z1CanIndex[iz]],Zlep1mass[Z1CanIndex[iz]]);
-                Lep2CR.SetPtEtaPhiM(Zlep2pt[Z1CanIndex[iz]],Zlep2eta[Z1CanIndex[iz]],Zlep2phi[Z1CanIndex[iz]],Zlep2mass[Z1CanIndex[iz]]);
-                Lep3CR.SetPtEtaPhiM(Zlep1pt[Z2CanIndex[iz]],Zlep1eta[Z2CanIndex[iz]],Zlep1phi[Z2CanIndex[iz]],Zlep1mass[Z2CanIndex[iz]]);
-                Lep4CR.SetPtEtaPhiM(Zlep2pt[Z2CanIndex[iz]],Zlep2eta[Z2CanIndex[iz]],Zlep2phi[Z2CanIndex[iz]],Zlep2mass[Z2CanIndex[iz]]);
-
-                daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep1chg[Z1CanIndex[iz]], Lep1CR));
-                daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep2chg[Z1CanIndex[iz]], Lep2CR));
-                daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep1chg[Z2CanIndex[iz]], Lep3CR));
-                daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep2chg[Z2CanIndex[iz]], Lep4CR));
-
-                float D_bkg_kin_tmp=-999; 
-	            mela->setInputEvent(&daughtersCR, &associatedCR, 0, 0);
-    	        mela->setCurrentCandidateFromIndex(0);
-
-	            float me_0plus_JHU_tmp, me_qqZZ_MCFM_tmp;
-    	        mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
-	            mela->computeP(me_0plus_JHU_tmp, true);            
-    	        mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
-        	    mela->computeP(me_qqZZ_MCFM_tmp, true);
-	            D_bkg_kin_tmp = me_0plus_JHU_tmp / (me_0plus_JHU_tmp + me_qqZZ_MCFM_tmp);
-
-    	        mela->resetInputEvent(); 
-                if (D_bkg_kin_tmp>max_D_bkg_kin_CR){
-                    max_D_bkg_kin_CR = D_bkg_kin_tmp;
-                    Z1index = Z1CanIndex[iz];
-                    Z2index = Z2CanIndex[iz];
+                if (Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]]) foundSRCandidate=true; //it is a global switch.
+                bool same4l = false;
+                bool foundZ11=false; bool foundZ12=false; bool foundZ21=false; bool foundZ22=false;
+                vector<int> lep_Hindex,lep_Hflavor;
+                lep_Hindex.clear();lep_Hflavor.clear();;
+                lep_Hindex.push_back(Zlep1index[Z1index]);
+                lep_Hindex.push_back(Zlep2index[Z1index]);
+                lep_Hindex.push_back(Zlep1index[Z2index]);
+                lep_Hindex.push_back(Zlep2index[Z2index]);
+                lep_Hflavor.push_back(Zflavor[Z1index]);
+                lep_Hflavor.push_back(Zflavor[Z1index]);
+                lep_Hflavor.push_back(Zflavor[Z2index]);
+                lep_Hflavor.push_back(Zflavor[Z2index]);
+                for(int l = 0; l < 4; l++){
+                    if ((lep_Hindex[l]==Zlep1index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ11 = true;
+                    if ((lep_Hindex[l]==Zlep2index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ12 = true;
+                    if ((lep_Hindex[l]==Zlep1index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ21 = true;
+                    if ((lep_Hindex[l]==Zlep2index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ22 = true;
                 }
-                passedZXCRSelection = true;
+                same4l = (foundZ11 && foundZ12 && foundZ21 && foundZ22);
+                if ((!same4l) && foundSRCandidate){ //SR has the priority
+                    SimpleParticleCollection_t daughtersSR;
+                    SimpleParticleCollection_t associatedSR;
+                    TLorentzVector Lep1SR,Lep2SR,Lep3SR,Lep4SR;
+                    
+                    Lep1SR.SetPtEtaPhiM(Zlep1pt[Z1CanIndex[iz]],Zlep1eta[Z1CanIndex[iz]],Zlep1phi[Z1CanIndex[iz]],Zlep1mass[Z1CanIndex[iz]]);
+                    Lep2SR.SetPtEtaPhiM(Zlep2pt[Z1CanIndex[iz]],Zlep2eta[Z1CanIndex[iz]],Zlep2phi[Z1CanIndex[iz]],Zlep2mass[Z1CanIndex[iz]]);
+                    Lep3SR.SetPtEtaPhiM(Zlep1pt[Z2CanIndex[iz]],Zlep1eta[Z2CanIndex[iz]],Zlep1phi[Z2CanIndex[iz]],Zlep1mass[Z2CanIndex[iz]]);
+                    Lep4SR.SetPtEtaPhiM(Zlep2pt[Z2CanIndex[iz]],Zlep2eta[Z2CanIndex[iz]],Zlep2phi[Z2CanIndex[iz]],Zlep2mass[Z2CanIndex[iz]]);
+
+                    daughtersSR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep1chg[Z1CanIndex[iz]], Lep1SR));
+                    daughtersSR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep2chg[Z1CanIndex[iz]], Lep2SR));
+                    daughtersSR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep1chg[Z2CanIndex[iz]], Lep3SR));
+                    daughtersSR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep2chg[Z2CanIndex[iz]], Lep4SR));
+
+                    float D_bkg_kin_tmp=-999; 
+                    mela->setInputEvent(&daughtersSR, &associatedSR, 0, 0);
+                    mela->setCurrentCandidateFromIndex(0);
+
+                    float me_0plus_JHU_tmp, me_qqZZ_MCFM_tmp;
+                    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+                    mela->computeP(me_0plus_JHU_tmp, true);            
+                    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
+                    mela->computeP(me_qqZZ_MCFM_tmp, true);
+                    D_bkg_kin_tmp = me_0plus_JHU_tmp / (me_0plus_JHU_tmp + me_qqZZ_MCFM_tmp);
+
+                    mela->resetInputEvent(); 
+                    if (D_bkg_kin_tmp>max_D_bkg_kin_SR){
+                        max_D_bkg_kin_SR = D_bkg_kin_tmp;
+                        Z1index = Z1CanIndex[iz];
+                        Z2index = Z2CanIndex[iz];
+                    }
+                    passedFullSelection = true;
+                }
+                else if(same4l && (foundSRCandidate)){
+                    if (Z1index==Z1CanIndex[iz]){
+                        if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumSR){
+                            Z1index = Z1CanIndex[iz];
+                            Z2index = Z2CanIndex[iz];
+                            Z2PtsumSR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        }
+                    }
+                    if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<minZ1DeltaM_SR){
+                        Z1index = Z1CanIndex[iz];
+                        Z2index = Z2CanIndex[iz];
+                        Z2PtsumSR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        minZ1DeltaM_SR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
+                    }    
+                    passedFullSelection = true;
+                }
+                else if(((!same4l) && (!foundSRCandidate))){
+                    SimpleParticleCollection_t daughtersCR;
+                    SimpleParticleCollection_t associatedCR;
+                    TLorentzVector Lep1CR,Lep2CR,Lep3CR,Lep4CR;
+                    
+                    Lep1CR.SetPtEtaPhiM(Zlep1pt[Z1CanIndex[iz]],Zlep1eta[Z1CanIndex[iz]],Zlep1phi[Z1CanIndex[iz]],Zlep1mass[Z1CanIndex[iz]]);
+                    Lep2CR.SetPtEtaPhiM(Zlep2pt[Z1CanIndex[iz]],Zlep2eta[Z1CanIndex[iz]],Zlep2phi[Z1CanIndex[iz]],Zlep2mass[Z1CanIndex[iz]]);
+                    Lep3CR.SetPtEtaPhiM(Zlep1pt[Z2CanIndex[iz]],Zlep1eta[Z2CanIndex[iz]],Zlep1phi[Z2CanIndex[iz]],Zlep1mass[Z2CanIndex[iz]]);
+                    Lep4CR.SetPtEtaPhiM(Zlep2pt[Z2CanIndex[iz]],Zlep2eta[Z2CanIndex[iz]],Zlep2phi[Z2CanIndex[iz]],Zlep2mass[Z2CanIndex[iz]]);
+
+                    daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep1chg[Z1CanIndex[iz]], Lep1CR));
+                    daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z1CanIndex[iz]]*Zlep2chg[Z1CanIndex[iz]], Lep2CR));
+                    daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep1chg[Z2CanIndex[iz]], Lep3CR));
+                    daughtersCR.push_back(SimpleParticle_t((-1)*Zflavor[Z2CanIndex[iz]]*Zlep2chg[Z2CanIndex[iz]], Lep4CR));
+
+                    float D_bkg_kin_tmp=-999; 
+                    mela->setInputEvent(&daughtersCR, &associatedCR, 0, 0);
+                    mela->setCurrentCandidateFromIndex(0);
+
+                    float me_0plus_JHU_tmp, me_qqZZ_MCFM_tmp;
+                    mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+                    mela->computeP(me_0plus_JHU_tmp, true);            
+                    mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
+                    mela->computeP(me_qqZZ_MCFM_tmp, true);
+                    D_bkg_kin_tmp = me_0plus_JHU_tmp / (me_0plus_JHU_tmp + me_qqZZ_MCFM_tmp);
+
+                    mela->resetInputEvent(); 
+                    if (D_bkg_kin_tmp>max_D_bkg_kin_CR){
+                        max_D_bkg_kin_CR = D_bkg_kin_tmp;
+                        Z1index = Z1CanIndex[iz];
+                        Z2index = Z2CanIndex[iz];
+                    }
+                    passedZXCRSelection = true;
+                }
+                else if(same4l && (!foundSRCandidate)){
+                    if (Z1index==Z1CanIndex[iz]){
+                        if((Zlep1pt[Z2CanIndex[iz]] + Zlep2pt[Z2CanIndex[iz]])>Z2PtsumCR){
+                            Z1index = Z1CanIndex[iz];
+                            Z2index = Z2CanIndex[iz];
+                            Z2PtsumCR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        }
+                    }
+                    if(fabs(Zlist[Z1CanIndex[iz]].M()-Zmass)<minZ1DeltaM_CR){
+                        Z1index = Z1CanIndex[iz];
+                        Z2index = Z2CanIndex[iz];
+                        Z2PtsumCR = Zlep1pt[Z2index] + Zlep2pt[Z2index];
+                        minZ1DeltaM_CR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
+                    }    
+                    passedFullSelection = true;
+                }
+
+            }
                      
-    	    }
+    	    
         }
             
     }

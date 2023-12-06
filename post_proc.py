@@ -37,6 +37,7 @@ def main():
     modulesToRun = []
     isMC = True
     isFSR = False
+    isFiducialAna = True
     year = None
     cfgFile = None
     jsonFileName = None
@@ -81,7 +82,7 @@ def main():
         jsonFileName = "golden_Json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
         sfFileName = "DeepCSV_102XSF_V2.csv"
         modulesToRun.extend([muonScaleRes2016()])
-    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR)
+    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, isFiducialAna)
     modulesToRun.extend([H4LCppModule()])
 
     print("Input json file: {}".format(jsonFileName))

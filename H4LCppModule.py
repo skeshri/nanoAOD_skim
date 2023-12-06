@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile,isMC,isFSR):
+    def __init__(self,year,cfgFile,isMC,isFSR,isFiducialAna):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -43,6 +43,7 @@ class HZZAnalysisCppProducer(Module):
         self.cfgFile = cfgFile
         self.isMC = isMC
         self.worker.isFSR = isFSR
+        self.worker.isFiducialAna = isFiducialAna
         pass
     def beginJob(self):
         pass
