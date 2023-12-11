@@ -182,7 +182,7 @@ class HZZAnalysisCppProducer(Module):
                 self.worker.SetMuonsGen(xm.genPartIdx)
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
-                                      xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
+                                      xe.dz, xe.sip3d, xe.mvaIso_Fall17V2, xe.pdgId, xe.pfRelIso03_all)
         for xm in muons:
             self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
@@ -190,7 +190,7 @@ class HZZAnalysisCppProducer(Module):
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
-            self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, xj.puId)
+            self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagCSVV2, 7)
 
         self.worker.LeptonSelection()
         foundZCandidate = self.worker.findZCandidate()

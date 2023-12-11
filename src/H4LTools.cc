@@ -111,7 +111,7 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
     std::vector<unsigned int> goodJets;
     for(unsigned int i=0;i<Jet_pt.size();i++){
         if((Jet_pt[i]>JetPtcut)&&(fabs(Jet_eta[i])<JetEtacut)){
-            if((Jet_jetId[i]>0)&&(Jet_puId[i]==7)){
+            if((Jet_jetId[i]>0)){
                 int overlaptag=0;
                 TLorentzVector jettest;
                 jettest.SetPtEtaPhiM(Jet_pt[i],Jet_eta[i],Jet_phi[i],Jet_mass[i]);
