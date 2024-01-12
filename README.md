@@ -50,10 +50,10 @@ nanoAOD skiming code for vv semi-leptonic VBS studies
 5. batch job submission.
    1. Crab-job submission   
       ```bash
-      cd crab/
+      cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
       voms-proxy-init -voms cms --valid 200:00
       source /cvmfs/cms.cern.ch/crab3/crab.sh
-      crab submit -c crab_cfg.py
+      crab submit --config=crab_cfg.py
       ```
 
    2. Step: 5 (b): Condor-job submission
