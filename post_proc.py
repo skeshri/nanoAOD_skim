@@ -10,7 +10,7 @@ from JetSFMaker import *
 testfile = "root://cms-xrd-global.cern.ch//store/data/Run2018A/SingleMuon/NANOAOD/Nano25Oct2019-v1/20000/D03C6AE0-73AD-A940-B8CA-779A621D4853.root"
 
 
-entriesToRun = 0  # 0 if need to run over all entries else put number of entries to run
+entriesToRun = 1000  # 0 if need to run over all entries else put number of entries to run
 isMCTrueFalse = True
 Year = 2016
 # Keep DownloadFileToLocalThenRun=True this should reduce the file read error from eos.
@@ -31,7 +31,7 @@ if testfile.find("SingleMuon") != -1 or testfile.find("EGamma") != -1 or testfil
   print "===> JSON File: ",jsonFileName
   jetmetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK4PFchs")
   fatJetCorrector = createJMECorrector(isMC=isMCTrueFalse, dataYear=Year, jesUncert="Merged", jetType = "AK8PFPuppi")
-  p=PostProcessor(".",[testfile],None,None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector()],provenance=False,fwkJobReport=False,jsonInput=jsonFileName,maxEntries=entriesToRun,haddFileName="nano.root",prefetch=DownloadFileToLocalThenRun)
+  p=PostProcessor(".",[testfile],None,None,[wvAnalysisModule(),jetmetCorrector(),fatJetCorrector()],provenance=True,fwkJobReport=True,jsonInput=jsonFileName,maxEntries=entriesToRun,prefetch=DownloadFileToLocalThenRun)
 else:
   print "==> Processing a MC file..."
   isMCTrueFalse=True
