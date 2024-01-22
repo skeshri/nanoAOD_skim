@@ -84,6 +84,7 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
 }
 std::vector<bool> H4LTools::passTight_Id(){
     std::vector<bool> tightid;
+    //unsigned nMu = (*nMuon).Get()[0];
     for (unsigned int i=0; i<Muon_pt.size(); i++){
         if (Muon_pt[i]<MuHighPtBound){
             tightid.push_back(Muon_isPFcand[i]);
