@@ -14,8 +14,19 @@ class HZZAnalysisCppProducer(Module):
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libmcfm_707.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
+        if "/GenAnalysis_cc.so" not in ROOT.gSystem.GetLibraries():
+            print("Load GenAnalysis C++ module")
+            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
+            if base:
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/src/GenAnalysis.cc+O" % base)
+            else:
+                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
+                ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/interface/GenAnalysis.h" % base)
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
-            print("Load C++ module")
+            print("Load H4LTools C++ module")
             base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
             if base:
                 ROOT.gROOT.ProcessLine(
@@ -26,6 +37,7 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         self.year = year
+        self.genworker = ROOT.GenAnalysis()
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
           self.worker = ROOT.H4LTools(self.year)
@@ -152,6 +164,8 @@ class HZZAnalysisCppProducer(Module):
         self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nFsrPhoton)
         if isMC:
             self.worker.SetObjectNumGen(event.nGenPart)
+            self.genworker.Initialize()
+            self.genworker.SetObjectNumGen(event.nGenPart, event.nGenJet)
         keepIt = False
 
         passedTrig=False
@@ -175,8 +189,12 @@ class HZZAnalysisCppProducer(Module):
         jets = Collection(event, "Jet")
         if isMC:
             genparts = Collection(event, "GenPart")
+            genjets = Collection(event, "GenJet")
+            for xj in genjets:
+                self.genworker.SetGenJets(xj.pt,xj.eta,xj.phi,xj.mass)
             for xg in genparts:
                 self.worker.SetGenParts(xg.pt)
+                self.genworker.SetGenParts(xg.pt,xg.eta,xg.phi,xg.mass,xg.pdgId,xg.status,xg.statusFlags,xg.genPartIdxMother)
             for xm in muons:
                 self.worker.SetMuonsGen(xm.genPartIdx)
         for xe in electrons:
@@ -194,7 +212,10 @@ class HZZAnalysisCppProducer(Module):
         self.worker.LeptonSelection()
         if ((self.worker.nTightEle<2)&(self.worker.nTightMu<2)):
             pass
-
+        if isMC:
+            self.genworker.SetGenVariables()
+        
+        passedFiducialSelection = self.genworker.passedFiducialSelection
 
         Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()
         Electron_Fsr_eta_vec = self.worker.ElectronFsrEta()
