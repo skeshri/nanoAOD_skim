@@ -133,7 +133,7 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
             }
         }
     } 
-    
+    njets_pt30_eta4p7 = goodJets.size();
     return goodJets;
 }
 

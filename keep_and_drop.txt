@@ -84,5 +84,6 @@ keep SV*
 keep Electron_gen*
 keep FatJet_*
 keep Gen*
+keep genWeight
 keep Jet_*
 keep Muon*

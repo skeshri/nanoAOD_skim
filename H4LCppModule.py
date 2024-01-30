@@ -86,7 +86,16 @@ class HZZAnalysisCppProducer(Module):
         self.initReaders(inputTree)  # initReaders must be called in beginFile
         self.out = wrappedOutputTree
         self.out.branch("mass4l",  "F")
+        self.out.branch("GENmass4l",  "F")
+        self.out.branch("mass4e",  "F")
+        self.out.branch("mass4mu",  "F")
+        self.out.branch("mass2e2mu",  "F")
         self.out.branch("pT4l",  "F")
+        self.out.branch("GENpT4l",  "F")
+        self.out.branch("rapidity4l",  "F")
+        self.out.branch("njets_pt30_eta4p7", "I")
+        self.out.branch("GENnjets_pt30_eta4p7", "I")
+        self.out.branch("GENrapidity4l",  "F")
         self.out.branch("eta4l",  "F")
         self.out.branch("phi4l",  "F")
         self.out.branch("massZ1",  "F")
@@ -124,10 +133,13 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pTj1",  "F")
         self.out.branch("etaj1",  "F")
         self.out.branch("phij1",  "F")
-        self.out.branch("mj2",  "F")
         self.out.branch("pTj2",  "F")
         self.out.branch("etaj2",  "F")
         self.out.branch("phij2",  "F")
+        self.out.branch("mj2",  "F")
+        self.out.branch("pileupWeight",  "F")
+        self.out.branch("dataMCWeight_new",  "F")
+        self.out.branch("prefiringWeight",  "F")
 
 
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
@@ -178,6 +190,16 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
+        prefiringWeight = 1
+        dataMCWeight_new = 1
+        pileupWeight = 1
+        mass4e=0
+        mass2e2mu=0
+        mass4mu=0
+        GENmass4l = -99
+        GENpT4l = -99
+        GENrapidity4l = -99
+        GENnjets_pt30_eta4p7 = -1
         passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
             self.passtrigEvts += 1
@@ -214,6 +236,10 @@ class HZZAnalysisCppProducer(Module):
             pass
         if isMC:
             self.genworker.SetGenVariables()
+            GENmass4l = self.genworker.GENmass4l
+            GENpT4l = self.genworker.GENpT4l
+            GENrapidity4l = self.genworker.GENrapidity4l
+            GENnjets_pt30_eta4p7 = self.genworker.GENnjets_pt30_eta4p7
         
         passedFiducialSelection = self.genworker.passedFiducialSelection
 
@@ -303,13 +329,30 @@ class HZZAnalysisCppProducer(Module):
             eta4l = self.worker.ZZsystem.Eta()
             phi4l = self.worker.ZZsystem.Phi()
             mass4l = self.worker.ZZsystem.M()
+            rapidity4l = self.worker.ZZsystem.Rapidity()
+            njets_pt30_eta4p7 = self.worker.njets_pt30_eta4p7
+            if self.worker.flag4e:
+                mass4e = mass4l
+            if self.worker.flag2e2mu:
+                mass4e = mass4l
+            if self.worker.flag4mu:
+                mass4mu = mass4l
             if self.worker.isFSR==False:
                 pT4l = self.worker.ZZsystemnofsr.Pt()
                 eta4l = self.worker.ZZsystemnofsr.Eta()
                 phi4l = self.worker.ZZsystemnofsr.Phi()
                 mass4l = self.worker.ZZsystemnofsr.M()
             self.out.fillBranch("mass4l",mass4l)
+            self.out.fillBranch("GENmass4l",GENmass4l)
+            self.out.fillBranch("mass4e",mass4e)
+            self.out.fillBranch("mass2e2mu",mass2e2mu)
+            self.out.fillBranch("mass4mu",mass4mu)
             self.out.fillBranch("pT4l",pT4l)
+            self.out.fillBranch("GENpT4l",GENpT4l)
+            self.out.fillBranch("rapidity4l",rapidity4l)
+            self.out.fillBranch("GENrapidity4l",GENrapidity4l)
+            self.out.fillBranch("njets_pt30_eta4p7",njets_pt30_eta4p7)
+            self.out.fillBranch("GENnjets_pt30_eta4p7",GENnjets_pt30_eta4p7)
             self.out.fillBranch("eta4l",eta4l)
             self.out.fillBranch("phi4l",phi4l)
             self.out.fillBranch("massZ1",massZ1)
@@ -352,6 +395,9 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("pTj2",pTj2)
             self.out.fillBranch("etaj2",etaj2)
             self.out.fillBranch("phij2",phij2)
+            self.out.fillBranch("pileupWeight",pileupWeight)
+            self.out.fillBranch("dataMCWeight_new",dataMCWeight_new)
+            self.out.fillBranch("prefiringWeight",prefiringWeight)
 
             # self.out.fillBranch("nElectron_Fsr", len(electrons))
             # self.out.fillBranch("nMuon_Fsr", len(muons))

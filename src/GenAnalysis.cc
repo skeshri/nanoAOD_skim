@@ -4,7 +4,7 @@
 #include <vector>
 int GenAnalysis::motherID(int Genidx){
     int ID=0;
-    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=21 || GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]>6){
+    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])!=21 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])>6){
         if(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=GenPart_pdgId[Genidx]){
             ID=GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]; return ID;
         }
@@ -16,7 +16,7 @@ int GenAnalysis::motherID(int Genidx){
 }
 int GenAnalysis::mothermotherID(int Genidx){
     int ID=0;
-    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=21 || GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]>6){
+    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])!=21 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])>6){
         if(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=GenPart_pdgId[Genidx] && GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]!=GenPart_pdgId[Genidx] && GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]!=GenPart_pdgId[GenPart_genPartIdxMother[Genidx]] ){
             ID=GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]; return ID;
         }
@@ -32,7 +32,7 @@ void GenAnalysis::SetGenVariables(){
     TLorentzVector LS3_Z1_1, LS3_Z1_2, LS3_Z2_1, LS3_Z2_2, GEN_HVec;
     int GENmom1_id=-999, GENmom2_id=-999;
     int counter_initParticle=0;
-    for(unsigned int genpidx; genpidx<nGenPart; genpidx++){
+    for(unsigned int genpidx=0; genpidx<nGenPart; genpidx++){
         if(GenPart_status[genpidx]==21){
             counter_initParticle++;
             if (counter_initParticle==1){
