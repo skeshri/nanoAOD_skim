@@ -45,7 +45,9 @@ class GenAnalysis{
       float GENpT4lj, GENpT4ljj, GENmass4lj, GENmass4ljj;
       float leadingPtCut,subleadingPtCut;
       bool passedFiducialSelection;
-      int GENnjets_pt30_eta4p7,GENnjets_pt30_eta2p5;
+      int GENnjets_pt30_eta4p7,GENnjets_pt30_eta2p5,nGENLeptons;
+      int GENZ_DaughtersId[2];
+      int nVECZ;
       unsigned int GENlep_Hindex[4];
       void SetGenParts(float GenPart_pt_, float GenPart_eta_,float GenPart_phi_,float GenPart_mass_,int GenPart_pdgId_,int GenPart_status_,int GenPart_statusFlags_,int GenPart_genPartIdxMother_){
         GenPart_pt.push_back(GenPart_pt_);
@@ -70,8 +72,9 @@ class GenAnalysis{
       }
       void Initialize(){
         passedFiducialSelection=false;
-        nGenPart = 0; nGenJet = 0; GENMH = 0; GENmassZZ= 0; GENpTZZ= 0; GENnjets_pt30_eta4p7=0;GENnjets_pt30_eta2p5=0;
-        GENpt_leadingjet_pt30_eta4p7=0; GENpt_leadingjet_pt30_eta2p5=0;
+        nGenPart = 0; nGENLeptons=0;nGenJet = 0; GENMH = 0; GENmassZZ= 0; GENpTZZ= 0; GENnjets_pt30_eta4p7=0;GENnjets_pt30_eta2p5=0;
+        GENpt_leadingjet_pt30_eta4p7=0; GENpt_leadingjet_pt30_eta2p5=0;nVECZ=0;
+        GENZ_DaughtersId[0]=0;GENZ_DaughtersId[1]=0;
         GenPart_pt.clear(); GenPart_eta.clear(); GenPart_phi.clear(); GenPart_mass.clear(); GenPart_pdgId.clear();GenPart_status.clear();GenPart_statusFlags.clear(); GenPart_genPartIdxMother.clear();
         GenJet_pt.clear(); GenJet_eta.clear(); GenJet_phi.clear(); GenJet_mass.clear();
         GENZ_phi.clear(); GENZ_pt.clear(); GENZ_eta.clear(); GENZ_mass.clear();GENZ_MomId.clear();

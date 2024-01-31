@@ -27,7 +27,6 @@ int GenAnalysis::mothermotherID(int Genidx){
     return 2212;
 }
 void GenAnalysis::SetGenVariables(){
-    int nGENLeptons=0;
     TLorentzVector GENmom1, GENmom2;
     TLorentzVector LS3_Z1_1, LS3_Z1_2, LS3_Z2_1, LS3_Z2_2, GEN_HVec;
     int GENmom1_id=-999, GENmom2_id=-999;
@@ -114,6 +113,7 @@ void GenAnalysis::SetGenVariables(){
             GENZ_phi.push_back(GenPart_phi[genpidx]);
             GENZ_mass.push_back(GenPart_mass[genpidx]);
             GENZ_MomId.push_back(motherID(genpidx));
+            nVECZ++;
         }
     }
     if (GENlep_pt.size()>=4) {
@@ -224,6 +224,8 @@ void GenAnalysis::SetGenVariables(){
                 if(deltaRll<=0.02) { passedDeltaR = false; break; }
             }
         }
+        GENZ_DaughtersId[0] = abs(GENlep_id[GENlep_Hindex[0]]);
+        GENZ_DaughtersId[1] = abs(GENlep_id[GENlep_Hindex[2]]);//Fix me: maybe not correct!
         if(passedMassOS==false || passedElMuDeltaR==false || passedDeltaR==false) passedFiducialSelection=false;
          if (passedFiducialSelection) {
             // DO GEN JETS

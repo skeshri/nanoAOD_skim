@@ -37,10 +37,11 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
         self.year = year
+        self.isMC = isMC
         self.genworker = ROOT.GenAnalysis()
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
-          self.worker = ROOT.H4LTools(self.year)
+          self.worker = ROOT.H4LTools(self.year,self.isMC)
           self.worker.InitializeElecut(cfg['Electron']['pTcut'],cfg['Electron']['Etacut'],cfg['Electron']['Sip3dcut'],cfg['Electron']['Loosedxycut'],cfg['Electron']['Loosedzcut'],
                                        cfg['Electron']['Isocut'],cfg['Electron']['BDTWP']['LowEta']['LowPT'],cfg['Electron']['BDTWP']['MedEta']['LowPT'],cfg['Electron']['BDTWP']['HighEta']['LowPT'],
                                        cfg['Electron']['BDTWP']['LowEta']['HighPT'],cfg['Electron']['BDTWP']['MedEta']['HighPT'],cfg['Electron']['BDTWP']['HighEta']['HighPT'])
@@ -53,7 +54,6 @@ class HZZAnalysisCppProducer(Module):
         self.passtrigEvts = 0
         self.passZZEvts = 0
         self.cfgFile = cfgFile
-        self.isMC = isMC
         self.worker.isFSR = isFSR
         pass
     def beginJob(self):
@@ -140,8 +140,23 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pileupWeight",  "F")
         self.out.branch("dataMCWeight_new",  "F")
         self.out.branch("prefiringWeight",  "F")
-
-
+        self.out.branch("passedTrig",  "O")
+        self.out.branch("passedFullSelection",  "O")
+        self.out.branch("passedZ4lSelection",  "O")
+        self.out.branch("passedZ4lZ1LSelection",  "O")
+        self.out.branch("passedZ4lZXCRSelection",  "O")
+        self.out.branch("passedZXCRSelection",  "O")
+        self.out.branch("passedFiducialSelection",  "O")
+        GENHlepNum = 4
+        GENZNum = 2
+        self.out.branch("GENlep_MomId",  "I", lenVar = "nGENLeptons")
+        self.out.branch("GENlep_MomMomId",  "I", lenVar = "nGENLeptons")
+        self.out.branch("GENZ_MomId",  "I", lenVar = "nVECZ")
+        self.out.branch("GENZ_DaughtersId",  "I", lenVar = "GENZNum")
+        self.out.branch("GENlep_Hindex",  "I", lenVar = "GENHlepNum")
+        self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
+        self.out.branch("GENlep_id",  "I", lenVar = "nGENLeptons")
+        self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron_Fsr")
@@ -198,8 +213,10 @@ class HZZAnalysisCppProducer(Module):
         mass4mu=0
         GENmass4l = -99
         GENpT4l = -99
+        nVECZ = 2
         GENrapidity4l = -99
         GENnjets_pt30_eta4p7 = -1
+        nGENLeptons = 0
         passedTrig = PassTrig(event, self.cfgFile)
         if (passedTrig==True):
             self.passtrigEvts += 1
@@ -219,6 +236,8 @@ class HZZAnalysisCppProducer(Module):
                 self.genworker.SetGenParts(xg.pt,xg.eta,xg.phi,xg.mass,xg.pdgId,xg.status,xg.statusFlags,xg.genPartIdxMother)
             for xm in muons:
                 self.worker.SetMuonsGen(xm.genPartIdx)
+            for xe in electrons:
+                self.worker.SetElectronsGen(xe.genPartIdx)
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
@@ -240,9 +259,10 @@ class HZZAnalysisCppProducer(Module):
             GENpT4l = self.genworker.GENpT4l
             GENrapidity4l = self.genworker.GENrapidity4l
             GENnjets_pt30_eta4p7 = self.genworker.GENnjets_pt30_eta4p7
+            nGENLeptons = self.genworker.nGENLeptons
         
         passedFiducialSelection = self.genworker.passedFiducialSelection
-
+     
         Electron_Fsr_pt_vec = self.worker.ElectronFsrPt()
         Electron_Fsr_eta_vec = self.worker.ElectronFsrEta()
         Electron_Fsr_phi_vec = self.worker.ElectronFsrPhi()
@@ -250,13 +270,14 @@ class HZZAnalysisCppProducer(Module):
         Muon_Fsr_eta_vec = self.worker.MuonFsrEta()
         Muon_Fsr_phi_vec = self.worker.MuonFsrPhi()
 
-
+        
         Electron_Fsr_pt = []
         Electron_Fsr_eta = []
         Electron_Fsr_phi = []
         Muon_Fsr_pt = []
         Muon_Fsr_eta = []
         Muon_Fsr_phi = []
+        
         if len(Electron_Fsr_pt_vec)>0:
             for i in range(len(Electron_Fsr_pt_vec)):
                 Electron_Fsr_pt.append(Electron_Fsr_pt_vec[i])
@@ -267,9 +288,53 @@ class HZZAnalysisCppProducer(Module):
                 Muon_Fsr_pt.append(Muon_Fsr_pt_vec[i])
                 Muon_Fsr_eta.append(Muon_Fsr_eta_vec[i])
                 Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])
+        GENlep_id = []
+        GENlep_Hindex = []
+        GENZ_DaughtersId = []
+        GENZ_MomId = []
+        GENlep_MomId = []
+        GENlep_MomMomId = []
+        if isMC:
+            GENlep_id_vec = self.genworker.GENlep_id
+            if len(GENlep_id_vec)>0:
+                for i in range(len(GENlep_id_vec)):
+                    GENlep_id.append(GENlep_id_vec[i])
+            GENlep_Hindex_vec = self.genworker.GENlep_Hindex
+            if len(GENlep_Hindex_vec)>0:
+                for i in range(len(GENlep_Hindex_vec)):
+                    GENlep_Hindex.append(GENlep_Hindex_vec[i])   
+            GENZ_DaughtersId_vec = self.genworker.GENZ_DaughtersId
+            if len(GENZ_DaughtersId_vec)>0:
+                for i in range(len(GENZ_DaughtersId_vec)):
+                    GENZ_DaughtersId.append(GENZ_DaughtersId_vec[i])
+            nVECZ = self.genworker.nVECZ
+            GENZ_MomId_vec = self.genworker.GENZ_MomId
+            if len(GENZ_MomId_vec)>0:
+                for i in range(len(GENZ_MomId_vec)):
+                    GENZ_MomId.append(GENZ_MomId_vec[i])
+            GENlep_MomId_vec = self.genworker.GENlep_MomId
+            if len(GENlep_MomId_vec)>0:
+                for i in range(len(GENlep_MomId_vec)):
+                    GENlep_MomId.append(GENlep_MomId_vec[i])
+            GENlep_MomMomId_vec = self.genworker.GENlep_MomMomId
+            if len(GENlep_MomMomId_vec)>0:
+                for i in range(len(GENlep_MomMomId_vec)):
+                    GENlep_MomMomId.append(GENlep_MomMomId_vec[i])
 
+            
         foundZZCandidate = self.worker.ZZSelection()
-
+        Lepointer = self.worker.Lepointer
+        lep_Hindex = []
+        lep_Hindex_vec = self.worker.lep_Hindex
+        if len(lep_Hindex_vec)>0:
+            for i in range(len(lep_Hindex_vec)):
+                lep_Hindex.append(lep_Hindex_vec[i])
+        lep_genindex = []
+        if isMC:
+            lep_genindex_vec = self.worker.lep_genindex
+            if len(lep_genindex_vec)>0:
+                for i in range(len(lep_genindex_vec)):
+                    lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             keepIt = True
             self.passZZEvts += 1
@@ -369,6 +434,13 @@ class HZZAnalysisCppProducer(Module):
             self.out.fillBranch("D_int",D_int)
             self.out.fillBranch("D_L1",D_L1)
             self.out.fillBranch("D_L1Zg",D_L1Zg)
+            self.out.fillBranch("passedTrig",  passedTrig)
+            self.out.fillBranch("passedFullSelection",  passedFullSelection)
+            self.out.fillBranch("passedZ4lSelection", passedZ4lSelection)
+            self.out.fillBranch("passedZ4lZ1LSelection",  passedZ4lZ1LSelection)
+            self.out.fillBranch("passedZ4lZXCRSelection",  passedZ4lZXCRSelection)
+            self.out.fillBranch("passedZXCRSelection",  passedZXCRSelection)
+            self.out.fillBranch("passedFiducialSelection",  passedFiducialSelection)
 
             self.out.fillBranch("massL1",massL1)
             self.out.fillBranch("pTL1",pTL1)
@@ -401,7 +473,13 @@ class HZZAnalysisCppProducer(Module):
 
             # self.out.fillBranch("nElectron_Fsr", len(electrons))
             # self.out.fillBranch("nMuon_Fsr", len(muons))
-
+            
+            self.out.fillBranch("GENlep_id",GENlep_id)
+            self.out.fillBranch("GENlep_Hindex",GENlep_Hindex)
+            self.out.fillBranch("GENZ_DaughtersId",GENZ_DaughtersId)
+            self.out.fillBranch("GENZ_MomId",GENZ_MomId)
+            self.out.fillBranch("GENlep_MomId",GENlep_MomId)
+            self.out.fillBranch("GENlep_MomMomId",GENlep_MomMomId)
             self.out.fillBranch("Electron_Fsr_pt",Electron_Fsr_pt)
             self.out.fillBranch("Electron_Fsr_eta",Electron_Fsr_eta)
             self.out.fillBranch("Electron_Fsr_phi",Electron_Fsr_phi)
