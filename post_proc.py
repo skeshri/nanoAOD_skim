@@ -18,7 +18,7 @@ def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
-    parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
+    parser.add_argument("-n", "--entriesToRun", default=200, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     return parser.parse_args()
 
@@ -61,7 +61,15 @@ def main():
     # Determine the year and type (MC or Data)
     first_file = testfilelist[0]
     isMC = "/data/" not in first_file
-
+    
+    if "22" in first_file or "postEE" in first_file:
+        """UL2018 for identification of 2018 UL data and UL18 for identification of 2018 UL MC
+        """
+        year = 2018
+        cfgFile = "Input_2018.yml"
+        jsonFileName = "golden_Json/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt"
+        sfFileName = "DeepCSV_102XSF_V2.csv"
+        modulesToRun.extend([muonScaleRes2018()])
     if "UL18" in first_file or "UL2018" in first_file:
         """UL2018 for identification of 2018 UL data and UL18 for identification of 2018 UL MC
         """
@@ -95,7 +103,7 @@ def main():
         # btagSF = lambda: btagSFProducer("UL"+str(year), algo="deepjet",selectedWPs=['L','M','T','shape_corr'], sfFileName=sfFileName)
         btagSF = lambda: btagSFProducer(era = "UL"+str(year), algo = "deepcsv")
         puidSF = lambda: JetSFMaker("%s" % year)
-        modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), puidSF()])
+        modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])#, puidSF()
         # # modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), btagSF(), puidSF()])
 
         if year == 2018: modulesToRun.extend([puAutoWeight_2018()])
