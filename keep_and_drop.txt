@@ -28,6 +28,8 @@ keep GEN*
 keep njet*
 keep D_*
 keep lep*
+keep *Weight
+keep *Weight*
 # keep nPhoton
 # keep Photon*
 keep nElectron
