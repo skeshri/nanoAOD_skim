@@ -87,7 +87,7 @@ class GenAnalysis{
       void SetGenVariables();
       bool mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, unsigned int& L4, bool makeCuts);
 
-      
+
     private:
       std::vector<float> GenPart_pt;
       std::vector<float> GenPart_eta;
@@ -102,10 +102,11 @@ class GenAnalysis{
       std::vector<float> GenJet_eta;
       std::vector<float> GenJet_phi;
       std::vector<float> GenJet_mass;
-      
+
       unsigned nGenPart, nGenJet;
 };
 GenAnalysis::GenAnalysis(){
+  // FIXME: Add the values to the yaml file
     genIsoConeSizeEl=0.3; genIsoConeSizeMu=0.3;
     genIsoCutEl=0.35; genIsoCutMu=0.35;
     leadingPtCut=20;subleadingPtCut=10;
