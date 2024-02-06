@@ -403,13 +403,12 @@ class HZZAnalysisCppProducer(Module):
             etaL3, etaL4 = etaL4, etaL3
             phiL3, phiL4 = phiL4, phiL3
             massL3, massL4 = massL4, massL3
-
-
-        pT4l = self.worker.ZZsystem.Pt()
-        eta4l = self.worker.ZZsystem.Eta()
-        phi4l = self.worker.ZZsystem.Phi()
-        mass4l = self.worker.ZZsystem.M()
-        rapidity4l = self.worker.ZZsystem.Rapidity()
+        if passedFullSelection: 
+            pT4l = self.worker.ZZsystem.Pt()
+            eta4l = self.worker.ZZsystem.Eta()
+            phi4l = self.worker.ZZsystem.Phi()
+            mass4l = self.worker.ZZsystem.M()
+            rapidity4l = self.worker.ZZsystem.Rapidity()
         njets_pt30_eta4p7 = self.worker.njets_pt30_eta4p7
         if self.worker.flag4e:
             mass4e = mass4l
@@ -417,7 +416,7 @@ class HZZAnalysisCppProducer(Module):
             mass4e = mass4l
         if self.worker.flag4mu:
             mass4mu = mass4l
-        if self.worker.isFSR==False:
+        if (self.worker.isFSR==False & passedFullSelection):
             pT4l = self.worker.ZZsystemnofsr.Pt()
             eta4l = self.worker.ZZsystemnofsr.Eta()
             phi4l = self.worker.ZZsystemnofsr.Phi()
