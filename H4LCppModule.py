@@ -4,11 +4,12 @@ import ROOT
 import yaml
 import os
 from Helper import *
+from METFilters import passFilters
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile,isMC,isFSR):
+    def __init__(self,year,cfgFile,isMC,isFSR, DEBUG=False):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -25,22 +26,12 @@ class HZZAnalysisCppProducer(Module):
                 ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
                 ROOT.gROOT.ProcessLine(
                     ".L %s/interface/H4LTools.h" % base)
-        if "/RoccoR_cc.so" not in ROOT.gSystem.GetLibraries():
-            base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
-            if base:
-                ROOT.gROOT.ProcessLine(
-                    ".L %s/src/RoccoR.cc+O" % base)
-            else:
-                base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools"
-                ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
-                ROOT.gROOT.ProcessLine(
-                    ".L %s/interface/RoccoR.h" % base)
         self.year = year
-	self.isMC = isMC
+        self.isMC = isMC
+        self.DEBUG = DEBUG
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
-          RoccoRPath = cfg['RoccoRPath']
-          self.worker = ROOT.H4LTools(self.year, RoccoRPath)
+          self.worker = ROOT.H4LTools(self.year, self.DEBUG)
           self.worker.InitializeElecut(cfg['Electron']['pTcut'],cfg['Electron']['Etacut'],cfg['Electron']['Sip3dcut'],cfg['Electron']['Loosedxycut'],cfg['Electron']['Loosedzcut'],
                                        cfg['Electron']['Isocut'],cfg['Electron']['BDTWP']['LowEta']['LowPT'],cfg['Electron']['BDTWP']['MedEta']['LowPT'],cfg['Electron']['BDTWP']['HighEta']['LowPT'],
                                        cfg['Electron']['BDTWP']['LowEta']['HighPT'],cfg['Electron']['BDTWP']['MedEta']['HighPT'],cfg['Electron']['BDTWP']['HighEta']['HighPT'])
@@ -51,23 +42,27 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
           self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
 
-        self.passtrigEvts = 0
-        self.noCutsEvts = 0
-        self.passZZ4lEvts = 0
-        self.passZZ2l2qEvts = 0
-        self.passZZ2l2nuEvts = 0
-        MET_sumEt = 0
         self.cfgFile = cfgFile
         self.isMC = isMC
         self.worker.isFSR = isFSR
+
+        # Variables to keep track of the cut flow
+        self.passAllEvts = 0
+        self.passtrigEvts = 0
+        self.passMETFilters = 0
+        self.passZZ4lEvts = 0
+        self.passZZ2l2qEvts = 0
+        self.passZZ2l2nuEvts = 0
         pass
+
     def beginJob(self):
         pass
 
     def endJob(self):
         print("\n========== Print Cut flow table  ====================\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
+        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
         print("{:27}:{:7} {}".format("Pass4eCut: ", str(self.worker.cut4e), " Events"))
         print("Pass4eGhostRemoval: "+str(self.worker.cutghost4e)+" Events")
         print("Pass4eLepPtCut: "+str(self.worker.cutLepPt4e)+" Events")
@@ -89,8 +84,9 @@ class HZZAnalysisCppProducer(Module):
         print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZ4lEvts), " Events"))
 
         print("\n==================   2l2q    ==============\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
+        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
         print("{:27}:{:7} {}".format("Pass2eCut: ", str(self.worker.cut2e), " Events"))
         print("{:27}:{:7} {}".format("Pass2muCut: ", str(self.worker.cut2mu), " Events"))
         print("{:27}:{:7} {}".format("Pass2lCut: ", str(self.worker.cut2l), " Events"))
@@ -105,8 +101,9 @@ class HZZAnalysisCppProducer(Module):
 
 
         print("\n==================   2l2nu    ==============\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.noCutsEvts), " Events"))
+        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
+        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
         print("{:27}:{:7} {}".format("Pass2e_metCut: ", str(self.worker.cut2e_met), " Events"))
         print("{:27}:{:7} {}".format("Pass2mu_metCut: ", str(self.worker.cut2mu_met), " Events"))
         print("{:27}:{:7} {}".format("Pass2l_metCut: ", str(self.worker.cut2l_met), " Events"))
@@ -124,37 +121,28 @@ class HZZAnalysisCppProducer(Module):
         self.initReaders(inputTree)  # initReaders must be called in beginFile
         self.out = wrappedOutputTree
 
-        # common branches for 4l, 2l2q, 2l2nu channels
         # boolean branch for 4l, 2l2q, 2l2nu channels
         self.out.branch("passZZ4lSelection",  "O")
         self.out.branch("passZZ2l2qSelection",  "O")
         self.out.branch("passZZ2l2nuSelection",  "O")
-        self.out.branch("mass4l",  "F")
-        self.out.branch("pT4l",  "F")
-        self.out.branch("eta4l",  "F")
-        self.out.branch("phi4l",  "F")
+
+
+        # common branches for 4l, 2l2q, 2l2nu channels
         self.out.branch("massZ1",  "F")
         self.out.branch("pTZ1",  "F")
         self.out.branch("etaZ1",  "F")
         self.out.branch("phiZ1",  "F")
+
         self.out.branch("massZ2",  "F")
         self.out.branch("pTZ2",  "F")
         self.out.branch("etaZ2",  "F")
         self.out.branch("phiZ2",  "F")
-        self.out.branch("massZ2_2j",  "F")
-        self.out.branch("phiZ2_2j",  "F")
-        self.out.branch("etaZ2_2j",  "F")
-        self.out.branch("pTZ2_2j",  "F")
-        self.out.branch("EneZ2_2j",  "F")
-        self.out.branch("phiZ2_met",  "F")
-        self.out.branch("pTZ2_met",  "F")
-        self.out.branch("EneZ2_met",  "F")
-        self.out.branch("D_CP",  "F")
-        self.out.branch("D_0m",  "F")
-        self.out.branch("D_0hp",  "F")
-        self.out.branch("D_int",  "F")
-        self.out.branch("D_L1",  "F")
-        self.out.branch("D_L1Zg",  "F")
+
+        # Branches for 4l channel
+        self.out.branch("mass4l",  "F")
+        self.out.branch("pT4l",  "F")
+        self.out.branch("eta4l",  "F")
+        self.out.branch("phi4l",  "F")
 
         self.out.branch("massL1",  "F")
         self.out.branch("pTL1",  "F")
@@ -172,16 +160,35 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pTL4",  "F")
         self.out.branch("etaL4",  "F")
         self.out.branch("phiL4",  "F")
+
+        self.out.branch("D_CP",  "F")
+        self.out.branch("D_0m",  "F")
+        self.out.branch("D_0hp",  "F")
+        self.out.branch("D_int",  "F")
+        self.out.branch("D_L1",  "F")
+        self.out.branch("D_L1Zg",  "F")
+
+        # Branches for 2l2q channel
+        self.out.branch("massZ2_2j",  "F")
+        self.out.branch("phiZ2_2j",  "F")
+        self.out.branch("etaZ2_2j",  "F")
+        self.out.branch("pTZ2_2j",  "F")
+        self.out.branch("EneZ2_2j",  "F")
+        self.out.branch("phiZ2_met",  "F")
+        self.out.branch("pTZ2_met",  "F")
+        self.out.branch("EneZ2_met",  "F")
+
         self.out.branch("mj1",  "F")
         self.out.branch("pTj1",  "F")
         self.out.branch("etaj1",  "F")
         self.out.branch("phij1",  "F")
+
         self.out.branch("mj2",  "F")
         self.out.branch("pTj2",  "F")
         self.out.branch("etaj2",  "F")
         self.out.branch("phij2",  "F")
 
-
+        # FSR branches for leptons
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron_Fsr")
@@ -205,6 +212,8 @@ class HZZAnalysisCppProducer(Module):
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail,
         go to next event)"""
+        if self.DEBUG:
+            print("======       Inside analyze function     ==========")
         # do this check at every event, as other modules might have read
         # further branches
         #if event._tree._ttreereaderversion > self._ttreereaderversion:
@@ -229,7 +238,7 @@ class HZZAnalysisCppProducer(Module):
         passedZXCRSelection=False
         passedFiducialSelection=False
         nZXCRFailedLeptons=0
-        self.noCutsEvts += 1
+        self.passAllEvts += 1
 
         massZ2_2j = -999.
         phiZ2_2j = -999.
@@ -292,6 +301,10 @@ class HZZAnalysisCppProducer(Module):
             self.passtrigEvts += 1
         else:
             return keepIt
+        if passFilters(event, int(self.year)):
+            self.passMETFilters += 1
+        else:
+            return keepIt
         electrons = Collection(event, "Electron")
         #electrons = Object(event, "Electron")
         muons = Collection(event, "Muon")
@@ -310,10 +323,14 @@ class HZZAnalysisCppProducer(Module):
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
+            if self.DEBUG:
+                print("Electrons: pT, eta: {}, {}".format(xe.pt, xe.eta))
         for xm in muons:
-            self.worker.SetMuons(xm.pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
+            self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all)
+            if self.DEBUG:
+                print("Muons: pT, eta: {}, {}".format(xm.corrected_pt, xm.eta))
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
         for xj in jets:
@@ -322,7 +339,6 @@ class HZZAnalysisCppProducer(Module):
         for xj in FatJets:
             self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
         self.worker.SetMET(met.pt,met.phi,met.sumEt)
-        self.worker.MuonPtCorrection(self.isMC)
         self.worker.LeptonSelection()
         foundZZCandidate_4l = False    # for 4l
         passZZ4lSelection = False
@@ -330,7 +346,7 @@ class HZZAnalysisCppProducer(Module):
         passZZ2l2qSelection = False
         foundZZCandidate_2l2nu = False # for 2l2nu
         passZZ2l2nuSelection = False
-	
+
 	#print("=="*51)
         foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
         foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
@@ -354,7 +370,7 @@ class HZZAnalysisCppProducer(Module):
         ##if (foundZZCandidate_2l2q and foundZZCandidate_2l2nu ):
         #    #print("both 2l2q and 2l2nu passed the MET selection")
         #    #exit()
-        
+
 
         if (foundZZCandidate_2l2q):
             keepIt = True
@@ -370,7 +386,7 @@ class HZZAnalysisCppProducer(Module):
             etaZ2_2j = self.worker.Z2_2j.Eta()
             pTZ2_2j = self.worker.Z2_2j.Pt()
             EneZ2_2j = self.worker.Z2_2j.E()
-        
+
         if (foundZZCandidate_2l2nu):
             keepIt = True
             passZZ2l2nuSelection = True
@@ -384,7 +400,7 @@ class HZZAnalysisCppProducer(Module):
         #self.out.fillBranch("phiZ2_met",phiZ2_met)
         #self.out.fillBranch("pTZ2_met",pTZ2_met)
         #self.out.fillBranch("EneZ2_met",EneZ2_met)
-       
+
         if (foundZZCandidate_4l or foundZZCandidate_2l2q or foundZZCandidate_2l2nu):
             #print("inside loop 4l or 2l2q")
             #print(passZZ2l2qSelection)
@@ -458,10 +474,20 @@ class HZZAnalysisCppProducer(Module):
                 phi4l = self.worker.ZZsystemnofsr.Phi()
                 mass4l = self.worker.ZZsystemnofsr.M()
 
+        if self.DEBUG:
+            print("(found candidates: 2l2q, 2l2nu, 4l): ({:1}, {:1}, {:1}), pTL1: {:7.3f}, pTL2: {:7.3f}, pTZ1: {:7.3f}, pTZ2: {:7.3f}, pTZ2_2j: {:7.3f}, pTZ2_met: {:7.3f}".format(foundZZCandidate_2l2q, foundZZCandidate_2l2nu, foundZZCandidate_4l, pTL1, pTL2, pTZ1, pTZ2, pTZ2_2j, pTZ2_met))
+            if (foundZZCandidate_2l2q):
+                print("==> pTL1: {}, \t pTL2: {}".format(pTL1, pTL2))
+
+        # if (foundZZCandidate_2l2q or foundZZCandidate_2l2nu or foundZZCandidate_4l):
+            # print("(found candidates: 2l2q, 2l2nu, 4l): ({:1}, {:1}, {:1}), pTL1: {:7.3f}, pTL2: {:7.3f}, pTZ1: {:7.3f}, pTZ2: {:7.3f}, pTZ2_2j: {:7.3f}, pTZ2_met: {:7.3f}".format(foundZZCandidate_2l2q, foundZZCandidate_2l2nu, foundZZCandidate_4l, pTL1, pTL2, pTZ1, pTZ2, pTZ2_2j, pTZ2_met))
+
+        # if foundZZCandidate_2l2q == True:
+            # exit()
         self.out.fillBranch("phiZ2_met",phiZ2_met)
         self.out.fillBranch("pTZ2_met",pTZ2_met)
         self.out.fillBranch("EneZ2_met",EneZ2_met)
-        
+
         self.out.fillBranch("massZ2_2j",massZ2_2j)
         self.out.fillBranch("phiZ2_2j",phiZ2_2j)
         self.out.fillBranch("etaZ2_2j",etaZ2_2j)
@@ -520,8 +546,6 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("passZZ2l2nuSelection",passZZ2l2nuSelection)
 
         return keepIt
-
-
 
 # define modules using the syntax 'name = lambda : constructor' to avoid
 # having them loaded when not needed
