@@ -140,6 +140,8 @@ void GenAnalysis::SetGenVariables(){
     int nFiducialPtLead=0;
     int nFiducialPtSublead=0;
 
+    int nGENe, nGENmu;
+    nGENe=0; nGENmu=0;
     for (unsigned int i=0; i<GENlep_id.size(); ++i) {
         TLorentzVector thisLep;
         thisLep.SetPtEtaPhiM(GENlep_pt[i],GENlep_eta[i],GENlep_phi[i],GENlep_mass[i]);
@@ -151,7 +153,12 @@ void GenAnalysis::SetGenVariables(){
             if (thisLep.Pt()>leadingPtCut) nFiducialPtLead++;
             if (thisLep.Pt()>subleadingPtCut) nFiducialPtSublead++;
         }
+        if (abs(GENlep_id[i]) == 13) nGENmu++;
+        if (abs(GENlep_id[i]) == 11) nGENe++;
     }
+    if(nGENmu>3) {flag4mu++;nGEN4mu++;}
+    if(nGENe>3) {flag4e++;nGEN4e++;}
+    if((nGENe>1)&&(nGENmu>1)) {flag2e2mu++;nGEN2e2mu++;}
     if (nFiducialLeptons>=4 && nFiducialPtLead>=1 && nFiducialPtSublead>=2 ){
         // START FIDUCIAL EVENT TOPOLOGY CUTS
         unsigned int L1=99; unsigned int L2=99; unsigned int L3=99; unsigned int L4=99;
@@ -160,7 +167,30 @@ void GenAnalysis::SetGenVariables(){
         GENpT4lj = -1.0; GENpT4ljj=-1.0; GENmass4lj = -1.0; GENmass4ljj=-1.0;
 
         passedFiducialSelection = mZ1_mZ2(L1, L2, L3, L4, true);
-
+        if(flag2e2mu){            
+            if(flagpassZ1){
+                nGEN2e2mupassZ1++;
+                if(flagpassFid){
+                    nGEN2e2mupassFid++;
+                }
+            }
+        }
+        if(flag4e){
+            if(flagpassZ1){
+                nGEN4epassZ1++;
+                if(flagpassFid){
+                    nGEN4epassFid++;
+                }
+            }
+        }
+        if(flag4mu){
+            if(flagpassZ1){
+                nGEN4mupassZ1++;
+                if(flagpassFid){
+                    nGEN4mupassFid++;
+                }
+            }
+        }
         GENlep_Hindex[0] = L1; GENlep_Hindex[1] = L2; GENlep_Hindex[2] = L3; GENlep_Hindex[3] = L4;
         if (passedFiducialSelection) {
 
@@ -173,11 +203,11 @@ void GenAnalysis::SetGenVariables(){
 
             GENmass4l = (LS3_Z1_1+LS3_Z1_2+LS3_Z2_1+LS3_Z2_2).M();
 
-            if (abs(GENlep_id[L1])==11 && abs(GENlep_id[L3])==11) {GENmass4e = GENmass4l;};
-            if (abs(GENlep_id[L1])==13 && abs(GENlep_id[L3])==13) {GENmass4mu = GENmass4l;};
+            if (abs(GENlep_id[L1])==11 && abs(GENlep_id[L3])==11) {GENmass4e = GENmass4l;}
+            if (abs(GENlep_id[L1])==13 && abs(GENlep_id[L3])==13) {GENmass4mu = GENmass4l;}
             if ( (abs(GENlep_id[L1])==11 || abs(GENlep_id[L1])==13) &&
                 (abs(GENlep_id[L3])==11 || abs(GENlep_id[L3])==13) &&
-                (abs(GENlep_id[L1])!=abs(GENlep_id[L3]) ) ) {GENmass2e2mu = GENmass4l;};
+                (abs(GENlep_id[L1])!=abs(GENlep_id[L3]) ) ) {GENmass2e2mu = GENmass4l;}
             GENpT4l = (LS3_Z1_1+LS3_Z1_2+LS3_Z2_1+LS3_Z2_2).Pt();
             GENeta4l = (LS3_Z1_1+LS3_Z1_2+LS3_Z2_1+LS3_Z2_2).Eta();
             GENphi4l = (LS3_Z1_1+LS3_Z1_2+LS3_Z2_1+LS3_Z2_2).Phi();
@@ -326,6 +356,7 @@ bool GenAnalysis::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, 
 
     if(ml1l2.M()>40 && ml1l2.M()<120 && findZ1) passZ1 = true;
     if (!makeCuts) passZ1 = true;
+    if (makeCuts && passZ1) flagpassZ1++;
 
     double pTL34 = 0.0; bool findZ2 = false;
     //bool m4lwindow=false; double window_lo=70.0; double window_hi=140.0;
@@ -371,7 +402,7 @@ bool GenAnalysis::mZ1_mZ2(unsigned int& L1, unsigned int& L2, unsigned int& L3, 
     unsigned int tmp_;
     if(GENlep_pt[L1]<GENlep_pt[L2])    {tmp_=L1;    L1=L2;    L2=tmp_;}
     if(GENlep_pt[L3]<GENlep_pt[L4])    {tmp_=L3;    L3=L4;    L4=tmp_;}
-
+    if(passZ1 && findZ2 && makeCuts) flagpassFid++;
     if(passZ1 && findZ2) return true;
     else return false;
 

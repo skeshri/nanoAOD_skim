@@ -49,6 +49,8 @@ class GenAnalysis{
       int GENZ_DaughtersId[2];
       int nVECZ;
       unsigned int GENlep_Hindex[4];
+      int flag4e, flag4mu, flag2e2mu,flagpassZ1,flagpassFid;
+      int nGEN4e, nGEN4mu, nGEN2e2mu,nGEN4epassZ1,nGEN4epassFid,nGEN4mupassZ1,nGEN4mupassFid, nGEN2e2mupTEtaisocuts,nGEN2e2mupassZ1,nGEN2e2mupassFid;
       void SetGenParts(float GenPart_pt_, float GenPart_eta_,float GenPart_phi_,float GenPart_mass_,int GenPart_pdgId_,int GenPart_status_,int GenPart_statusFlags_,int GenPart_genPartIdxMother_){
         GenPart_pt.push_back(GenPart_pt_);
         GenPart_eta.push_back(GenPart_eta_);
@@ -73,7 +75,8 @@ class GenAnalysis{
       void Initialize(){
         passedFiducialSelection=false;
         nGenPart = 0; nGENLeptons=0;nGenJet = 0; GENMH = 0; GENmassZZ= 0; GENpTZZ= 0; GENnjets_pt30_eta4p7=0;GENnjets_pt30_eta2p5=0;
-        GENpt_leadingjet_pt30_eta4p7=0; GENpt_leadingjet_pt30_eta2p5=0;nVECZ=0;
+        GENpt_leadingjet_pt30_eta4p7=0; GENpt_leadingjet_pt30_eta2p5=0;nVECZ=0;GENmass4l=-99;GENmass4e=-99;GENmass4mu=-99; GENmass2e2mu=-99;
+        GENmassZ1=0;GENmassZ2=0;GENpT4l=0;GENeta4l=-99;GENrapidity4l=-99;GENphi4l=-99;
         GENZ_DaughtersId[0]=0;GENZ_DaughtersId[1]=0;
         GenPart_pt.clear(); GenPart_eta.clear(); GenPart_phi.clear(); GenPart_mass.clear(); GenPart_pdgId.clear();GenPart_status.clear();GenPart_statusFlags.clear(); GenPart_genPartIdxMother.clear();
         GenJet_pt.clear(); GenJet_eta.clear(); GenJet_phi.clear(); GenJet_mass.clear();
@@ -81,6 +84,8 @@ class GenAnalysis{
         GENH_phi.clear(); GENH_pt.clear(); GENH_eta.clear(); GENH_mass.clear();
         GENjet_pt.clear();GENjet_eta.clear();GENjet_phi.clear();GENjet_mass.clear();
         GENlep_eta.clear();GENlep_pt.clear();GENlep_phi.clear();GENlep_mass.clear();GENlep_id.clear();GENlep_status.clear();GENlep_MomMomId.clear();GENlep_MomId.clear();GENlep_RelIso.clear();
+        flag4e=0; flag4mu=0; flag2e2mu=0;flagpassZ1=0;flagpassFid=0;
+        
       }
       int motherID(int Genidx);
       int mothermotherID(int Genidx);
@@ -110,5 +115,6 @@ GenAnalysis::GenAnalysis(){
     genIsoConeSizeEl=0.3; genIsoConeSizeMu=0.3;
     genIsoCutEl=0.35; genIsoCutMu=0.35;
     leadingPtCut=20;subleadingPtCut=10;
-}
+    nGEN4e=0; nGEN4mu=0; nGEN2e2mu=0;nGEN4epassZ1=0;nGEN4epassFid=0;nGEN4mupassZ1=0;nGEN4mupassFid=0;nGEN2e2mupTEtaisocuts=0;nGEN2e2mupassZ1=0;nGEN2e2mupassFid=0;
+} 
 #endif

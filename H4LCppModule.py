@@ -80,6 +80,16 @@ class HZZAnalysisCppProducer(Module):
         print("PassmZ1mZ2Cut_2e2mu: "+str(self.worker.cutZZ2e2mu)+" Events")
         print("Passm4l_105_160_Cut_2e2mu: "+str(self.worker.cutm4l2e2mu)+" Events")
         print("PassZZSelection: "+str(self.passZZEvts)+" Events")
+        if self.isMC:
+            print("PassGEN4eCut: "+str(self.genworker.nGEN4e)+" Events")
+            print("PassGEN4eZ1Cut: "+str(self.genworker.nGEN4epassZ1)+" Events")
+            print("PassGEN4efidCut: "+str(self.genworker.nGEN4epassFid)+" Events")
+            print("PassGEN2e2muCut: "+str(self.genworker.nGEN2e2mu)+" Events")
+            print("PassGEN2e2muZ1Cut: "+str(self.genworker.nGEN2e2mupassZ1)+" Events")
+            print("PassGEN2e2mufidCut: "+str(self.genworker.nGEN2e2mupassFid)+" Events")
+            print("PassGEN4muCut: "+str(self.genworker.nGEN4mu)+" Events")
+            print("PassGEN4muZ1Cut: "+str(self.genworker.nGEN4mupassZ1)+" Events")
+            print("PassGEN4mufidCut: "+str(self.genworker.nGEN4mupassFid)+" Events")
         pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):

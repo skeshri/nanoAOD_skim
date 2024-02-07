@@ -253,10 +253,30 @@ class H4LTools {
       std::vector<int> TightElelep_index;
       std::vector<int> TightMulep_index;
       int lep_Hindex[4];
+      TLorentzVector Z1;
+      TLorentzVector Z1nofsr;
+      TLorentzVector Z2;
+      TLorentzVector Z2nofsr;
+      TLorentzVector ZZsystem;
+      TLorentzVector ZZsystemnofsr;
       
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
       void Initialize(){
+        looseEle.clear();
+        looseMu.clear();
+        bestEle.clear();
+        bestMu.clear();
+        tighteleforjetidx.clear();
+        tightmuforjetidx.clear();
+        Electronindex.clear();
+        Muonindex.clear();
+        AllEid.clear();
+        AllMuid.clear();
+        Elelist.clear();
+        Mulist.clear();
+        ElelistFsr.clear();
+        MulistFsr.clear();
         Electron_pt.clear();Electron_phi.clear();Electron_eta.clear();Electron_mass.clear();Electron_dxy.clear();Electron_dz.clear();Electron_sip3d.clear();
         Electron_mvaFall17V2Iso.clear();Electron_pdgId.clear();Electron_genPartIdx.clear();Electron_pfRelIso03_all.clear();
         Muon_pt.clear();Muon_phi.clear();Muon_eta.clear();Muon_mass.clear();Muon_dxy.clear();Muon_dz.clear();Muon_sip3d.clear();Muon_ptErr.clear();Muon_pfRelIso03_all.clear();
@@ -282,7 +302,12 @@ class H4LTools {
         looseEle.clear(); looseMu.clear(); bestEle.clear(); bestMu.clear();  tighteleforjetidx.clear();  tightmuforjetidx.clear(); 
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
         Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); TightEleindex.clear(); TightMuindex.clear();
-        
+        Z1.SetPtEtaPhiM(0,0,0,0);
+        Z1nofsr.SetPtEtaPhiM(0,0,0,0);
+        Z2.SetPtEtaPhiM(0,0,0,0);
+        Z2nofsr.SetPtEtaPhiM(0,0,0,0);
+        ZZsystem.SetPtEtaPhiM(0,0,0,0);
+        ZZsystemnofsr.SetPtEtaPhiM(0,0,0,0);
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0;
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0;
         Lepointer = 0; 
@@ -306,12 +331,6 @@ class H4LTools {
       TSpline *spline_L1Zgs;
       bool findZCandidate();
       bool ZZSelection();
-      TLorentzVector Z1;
-      TLorentzVector Z1nofsr;
-      TLorentzVector Z2;
-      TLorentzVector Z2nofsr;
-      TLorentzVector ZZsystem;
-      TLorentzVector ZZsystemnofsr;
 
       Mela* mela;
       float me_0plus_JHU, me_qqZZ_MCFM, p0plus_m4l, bkg_m4l;
