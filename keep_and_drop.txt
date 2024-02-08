@@ -21,11 +21,15 @@ keep HLT*
 keep Flag*
 #
 #
+keep VBF*
+keep is*
+keep *Index
+keep boosted*
 keep *4l
 keep *Z1
 keep *Z2
-keep *Z2_2j
-keep *Z2_met
+keep *2j
+keep *met
 keep *L1
 keep *L2
 keep *L3
