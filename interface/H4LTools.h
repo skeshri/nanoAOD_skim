@@ -534,8 +534,7 @@ private:
 H4LTools::H4LTools(int year, bool DEBUG_Main)
 {
     DEBUG = DEBUG_Main;
-    std::cout << "year"
-              << " " << year << std::endl;
+    std::cout << "year" << " " << year << std::endl;
     mela = new Mela(13.0, 125.0, TVar::SILENT);
     mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);
     TFile *gConstant_g4 = TFile::Open("CoupleConstantsForMELA/gConstant_HZZ2e2mu_g4.root");
