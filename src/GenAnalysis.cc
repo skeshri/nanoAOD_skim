@@ -230,7 +230,7 @@ void GenAnalysis::SetGenVariables(){
         bool passedMassOS = true; bool passedElMuDeltaR = true; bool passedDeltaR = true;
         unsigned int N=GENlep_pt.size();
         for(unsigned int i = 0; i<N; i++) {
-            for(unsigned int j = i+1; j<=N; j++) {
+            for(unsigned int j = i+1; j<N; j++) {
 
                 // only consider the leptons from Z1 and Z2
                 if (!(i==L1 || i==L2 || i==L3 || i==L4)) continue;
