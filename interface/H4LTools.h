@@ -12,13 +12,13 @@
 
 class H4LTools {
     public:
-      H4LTools(int year);
+      H4LTools(int year, bool isMC_);
       float elePtcut, MuPtcut, eleEtacut, MuEtacut, elesip3dCut, Musip3dCut,Zmass,MZ1cut,MZcutup,MZcutdown,MZZcut,HiggscutUp,HiggscutDown;
       float eleLoosedxycut,eleLoosedzcut,MuLoosedxycut,MuLoosedzcut,MuTightdxycut,MuTightdzcut,MuTightTrackerLayercut,MuTightpTErrorcut,MuHighPtBound,eleIsocut,MuIsocut;
       float fsrphotonPtcut,fsrphotonEtacut,fsrphotonIsocut,fsrphotondRlcut,fsrphotondRlOverPtcut, JetPtcut,JetEtacut;
       float eleBDTWPLELP,eleBDTWPMELP,eleBDTWPHELP,eleBDTWPLEHP,eleBDTWPMEHP,eleBDTWPHEHP;
       float mass3l;
-      bool passedZ1LSelection, passedFullSelection, passedZXCRSelection;
+      bool passedZ1LSelection, passedFullSelection, passedZXCRSelection, isMC;
       bool isFiducialAna = false;
       int nfailedleptons;
       void InitializeElecut(float elePtcut_,float eleEtacut_,float elesip3dCut_,float eleLoosedxycut_,float eleLoosedzcut_,float eleIsocut_,float eleBDTWPLELP_,float eleBDTWPMELP_, float eleBDTWPHELP_,float eleBDTWPLEHP_,float eleBDTWPMEHP_,float eleBDTWPHEHP_){
@@ -118,13 +118,18 @@ class H4LTools {
       void SetMuonsGen(int Muon_genPartIdx_){
         Muon_genPartIdx.push_back(Muon_genPartIdx_);
       }
+      void SetElectronsGen(int Electron_genPartIdx_){
+        Electron_genPartIdx.push_back(Electron_genPartIdx_);
+      }
       void SetFsrPhotons(float FsrPhoton_dROverEt2_, float FsrPhoton_eta_,
-                        float FsrPhoton_phi_, float FsrPhoton_pt_, float FsrPhoton_relIso03_){
+                        float FsrPhoton_phi_, float FsrPhoton_pt_, float FsrPhoton_relIso03_, int FsrPhoton_electronIdx_, int FsrPhoton_muonIdx_){
         FsrPhoton_dROverEt2.push_back(FsrPhoton_dROverEt2_); 
         FsrPhoton_phi.push_back(FsrPhoton_phi_);
         FsrPhoton_eta.push_back(FsrPhoton_eta_);
         FsrPhoton_pt.push_back(FsrPhoton_pt_);
         FsrPhoton_relIso03.push_back(FsrPhoton_relIso03_);
+        FsrPhoton_electronIdx.push_back(FsrPhoton_electronIdx_);
+        FsrPhoton_muonIdx.push_back(FsrPhoton_muonIdx_);
       }
       void SetGenParts(float GenPart_pt_){
         GenPart_pt.push_back(GenPart_pt_);
@@ -147,7 +152,9 @@ class H4LTools {
       std::vector<bool> passTight_Id();
       std::vector<unsigned int> goodFsrPhotons();
       unsigned doFsrRecovery(TLorentzVector Lep);
+      unsigned doFsrRecovery_Run3(std::vector<unsigned int> goodfsridx, unsigned lepidx, int lepflavor);//lepflavor 11 or 13
       std::vector<TLorentzVector> BatchFsrRecovery(std::vector<TLorentzVector> LepList);
+      void BatchFsrRecovery_Run3();
       std::vector<TLorentzVector> ElectronFsr();
       std::vector<TLorentzVector> MuonFsr();
       std::vector<float> ElectronFsrPt();
@@ -157,13 +164,16 @@ class H4LTools {
       std::vector<float> MuonFsrEta();
       std::vector<float> MuonFsrPhi();
       std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
-      
+      std::vector<TLorentzVector> Electrondressed_Run3;
+      std::vector<TLorentzVector> Muondressed_Run3;
       std::vector<TLorentzVector> Zlist;
       std::vector<TLorentzVector> Zlistnofsr;
       std::vector<int> Zflavor; //mu->13, e->11
       std::vector<bool> Zistight;
       std::vector<int> Zlep1index;
       std::vector<int> Zlep2index;
+      std::vector<int> Zlep1lepindex;
+      std::vector<int> Zlep2lepindex;
       std::vector<float> Zlep1pt;
       std::vector<float> Zlep1eta;
       std::vector<float> Zlep1phi;
@@ -190,7 +200,9 @@ class H4LTools {
       int nTightMu;
       int nTightEleChgSum;
       int nTightMuChgSum;
+      int njets_pt30_eta4p7;
       int nTightZ;
+      int Lepointer;
 
       unsigned int Z1LZ1index;
     
@@ -219,7 +231,36 @@ class H4LTools {
       
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
+      std::vector<int> lep_genindex;
+      std::vector<int> Elelep_index;
+      std::vector<int> Mulep_index;
+      int lep_Hindex[4];
+      TLorentzVector Z1;
+      TLorentzVector Z1nofsr;
+      TLorentzVector Z2;
+      TLorentzVector Z2nofsr;
+      TLorentzVector ZZsystem;
+      TLorentzVector ZZsystemnofsr;
       void Initialize(){
+        looseEle.clear();
+        looseMu.clear();
+        bestEle.clear();
+        bestMu.clear();
+        tighteleforjetidx.clear();
+        tightmuforjetidx.clear();
+        Electronindex.clear();
+        Elelep_index.clear();
+        Mulep_index.clear();
+        lep_genindex.clear();
+        Muonindex.clear();
+        AllEid.clear();
+        AllMuid.clear();
+        Elelist.clear();
+        Mulist.clear();
+        ElelistFsr.clear();
+        MulistFsr.clear();
+        Muondressed_Run3.clear();
+        Electrondressed_Run3.clear();
         Electron_pt.clear();Electron_phi.clear();Electron_eta.clear();Electron_mass.clear();Electron_dxy.clear();Electron_dz.clear();Electron_sip3d.clear();
         Electron_mvaFall17V2Iso.clear();Electron_pdgId.clear();Electron_pfRelIso03_all.clear();
         Muon_pt.clear();Muon_phi.clear();Muon_eta.clear();Muon_mass.clear();Muon_dxy.clear();Muon_dz.clear();Muon_sip3d.clear();Muon_ptErr.clear();Muon_pfRelIso03_all.clear();
@@ -239,7 +280,7 @@ class H4LTools {
         Zlep1chg.clear(); Zlep2chg.clear();
         Zlep1ptNoFsr.clear(); Zlep1etaNoFsr.clear(); Zlep1phiNoFsr.clear(); Zlep1massNoFsr.clear();
         Zlep2ptNoFsr.clear(); Zlep2etaNoFsr.clear(); Zlep2phiNoFsr.clear(); Zlep2massNoFsr.clear();
-        Zlep1istight.clear(); Zlep2istight.clear();
+        Zlep1istight.clear(); Zlep2istight.clear();Zlep1lepindex.clear();Zlep2lepindex.clear();
         jetidx.clear();
         looseEle.clear(); looseMu.clear(); bestEle.clear(); bestMu.clear();  tighteleforjetidx.clear();  tightmuforjetidx.clear(); 
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
@@ -247,7 +288,13 @@ class H4LTools {
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0; mass3l = -99;
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0; nTightZ = 0; nfailedleptons=0;
         Z1LZ1index = -1;
-        
+        Lepointer = 0; njets_pt30_eta4p7=0;
+        Z1.SetPtEtaPhiM(0,0,0,0);
+        Z1nofsr.SetPtEtaPhiM(0,0,0,0);
+        Z2.SetPtEtaPhiM(0,0,0,0);
+        Z2nofsr.SetPtEtaPhiM(0,0,0,0);
+        ZZsystem.SetPtEtaPhiM(0,0,0,0);
+        ZZsystemnofsr.SetPtEtaPhiM(0,0,0,0);
         pTL1 = -999; etaL1 = -999; phiL1 = -999; massL1 = -999;
         pTL2 = -999; etaL2 = -999; phiL2 = -999; massL2 = -999;
         pTL3 = -999; etaL3 = -999; phiL3 = -999; massL3 = -999;
@@ -267,12 +314,6 @@ class H4LTools {
       TSpline *spline_L1Zgs;
       bool findZCandidate();
       bool ZZSelection();
-      TLorentzVector Z1;
-      TLorentzVector Z1nofsr;
-      TLorentzVector Z2;
-      TLorentzVector Z2nofsr;
-      TLorentzVector ZZsystem;
-      TLorentzVector ZZsystemnofsr;
 
       Mela* mela;
       float me_0plus_JHU, me_qqZZ_MCFM, p0plus_m4l, bkg_m4l;
@@ -294,7 +335,7 @@ class H4LTools {
     private:
       std::vector<float> Electron_pt,Electron_phi,Electron_eta,Electron_mass,Electron_dxy,Electron_dz,Electron_sip3d;
       std::vector<float> Electron_mvaFall17V2Iso,Electron_pfRelIso03_all;
-      std::vector<int> Electron_pdgId;
+      std::vector<int> Electron_pdgId,Electron_genPartIdx;
 
       std::vector<float> Jet_pt,Jet_phi,Jet_eta,Jet_mass,Jet_btagDeepC;
       std::vector<int> Jet_jetId,Jet_puId;
@@ -303,7 +344,7 @@ class H4LTools {
       std::vector<int> Muon_nTrackerLayers,Muon_genPartIdx,Muon_pdgId,Muon_charge;
       std::vector<bool> Muon_isTracker,Muon_isGlobal,Muon_isPFcand;
 
-      std::vector<float> FsrPhoton_dROverEt2,FsrPhoton_phi,FsrPhoton_pt,FsrPhoton_relIso03,FsrPhoton_eta;
+      std::vector<float> FsrPhoton_dROverEt2,FsrPhoton_phi,FsrPhoton_pt,FsrPhoton_relIso03,FsrPhoton_eta,FsrPhoton_muonIdx,FsrPhoton_electronIdx;
       
       std::vector<float> GenPart_pt;
       
@@ -314,7 +355,8 @@ class H4LTools {
 
 };
 
-H4LTools::H4LTools(int year){
+H4LTools::H4LTools(int year, bool isMC_){
+  isMC = isMC_;
   std::cout<<"year"<<" "<<year<<std::endl;
   mela = new Mela(13.0, 125.0, TVar::SILENT);
   mela->setCandidateDecayMode(TVar::CandidateDecay_ZZ);  
