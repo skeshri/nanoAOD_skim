@@ -319,7 +319,7 @@ class H4LTools {
 
         pTj1 = -99;  etaj1 = -99;  phij1 = -99;  mj1 = -99;
         pTj2 = -99;  etaj2 = -99;  phij2 = -99;  mj2 = -99;
-        njets_pt30_eta4p7 = -1;
+        njets_pt30_eta4p7 = 0;
 
         flag4e=false; flag4mu=false; flag2e2mu=false;
       }

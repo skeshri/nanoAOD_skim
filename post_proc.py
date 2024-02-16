@@ -105,12 +105,12 @@ def main():
     if isMC:
         if (not args.NOsyst):
             # FIXME: JES not used properly
-            jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
-            fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
+            #jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
+            #fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
             # btagSF = lambda: btagSFProducer("UL"+str(year), algo="deepjet",selectedWPs=['L','M','T','shape_corr'], sfFileName=sfFileName)
             btagSF = lambda: btagSFProducer(era = "UL"+str(year), algo = "deepcsv")
             puidSF = lambda: JetSFMaker("%s" % year)
-            modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])#, puidSF()
+            #modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])#, puidSF()
             # # modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), btagSF(), puidSF()])
 
         # FIXME: No PU weight for 2022
@@ -120,11 +120,11 @@ def main():
 
         p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun, provenance=True,fwkJobReport=False,haddFileName="skimmed_nano_mc.root", maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop.txt")
     else:
-        if (not args.NOsyst):
+        #if (not args.NOsyst):
             # FIXME: JES not used properly
-            jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
-            fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
-            modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
+            #jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
+            #fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
+            #modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
         p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun, provenance=True, fwkJobReport=False,haddFileName="skimmed_nano_data.root", jsonInput=jsonFileName, maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop_data.txt")
 
