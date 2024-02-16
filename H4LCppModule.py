@@ -50,7 +50,14 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeFsrPhotonCut(cfg['FsrPhoton']['pTcut'],cfg['FsrPhoton']['Etacut'],cfg['FsrPhoton']['Isocut'],cfg['FsrPhoton']['dRlcut'],cfg['FsrPhoton']['dRlOverPtcut'])
           self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
-
+          self.PUweightfile = cfg["outputdataNPV"]
+          self.PUweighthisto = cfg["PUweightHistoName"]
+        PUinput_file = ROOT.TFile.Open(self.PUweightfile)
+        PUinput_hist = PUinput_file.Get(self.PUweighthisto)
+        self.PUweight_list = []
+        for i in range(1, PUinput_hist.GetNbinsX() + 1):
+            self.PUweight_list.append(PUinput_hist.GetBinContent(i))
+        PUinput_file.Close()
         self.passtrigEvts = 0
         self.passZZEvts = 0
         self.cfgFile = cfgFile
@@ -245,6 +252,8 @@ class HZZAnalysisCppProducer(Module):
             self.passtrigEvts += 1
         else:
             return keepIt
+        if(isMC):
+            pileupWeight = self.PUweight_list[event.Pileup_nPU]
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")

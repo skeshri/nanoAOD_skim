@@ -18,7 +18,7 @@ def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
-    parser.add_argument("-n", "--entriesToRun", default=0, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
+    parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
     return parser.parse_args()

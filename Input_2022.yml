@@ -99,3 +99,20 @@ Jet:
     30
   Etacut:
     4.7
+
+inputdataNPV:
+  "data/pileupHistogram-Cert_Collisions2022_355100_362760_GoldenJson-13p6TeV-69200ub-99bins.root"
+inputdataNPVup:
+  "data/pileupHistogram-Cert_Collisions2022_355100_362760_GoldenJson-13p6TeV-72400ub-99bins.root"
+inputdataNPVdown:
+  "data/pileupHistogram-Cert_Collisions2022_355100_362760_GoldenJson-13p6TeV-66000ub-99bins.root"
+
+outputdataNPV:
+  "data/pileupHistogram_2022.root"
+outputdataNPVup:
+  "data/pileupHistogram_2022up.root"
+outputdataNPVdown:
+  "data/pileupHistogram_2022down.root"
+
+PUweightHistoName:
+  "pileupWeight"
