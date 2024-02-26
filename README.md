@@ -64,7 +64,7 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
          ```bash
          cd $CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
          # Use the arguments that you need.
-         python condor_setup_lxplus.py --input-file sample_list_v12.dat
+         python condor_setup_lxplus.py --input-file sample_list_v12_2022.dat
          # Set proxy before submitting the condor jobs.
          voms-proxy-init -voms cms --valid 200:00
          condor_submit <Files-created-from-above-command>.jdl
