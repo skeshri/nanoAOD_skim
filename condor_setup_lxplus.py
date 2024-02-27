@@ -18,20 +18,20 @@ def main(args):
     use_custom_eos_cmd = args.use_custom_eos_cmd
     InputFileFromWhereReadDASNames = args.input_file
     EOS_Output_path = args.eos_output_path
-    condor_file_name = args.condor_file_name
-    condor_queue = args.condor_queue
+    if EOS_Output_path == "":
+        # Get the username and its initial and set the path as /eos/user/<UserInitials>/<UserName>/nanoAODv9_ntuples
+        username = os.environ['USER']
+        user_initials = username[0:1]
+        EOS_Output_path = '/eos/user/'+user_initials+'/'+username+'/nanoAODv9_ntuples'
+    if submission_name != "":
+        EOS_Output_path = EOS_Output_path + '/' + submission_name
     condor_log_path = args.condor_log_path
-    DontCreateTarFile = args.DontCreateTarFile
 
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
-
-    if EOS_Output_path == "":
-        # Get the username and its initial and set the path as /eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples
-        username = os.environ['USER']
-        user_initials = username[0:1]
-        EOS_Output_path = '/eos/user/'+user_initials+'/'+username+'/nanoAOD_ntuples'
-    EOS_Output_path += submission_name
+    condor_file_name = args.condor_file_name
+    condor_queue = args.condor_queue
+    DontCreateTarFile = args.DontCreateTarFile
     condor_file_name = 'submit_condor_jobs_lnujj_'+submission_name
 
     # Create log files
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
     # input_file mandatory
     parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
-    parser.add_argument("--eos_output_path", default='/eos/user/r/rasharma/HZZCondorjob_28Jan', help="Initial path for operations.")
+    parser.add_argument("--eos_output_path", default='', help="EOS path for output files. By default it is `/eos/user/<UserInitials>/<UserName>/nanoAODv9_ntuples`")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="testmatch", help="""
