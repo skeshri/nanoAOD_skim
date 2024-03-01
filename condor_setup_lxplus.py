@@ -128,7 +128,7 @@ def main(args):
                 outjdl_file.write("Output = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
                 outjdl_file.write("Error  = "+output_log_path+"/"+sample_name+"_$(Process).err\n")
                 outjdl_file.write("Log  = "+output_log_path+"/"+sample_name+"_$(Process).log\n")
-                outjdl_file.write("Arguments = "+(xrd_redirector+root_file)+" "+output_path+"  "+EOS_Output_path+"\n")
+                outjdl_file.write("Arguments = "+(xrd_redirector+root_file)+" "+output_path+"  "+EOS_Output_path+ " " + (root_file.split('/')[-1]).split('.')[0] + "\n")
                 outjdl_file.write("Queue \n")
             print("Number of files: ",count_root_files)
             print("Number of jobs (till now): ",count_jobs)
@@ -163,14 +163,14 @@ def main(args):
     outScript.write("\n"+'echo "====> List root files : " ');
     outScript.write("\n"+'ls *.root');
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
-    outScript.write("\n"+'if ls *_Skim.root 1> /dev/null 2>&1; then');
-    outScript.write("\n"+'    echo "File *_Skim.root exists. Copy this."');
-    outScript.write("\n"+'    echo "cp *_Skim.root ${2}"');
-    outScript.write("\n"+'    cp  *_Skim.root ${2}');
+    outScript.write("\n"+'if ls skimmed_nano.root 1> /dev/null 2>&1; then');
+    outScript.write("\n"+'    echo "File skimmed_nano.root exists. Copy this."');
+    outScript.write("\n"+'    echo "cp skimmed_nano.root ${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    cp  skimmed_nano.root ${2}/${4}_Skim.root');
     outScript.write("\n"+'else');
-    outScript.write("\n"+'    echo "file *_Skim.root does not exists, so copy *.root file."');
-    outScript.write("\n"+'    echo "cp *.root ${2}"');
-    outScript.write("\n"+'    cp  *.root ${2}');
+    outScript.write("\n"+'    echo "file skimmed_nano.root does not exists, so copy *.root file."');
+    outScript.write("\n"+'    echo "cp *.root ${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    cp  *.root ${2}/${4}_Skim.root');
     outScript.write("\n"+'fi');
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
