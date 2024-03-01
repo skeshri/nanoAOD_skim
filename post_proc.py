@@ -109,9 +109,11 @@ def main():
         if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
         if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
 
+        # INFO: Keep the `fwkJobReport=False` to trigger `haddnano.py`
+        #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
         p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
-                        provenance=True,fwkJobReport=False,
-                        haddFileName="skimmed_nano_mc.root",
+                        provenance=True,fwkJobReport=True,
+                        haddFileName="skimmed_nano.root",
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun, longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
                         outputbranchsel="keep_and_drop.txt")
@@ -122,10 +124,11 @@ def main():
             modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
         p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
-                        provenance=True, fwkJobReport=False,
-                        haddFileName="skimmed_nano_data.root",
+                        provenance=True, fwkJobReport=True,
+                        haddFileName="skimmed_nano.root",
                         jsonInput=jsonFileName,
-                        maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, longTermCache= True,
+                        maxEntries=entriesToRun,
+                        prefetch=DownloadFileToLocalThenRun, longTermCache= True,
                         outputbranchsel="keep_and_drop_data.txt")
 
     p.run()
