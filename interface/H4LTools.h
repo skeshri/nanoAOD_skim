@@ -273,6 +273,7 @@ class H4LTools {
         Zlist.clear();
         Zlistnofsr.clear();
         Zflavor.clear();
+        Zistight.clear();
         Zlep1index.clear();
         Zlep2index.clear();
         Zlep1pt.clear(); Zlep1eta.clear(); Zlep1phi.clear(); Zlep1mass.clear();
