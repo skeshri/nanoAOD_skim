@@ -83,45 +83,45 @@ def main(args):
         outjdl_file.write("MY.WantOS = \"el7\"\n")
         count = 0
         count_jobs = 0
-        for lines in in_file:
-            if lines[0] == "#": continue
+        for SampleDASName in in_file:
+            if SampleDASName[0] == "#": continue
             count = count +1
             #if count > 1: break
             print(style.RED +"="*51+style.RESET+"\n")
             print ("==> Sample : ",count)
-            sample_name = lines.split('/')[1]
-            campaign = lines.split('/')[2].split('-')[0]
+            sample_name = SampleDASName.split('/')[1]
             print("==> sample_name = ",sample_name)
-            print("==> campaign = ",campaign)
             ########################################
             #
             #      Create output directory
             #
             ########################################
-            if sample_name.find("SingleMuon") != -1 or sample_name.find("SingleElectron") != -1 or sample_name.find("EGamma") != -1 or sample_name.find("DoubleMuon") != -1 or sample_name.find("MuonEG") != -1 or sample_name.find("DoubleEG") != -1:
+            if (SampleDASName.strip()).endswith("/NANOAOD"): # if the sample name ends with /NANOAOD, then it is a data if it ends with /NANOAODSIM then it is a MC. As the line contain the "\n" at the end, so we need to use the strip() function.
+                campaign = SampleDASName.split('/')[2].split('-')[0]
+                print("==> campaign = ",campaign)
                 output_string = sample_name + os.sep + campaign + os.sep + dirName
                 output_path = EOS_Output_path + os.sep + output_string
-                os.system("mkdir "+EOS_Output_path + os.sep + sample_name)
-                os.system("mkdir "+EOS_Output_path + os.sep + sample_name + os.sep + campaign)
-                os.system("mkdir "+ EOS_Output_path + os.sep + sample_name + os.sep + campaign + os.sep + dirName)
+                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name)
+                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name + os.sep + campaign)
+                os.system("mkdir -p "+ EOS_Output_path + os.sep + sample_name + os.sep + campaign + os.sep + dirName)
                 infoLogFiles.send_git_log_and_patch_to_eos(EOS_Output_path + os.sep + sample_name + os.sep + campaign + os.sep + dirName)
             else:
                 output_string = sample_name+os.sep+dirName
                 output_path = EOS_Output_path+ os.sep + output_string
-                os.system("mkdir "+EOS_Output_path + os.sep + sample_name)
-                os.system("mkdir "+EOS_Output_path + os.sep + sample_name+os.sep+dirName)
+                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name)
+                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name+os.sep+dirName)
                 infoLogFiles.send_git_log_and_patch_to_eos(EOS_Output_path + os.sep + sample_name + os.sep + dirName)
             #  print "==> output_path = ",output_path
 
             ########################################
-            #print 'dasgoclient --query="file dataset='+lines.strip()+'"'
+            #print 'dasgoclient --query="file dataset='+SampleDASName.strip()+'"'
             #print "..."
             if use_custom_eos:
                 xrd_redirector = 'root://cms-xrd-global.cern.ch/'
-                output = os.popen(use_custom_eos_cmd + lines.strip()).read()
+                output = os.popen(use_custom_eos_cmd + SampleDASName.strip()).read()
             else:
                 xrd_redirector = 'root://cms-xrd-global.cern.ch/'
-                output = os.popen('dasgoclient --query="file dataset='+lines.strip()+'"').read()
+                output = os.popen('dasgoclient --query="file dataset='+SampleDASName.strip()+'"').read()
 
             count_root_files = 0
             for root_file in output.split():
