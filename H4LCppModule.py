@@ -111,6 +111,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("GENpT4l",  "F")
         self.out.branch("rapidity4l",  "F")
         self.out.branch("njets_pt30_eta4p7", "I")
+        self.out.branch("finalState", "I")
         self.out.branch("GENnjets_pt30_eta4p7", "I")
         self.out.branch("GENrapidity4l",  "F")
         self.out.branch("eta4l",  "F")
@@ -228,6 +229,7 @@ class HZZAnalysisCppProducer(Module):
         mass4e=0
         mass2e2mu=0
         mass4mu=0
+        finalState=-1
         GENmass4l = -99
         GENpT4l = -99
         nVECZ = 2
@@ -370,8 +372,11 @@ class HZZAnalysisCppProducer(Module):
                     lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             self.passZZEvts += 1
-        keepIt = True
-        
+        if (passedFullSelection |passedFiducialSelection ): keepIt = True
+        if self.worker.RecoFourMuEvent: finalState = 1
+        if self.worker.RecoFourEEvent: finalState = 2
+        if self.worker.RecoTwoETwoMuEvent: finalState = 3
+        if self.worker.RecoTwoMuTwoEEvent: finalState = 4
         pTZ1 = self.worker.Z1.Pt()
         etaZ1 = self.worker.Z1.Eta()
         phiZ1 = self.worker.Z1.Phi()
@@ -451,6 +456,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("rapidity4l",rapidity4l)
         self.out.fillBranch("GENrapidity4l",GENrapidity4l)
         self.out.fillBranch("njets_pt30_eta4p7",njets_pt30_eta4p7)
+        self.out.fillBranch("finalState",finalState)
         self.out.fillBranch("GENnjets_pt30_eta4p7",GENnjets_pt30_eta4p7)
         self.out.fillBranch("eta4l",eta4l)
         self.out.fillBranch("phi4l",phi4l)
