@@ -436,7 +436,7 @@ void H4LTools::LeptonSelection(){
               }
           }*/
         }
-        if((Eid[ae]==true)&&(RelEleIsoNoFsr<0.35)){
+        if((Eid[ae]==true)&&(RelEleIsoNoFsr<9999)){
             nTightEle++;
             TightEleindex.push_back(ae);
             nTightEleChgSum += Elechg[ae];
@@ -866,6 +866,7 @@ bool H4LTools::ZZSelection(){
                         minZ1DeltaM_SR = fabs(Zlist[Z1CanIndex[iz]].M()-Zmass);
                     }    
                     passedFullSelection = true;
+		    passedZXCRSelection = false;
                 }
                 else {
                     if (Z1index==Z1CanIndex[iz]){
