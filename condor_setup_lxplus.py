@@ -79,7 +79,6 @@ def main(args):
         outjdl_file.write("Transfer_Input_Files = "+Transfer_Input_Files + ",  " + post_proc_to_run+"\n")
         outjdl_file.write("x509userproxy = $ENV(X509_USER_PROXY)\n")
         outjdl_file.write("requirements = TARGET.OpSysAndVer =?= \"AlmaLinux9\"\n")
-        # MY.WantOS = "el7"
         outjdl_file.write("MY.WantOS = \"el7\"\n")
         count = 0
         count_jobs = 0
@@ -91,26 +90,25 @@ def main(args):
             print ("==> Sample : ",count)
             sample_name = SampleDASName.split('/')[1]
             print("==> sample_name = ",sample_name)
+            campaign = SampleDASName.split('/')[2].split('-')[0]
+            print("==> campaign = ",campaign)
             ########################################
             #
             #      Create output directory
             #
             ########################################
             if (SampleDASName.strip()).endswith("/NANOAOD"): # if the sample name ends with /NANOAOD, then it is a data if it ends with /NANOAODSIM then it is a MC. As the line contain the "\n" at the end, so we need to use the strip() function.
-                campaign = SampleDASName.split('/')[2].split('-')[0]
-                print("==> campaign = ",campaign)
                 output_string = sample_name + os.sep + campaign + os.sep + dirName
                 output_path = EOS_Output_path + os.sep + output_string
-                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name)
-                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name + os.sep + campaign)
-                os.system("mkdir -p "+ EOS_Output_path + os.sep + sample_name + os.sep + campaign + os.sep + dirName)
-                infoLogFiles.send_git_log_and_patch_to_eos(EOS_Output_path + os.sep + sample_name + os.sep + campaign + os.sep + dirName)
+                print("==> output_path = ",output_path)
+                os.system("mkdir -p "+ output_path)
+                infoLogFiles.send_git_log_and_patch_to_eos(output_path)
             else:
-                output_string = sample_name+os.sep+dirName
+                output_string = campaign + os.sep + sample_name + os.sep + dirName
                 output_path = EOS_Output_path+ os.sep + output_string
-                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name)
-                os.system("mkdir -p "+EOS_Output_path + os.sep + sample_name+os.sep+dirName)
-                infoLogFiles.send_git_log_and_patch_to_eos(EOS_Output_path + os.sep + sample_name + os.sep + dirName)
+                print("==> output_path = ",output_path)
+                os.system("mkdir -p "+output_path)
+                infoLogFiles.send_git_log_and_patch_to_eos(output_path)
             #  print "==> output_path = ",output_path
 
             ########################################
