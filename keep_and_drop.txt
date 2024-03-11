@@ -12,8 +12,8 @@ keep BeamSpot*
 #keep GenFilter*
 #
 #   Others
-#keep LowPtElectron*
-#keep nLowPtElectron*
+keep LowPtElectron*
+keep nLowPtElectron*
 keep OtherPV*
 keep nOtherPV*
 keep PV*
@@ -26,6 +26,7 @@ keep PV*
 #keep Flag*
 #
 #
+keep mass*
 keep *4l
 keep *Z1
 keep *Z2
@@ -42,23 +43,23 @@ keep D_*
 keep lep*
 keep *Weight
 keep *Weight*
-# keep nPhoton
-# keep Photon*
-# keep nElectron
-# keep Electron*
-# keep nMuon
-# keep Muon*
-# keep nTau
-# keep Tau*
-# keep HTXS*
-# keep btag*
-# keep CaloMET*
-# keep ChsMET*
-# keep nCorrT1METJet
-# keep CorrT1METJet*
-# keep DeepMET*
-# keep nFatJet
-# keep FatJet*
+keep nPhoton
+keep Photon*
+keep nElectron
+keep Electron*
+keep nMuon
+keep Muon*
+keep nTau
+keep Tau*
+keep HTXS*
+keep btag*
+keep CaloMET*
+keep ChsMET*
+keep nCorrT1METJet
+keep CorrT1METJet*
+keep DeepMET*
+keep nFatJet
+keep FatJet*
 # keep nGenJetAK8
 # keep GenJetAK8*
 # keep nGenJet
@@ -76,7 +77,7 @@ keep nPS*
 keep PS*
 #keep nIsoTrack
 #keep IsoTrack*
-#keep nJet
+keep nJet
 #keep Jet*
 #keep L1*
 #keep nLowPtElectron
@@ -89,8 +90,8 @@ keep Pileup*
 #keep RawPuppiMET*
 #keep fixedGridRho*
 #keep Rho_*
-#keep nGenDressedLepton
-#keep GenDressedLepton*
+keep nGenDressedLepton
+keep GenDressedLepton*
 #keep nSubJet
 #keep SubJet*
 #keep TkMET*

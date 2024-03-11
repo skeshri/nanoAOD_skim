@@ -1,7 +1,7 @@
 import tarfile
 import os
 
-EXCLUDE_FILES = [".tmp", ".log", ".stdout", ".stderr"]
+EXCLUDE_FILES = [".tmp", ".log", ".stdout", ".stderr", "condor_logs", "crab_projects_sendPythonFolderFalse", ".jdl", ".tar.gz", ".tgz", ".pdf", ".png"]
 
 def filter_function(tarinfo):
     """
@@ -15,7 +15,9 @@ def filter_function(tarinfo):
     Returns:
         bool -- True if the file should be included, False otherwise.
     """
-    if os.path.splitext(tarinfo.name)[1] in EXCLUDE_FILES:
+    # print "exclude self.files: ",self.EXCLUDE_FILES
+    # if os.path.splitext(tarinfo.name)[1] in EXCLUDE_FILES:
+    if ((os.path.splitext(tarinfo.name)[1] in EXCLUDE_FILES) or (os.path.splitext(tarinfo.name)[0].split('/')[-1] in EXCLUDE_FILES)):
         return None
     else:
         return tarinfo
