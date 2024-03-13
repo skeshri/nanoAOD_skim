@@ -70,6 +70,14 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
          condor_submit <Files-created-from-above-command>.jdl
          ```
 
+         To resubmit the failed jobs, use the following command:
+
+         ```bash
+         python Utils/nanoAOD_condor_resubmit.py -d condor_logs/SkimNanoAOD_2022_ZXCR/240312_135155/ -s /eos/user/r/rasharma/nanoAOD_ntuples/SkimNanoAOD_2022_ZXCR/ -i submit_condor_jobs_lnujj_SkimNanoAOD_2022_ZXCR.jdl -n 1
+         ```
+
+         This will give you new jdl file. Then you can submit the new jdl file.
+
    1. Step: 5(b): Crab-job submission (Not tested recently)
       ```bash
       cd crab/
