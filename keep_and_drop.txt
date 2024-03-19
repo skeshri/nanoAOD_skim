@@ -26,20 +26,20 @@ keep OtherPV*
 #
 # Physics Objects
 #
-keep Electron*
-keep nElectron
+#keep Electron*
+#keep nElectron
 #keep LowPtElectron*
 #keep nLowPtElectron*
-keep Muon*
-keep nMuon
+#keep Muon*
+#keep nMuon
 #keep Photon*
 #keep nPhoton
 #keep Tau*
 #keep nTau
-keep Jet*
-keep nJet
-keep FatJet*
-keep nFatJet
+#keep Jet*
+#keep nJet
+#keep FatJet*
+#keep nFatJet
 #keep SubJet*
 #keep nSubJet
 keep MET*
@@ -54,11 +54,11 @@ keep TkMET*
 #
 # B-tagging and Jet Corrections
 #
-keep btag*
+#keep btag*
 #keep CorrT1METJet*
 #keep nCorrT1METJet
-keep fixedGridRho*
-keep Rho_*
+#keep fixedGridRho*
+#keep Rho_*
 #
 # Isolation Tracks
 #keep IsoTrack*
@@ -75,6 +75,7 @@ keep is*
 keep *Index
 keep boosted*
 keep *4l
+keep mass*
 keep *Z1
 keep *Z2
 keep *2j
@@ -92,21 +93,21 @@ keep higgs*
 #
 # Generator Level Information
 #
-keep gen*
-keep Gen*
-keep nGenPart
-keep GenPart*
+#keep gen*
+#keep Gen*
+#keep nGenPart
+#keep GenPart*
 #keep nGenDressedLepton
 #keep GenDressedLepton*
-keep Electron_gen*
-keep nGenJet
-keep GenJet*
-keep nGenJetAK8
-keep GenJetAK8*
+#keep Electron_gen*
+#keep nGenJet
+#keep GenJet*
+#keep nGenJetAK8
+#keep GenJetAK8*
 #keep nSubGenJetAK8
 #keep SubGenJetAK8*
-keep GenMET*
-keep genTtbarId
+#keep GenMET*
+#keep genTtbarId
 keep nLHE*
 keep LHE*
 keep nPSWeight

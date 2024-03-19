@@ -1,4 +1,5 @@
 # Ignore root files
+*.xml
 crab_project*/
 *.rst
 *.swp
