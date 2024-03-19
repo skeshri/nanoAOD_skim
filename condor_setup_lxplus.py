@@ -5,6 +5,7 @@ python3 condor_setup_lxplus.py
 import argparse
 import os
 import sys
+import datetime
 
 sys.path.append("Utils/.")
 
@@ -30,9 +31,13 @@ def main(args):
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
     condor_file_name = args.condor_file_name
+    # Add time stamp to the condor_file_name
+    now = datetime.datetime.now()
+    condor_file_name = condor_file_name + "_" + now.strftime("%Y%m%d_%H%M%S")
+    condor_file_name = condor_file_name + "_" + submission_name
+
     condor_queue = args.condor_queue
     DontCreateTarFile = args.DontCreateTarFile
-    condor_file_name = 'submit_condor_jobs_lnujj_'+submission_name
 
     # Create log files
     import infoCreaterGit
@@ -209,7 +214,7 @@ if __name__ == "__main__":
     parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
     parser.add_argument("--eos_output_path", default='', help="EOS path for output files. By default it is `/eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples`")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
-    parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
+    parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="testmatch", help="""
                         Condor queue options: (Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours)
 
