@@ -143,6 +143,12 @@ def main(args):
     outScript.write("\n"+'echo "System software: `cat /etc/redhat-release`"');
     outScript.write("\n"+'source /cvmfs/cms.cern.ch/cmsset_default.sh');
     outScript.write("\n"+'echo "copy cmssw tar file from store area"');
+    outScript.write("\n"+'echo "====> List input arguments : " ');
+    outScript.write("\n"+'echo "nanoAOD ROOT file: ${1}"');
+    outScript.write("\n"+'echo "EOS path to store output root file: ${2}"');
+    outScript.write("\n"+'echo "EOS path from where we copy CMSSW: ${3}"');
+    outScript.write("\n"+'echo "Output root file name: ${4}"');
+    outScript.write("\n"+'echo "========================================="');
     outScript.write("\n"+'cp -s ${3}/'+CMSSWRel +'.tgz  .');
     outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
