@@ -63,6 +63,7 @@ def isValidAndFaultFree(fname, ref=None):
     return checkfaulty(fname, ref)
 
 def merge_files(targetFile, filesToMerge):
+    logging.info("Merging {} files into: {}".format(len(filesToMerge), targetFile))
     if len(filesToMerge) > 100:
         logging.info('A lot of files to merge; this might take some time...')
         tempTargets = []
@@ -100,6 +101,7 @@ def main():
     parser.add_argument('-i', '--inputDir', type=str, required=True, help="Path of the input directory that contains ROOT files to be merged.")
     parser.add_argument('-o', '--outputDir', type=str, required=True, help="Path of the output directory where the merged ROOT file will be saved.")
     parser.add_argument('-f', '--outputFile', type=str, required=True, help="Name of the hadd-ed output ROOT file.")
+    parser.add_argument('-r', '--recursive', action='store_true', help="Search for ROOT files recursively in the input directory.")
 
     args = parser.parse_args()
 
@@ -107,23 +109,34 @@ def main():
     outputDir = args.outputDir
     outputFile = args.outputFile
 
+    logging.info("Input directory: {}".format(inputDir))
+    logging.info("Output directory: {}".format(outputDir))
+    logging.info("Output file: {}".format(outputFile))
+
     if not os.path.isdir(inputDir):
         logging.error("The specified input directory does not exist: {}".format(inputDir))
         sys.exit(1)
 
     targetFile = os.path.join(outputDir, outputFile)
 
-    logging.info("Input directory: {}".format(inputDir))
-    logging.info("Output directory: {}".format(outputDir))
-    logging.info("Output file: {}".format(outputFile))
+    filesToMerge = []
+    if args.recursive:
+        logging.info("Searching for ROOT files recursively in the input directory.")
+        # filesToMerge = glob.glob(os.path.join(inputDir, '**', '*.root'), recursive=True) # Works only with Python 3
+        for root, dirnames, filenames in os.walk(inputDir):
+            for filename in glob.glob(os.path.join(root, '*.root')):
+                filesToMerge.append(os.path.join(root, filename))
+    else:
+        logging.info("Searching for ROOT files in the input directory only.")
+        filesToMerge = glob.glob(os.path.join(inputDir, '*.root')) # Does not search recursively
 
-    filesToMerge = glob.glob(os.path.join(inputDir, '*.root'))
+
     if not filesToMerge:
         logging.error("No ROOT files found in the specified directory.")
         sys.exit(1)
 
     logging.info("Found {} ROOT files to merge.".format(len(filesToMerge)))
-    logging.into("Merging files into: {}".format(targetFile))
+    logging.info("Merging files into: {}".format(targetFile))
     logging.debug("Files to merge: {}".format(filesToMerge))
 
     # Check if the target file already exists and is valid
