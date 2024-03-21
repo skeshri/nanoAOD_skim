@@ -61,7 +61,7 @@ def main(args):
     import makeTarFile
     if not DontCreateTarFile: makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
     print("copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n")
-    os.system('cp ' + CMSSWRel+".tgz" + ' '+storeDir+'/' + CMSSWRel+".tgz")
+    os.system('xrdcp ' + CMSSWRel+".tgz" + '  root://eosuser.cern.ch/'+storeDir+'/' + CMSSWRel+".tgz")
 
     post_proc_to_run = "post_proc.py"
     command = "python "+post_proc_to_run
@@ -147,14 +147,14 @@ def main(args):
     outScript.write("\n"+'echo "Running on: `uname -a`"');
     outScript.write("\n"+'echo "System software: `cat /etc/redhat-release`"');
     outScript.write("\n"+'source /cvmfs/cms.cern.ch/cmsset_default.sh');
-    outScript.write("\n"+'echo "copy cmssw tar file from store area"');
     outScript.write("\n"+'echo "====> List input arguments : " ');
-    outScript.write("\n"+'echo "nanoAOD ROOT file: ${1}"');
-    outScript.write("\n"+'echo "EOS path to store output root file: ${2}"');
-    outScript.write("\n"+'echo "EOS path from where we copy CMSSW: ${3}"');
-    outScript.write("\n"+'echo "Output root file name: ${4}"');
+    outScript.write("\n"+'echo "1. nanoAOD ROOT file: ${1}"');
+    outScript.write("\n"+'echo "2. EOS path to store output root file: ${2}"');
+    outScript.write("\n"+'echo "3. EOS path from where we copy CMSSW: ${3}"');
+    outScript.write("\n"+'echo "4. Output root file name: ${4}"');
     outScript.write("\n"+'echo "========================================="');
-    outScript.write("\n"+'cp -s ${3}/'+CMSSWRel +'.tgz  .');
+    outScript.write("\n"+'echo "copy cmssw tar file from store area"');
+    outScript.write("\n"+'xrdcp -f  root://eosuser.cern.ch/${3}/'+CMSSWRel +'.tgz  .');
     outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'cd ' + CMSSWRel + '/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/'+TOP_LEVEL_DIR_NAME+'/' );
@@ -177,12 +177,12 @@ def main(args):
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
     outScript.write("\n"+'if ls skimmed_nano.root 1> /dev/null 2>&1; then');
     outScript.write("\n"+'    echo "File skimmed_nano.root exists. Copy this."');
-    outScript.write("\n"+'    echo "cp skimmed_nano.root ${2}/${4}_Skim.root"');
-    outScript.write("\n"+'    cp  skimmed_nano.root ${2}/${4}_Skim.root');
+    outScript.write("\n"+'    echo "xrdcp -f skimmed_nano.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    xrdcp -f skimmed_nano.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
     outScript.write("\n"+'else');
     outScript.write("\n"+'    echo "file skimmed_nano.root does not exists, so copy *.root file."');
-    outScript.write("\n"+'    echo "cp *.root ${2}/${4}_Skim.root"');
-    outScript.write("\n"+'    cp  *.root ${2}/${4}_Skim.root');
+    outScript.write("\n"+'    echo "xrdcp -f *.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    xrdcp -f *.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
     outScript.write("\n"+'fi');
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');

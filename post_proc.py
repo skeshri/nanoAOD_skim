@@ -21,6 +21,7 @@ def parse_arguments():
     parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
+    parser.add_argument("--DEBUG", default=False, action="store_true", help="Print debug information")
     return parser.parse_args()
 
 
@@ -95,7 +96,7 @@ def main():
         sfFileName = "DeepCSV_102XSF_V2.csv"
         modulesToRun.extend([muonScaleRes2016()])
 
-    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, isFiducialAna)
+    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, isFiducialAna, args.DEBUG)
     modulesToRun.extend([H4LCppModule()])
 
     print("Input json file: {}".format(jsonFileName))
@@ -121,7 +122,12 @@ def main():
 
         # INFO: Keep the `fwkJobReport=False` to trigger `haddnano.py`
         #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
-        p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun, provenance=True,fwkJobReport=True,haddFileName="skimmed_nano.root", maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop.txt")
+        p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
+                        provenance=True,fwkJobReport=True,
+                        haddFileName="skimmed_nano.root",
+                        maxEntries=entriesToRun,
+                        prefetch=DownloadFileToLocalThenRun, longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
+                        outputbranchsel="keep_and_drop.txt")
     else:
         #if (not args.NOsyst):
             # FIXME: JES not used properly
@@ -129,7 +135,13 @@ def main():
             #fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
             #modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
-        p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun, provenance=True, fwkJobReport=True,haddFileName="skimmed_nano.root", jsonInput=jsonFileName, maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, outputbranchsel="keep_and_drop_data.txt")
+        p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
+                        provenance=True, fwkJobReport=True,
+                        haddFileName="skimmed_nano.root",
+                        jsonInput=jsonFileName,
+                        maxEntries=entriesToRun,
+                        prefetch=DownloadFileToLocalThenRun,  longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
+                        outputbranchsel="keep_and_drop_data.txt")
 
     p.run()
 

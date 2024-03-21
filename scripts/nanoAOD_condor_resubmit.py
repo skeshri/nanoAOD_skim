@@ -238,8 +238,8 @@ def main():
             # print("{}/{}_Skim.root".format(detail[0], detail[1]))
             not_finished = list(set(not_finished) - set(["{}.root".format(detail[1])]))
 
-    print('Number of missing files (after removing the files over which condor jobs are running) : {}'.format(len(not_finished)))
-    if DEBUG: print('Missing files (after removing the files over which condor jobs are running) : {}'.format(not_finished))
+        print('Number of missing files (after removing the files over which condor jobs are running) : {}'.format(len(not_finished)))
+        if DEBUG: print('Missing files (after removing the files over which condor jobs are running) : {}'.format(not_finished))
 
     jdlfile = prepare_runJobs_missing(not_finished,options.input,options.dir,stageDir,str(options.resubmit_no))
     print(jdlfile)

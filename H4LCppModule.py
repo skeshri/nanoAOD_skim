@@ -8,7 +8,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile,isMC,isFSR,isFiducialAna):
+    def __init__(self,year,cfgFile,isMC,isFSR,isFiducialAna, DEBUG=False):
         base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
@@ -27,6 +27,7 @@ class HZZAnalysisCppProducer(Module):
                     ".L %s/interface/H4LTools.h" % base)
         self.year = year
         self.isMC = isMC
+        self.DEBUG = DEBUG
         with open(cfgFile, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
           self.worker = ROOT.H4LTools(self.year,self.isMC)
@@ -69,7 +70,7 @@ class HZZAnalysisCppProducer(Module):
         print("PassmZ1mZ2Cut_2e2mu: "+str(self.worker.cutZZ2e2mu)+" Events")
         print("Passm4l_105_160_Cut_2e2mu: "+str(self.worker.cutm4l2e2mu)+" Events")
         print("PassZZSelection: "+str(self.passZZEvts)+" Events")
-        
+
         pass
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
@@ -235,7 +236,7 @@ class HZZAnalysisCppProducer(Module):
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, 0.8, 7)
         self.worker.BatchFsrRecovery_Run3()
-        
+
         self.worker.LeptonSelection()
         foundZCandidate = self.worker.findZCandidate()
         self.worker.findZ1LCandidate()
@@ -248,14 +249,14 @@ class HZZAnalysisCppProducer(Module):
         Muon_Fsr_pt_vec = self.worker.MuonFsrPt()
         Muon_Fsr_eta_vec = self.worker.MuonFsrEta()
         Muon_Fsr_phi_vec = self.worker.MuonFsrPhi()
-        
+
         Electron_Fsr_pt = []
         Electron_Fsr_eta = []
         Electron_Fsr_phi = []
         Muon_Fsr_pt = []
         Muon_Fsr_eta = []
         Muon_Fsr_phi = []
-        
+
         if len(Electron_Fsr_pt_vec)>0:
             for i in range(len(Electron_Fsr_pt_vec)):
                 Electron_Fsr_pt.append(Electron_Fsr_pt_vec[i])
@@ -266,8 +267,8 @@ class HZZAnalysisCppProducer(Module):
                 Muon_Fsr_pt.append(Muon_Fsr_pt_vec[i])
                 Muon_Fsr_eta.append(Muon_Fsr_eta_vec[i])
                 Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])
-        
-            
+
+
         foundZZCandidate = self.worker.ZZSelection()
         passedFullSelection = self.worker.passedFullSelection
         passedZ1LSelection = self.worker.passedZ1LSelection
@@ -288,7 +289,7 @@ class HZZAnalysisCppProducer(Module):
         if (foundZZCandidate):
             self.passZZEvts += 1
         keepIt = True
-        
+
         pTZ1 = self.worker.Z1.Pt()
         etaZ1 = self.worker.Z1.Eta()
         phiZ1 = self.worker.Z1.Phi()
@@ -339,7 +340,7 @@ class HZZAnalysisCppProducer(Module):
             etaL3, etaL4 = etaL4, etaL3
             phiL3, phiL4 = phiL4, phiL3
             massL3, massL4 = massL4, massL3
-        if passedFullSelection: 
+        if passedFullSelection:
             pT4l = self.worker.ZZsystem.Pt()
             eta4l = self.worker.ZZsystem.Eta()
             phi4l = self.worker.ZZsystem.Phi()
@@ -422,7 +423,7 @@ class HZZAnalysisCppProducer(Module):
 
         # self.out.fillBranch("nElectron_Fsr", len(electrons))
         # self.out.fillBranch("nMuon_Fsr", len(muons))
-        
+
         self.out.fillBranch("Electron_Fsr_pt",Electron_Fsr_pt)
         self.out.fillBranch("Electron_Fsr_eta",Electron_Fsr_eta)
         self.out.fillBranch("Electron_Fsr_phi",Electron_Fsr_phi)
