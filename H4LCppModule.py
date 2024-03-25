@@ -174,7 +174,7 @@ class HZZAnalysisCppProducer(Module):
         self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nFsrPhoton)
         if isMC:
             self.worker.SetObjectNumGen(event.nGenPart)
-        keepIt = False
+        keepIt = True
 
         passedTrig=False
         passedFullSelection=False
@@ -288,8 +288,6 @@ class HZZAnalysisCppProducer(Module):
                     lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             self.passZZEvts += 1
-        keepIt = True
-
         pTZ1 = self.worker.Z1.Pt()
         etaZ1 = self.worker.Z1.Eta()
         phiZ1 = self.worker.Z1.Phi()
