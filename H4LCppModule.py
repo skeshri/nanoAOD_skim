@@ -211,7 +211,7 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetObjectNumGen(event.nGenPart)
             self.genworker.Initialize()
             self.genworker.SetObjectNumGen(event.nGenPart, event.nGenJet)
-        keepIt = False
+        keepIt = True
 
         passedTrig=False
         passedFullSelection=False
@@ -372,7 +372,6 @@ class HZZAnalysisCppProducer(Module):
                     lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             self.passZZEvts += 1
-        if (passedFullSelection |passedFiducialSelection ): keepIt = True
         if self.worker.RecoFourMuEvent: finalState = 1
         if self.worker.RecoFourEEvent: finalState = 2
         if self.worker.RecoTwoETwoMuEvent: finalState = 3
