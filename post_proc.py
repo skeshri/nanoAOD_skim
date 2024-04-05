@@ -18,6 +18,7 @@ def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
+    parser.add_argument('-o', '--outputFile', default="skimmed_nano.root", type=str, help="Output file name")
     parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
@@ -124,7 +125,7 @@ def main():
         #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
         p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
                         provenance=True,fwkJobReport=True,
-                        haddFileName="skimmed_nano.root",
+                        haddFileName=args.outputFile,
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun, longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
                         outputbranchsel="keep_and_drop.txt")
@@ -137,7 +138,7 @@ def main():
 
         p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
                         provenance=True, fwkJobReport=True,
-                        haddFileName="skimmed_nano.root",
+                        haddFileName=args.outputFile,
                         jsonInput=jsonFileName,
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun,  longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
