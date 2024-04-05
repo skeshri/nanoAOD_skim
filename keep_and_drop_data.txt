@@ -26,20 +26,20 @@ keep OtherPV*
 #
 # Physics Objects
 #
-keep Electron*
-keep nElectron
+#keep Electron*
+#keep nElectron
 #keep LowPtElectron*
 #keep nLowPtElectron*
-keep Muon*
-keep nMuon
+#keep Muon*
+#keep nMuon
 #keep Photon*
 #keep nPhoton
 #keep Tau*
 #keep nTau
-keep Jet*
-keep nJet
-keep FatJet*
-keep nFatJet
+#keep Jet*
+#keep nJet
+#keep FatJet*
+#keep nFatJet
 #keep SubJet*
 #keep nSubJet
 keep MET*

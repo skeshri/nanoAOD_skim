@@ -26,20 +26,20 @@ keep OtherPV*
 #
 # Physics Objects
 #
-keep Electron*
-keep nElectron
+#keep Electron*
+#keep nElectron
 #keep LowPtElectron*
 #keep nLowPtElectron*
-keep Muon*
-keep nMuon
+#keep Muon*
+#keep nMuon
 #keep Photon*
 #keep nPhoton
 #keep Tau*
 #keep nTau
-keep Jet*
-keep nJet
-keep FatJet*
-keep nFatJet
+#keep Jet*
+#keep nJet
+#keep FatJet*
+#keep nFatJet
 #keep SubJet*
 #keep nSubJet
 keep MET*
@@ -92,21 +92,21 @@ keep higgs*
 #
 # Generator Level Information
 #
-keep gen*
-keep Gen*
-keep nGenPart
-keep GenPart*
+#keep gen*
+#keep Gen*
+#keep nGenPart
+#keep GenPart*
 #keep nGenDressedLepton
 #keep GenDressedLepton*
-keep Electron_gen*
-keep nGenJet
-keep GenJet*
-keep nGenJetAK8
-keep GenJetAK8*
+#keep Electron_gen*
+#keep nGenJet
+#keep GenJet*
+#keep nGenJetAK8
+#keep GenJetAK8*
 #keep nSubGenJetAK8
 #keep SubGenJetAK8*
-keep GenMET*
-keep genTtbarId
+#keep GenMET*
+#keep genTtbarId
 keep nLHE*
 keep LHE*
 keep nPSWeight
