@@ -2,137 +2,165 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection,Object
 import ROOT
 import yaml
+import json
 import os
+from collections import OrderedDict
 from Helper import *
 from METFilters import passFilters
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class HZZAnalysisCppProducer(Module):
-    def __init__(self,year,cfgFile,isMC,isFSR, DEBUG=False):
-        base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
-        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libJHUGenMELAMELA.so" % base)
-        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
-        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libmcfm_707.so" % base)
-        ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
-        if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
-            print("Load C++ module")
-            base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
-            if base:
-                ROOT.gROOT.ProcessLine(
-                    ".L %s/src/H4LTools.cc+O" % base)
-            else:
-                base = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
-                ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
-                ROOT.gROOT.ProcessLine(
-                    ".L %s/interface/H4LTools.h" % base)
+
+    def __init__(self, year, cfgFile, isMC, isFSR, DEBUG=False):
+        self.loadLibraries()
         self.year = year
         self.isMC = isMC
         self.DEBUG = DEBUG
-        with open(cfgFile, 'r') as ymlfile:
-          cfg = yaml.load(ymlfile)
-          self.worker = ROOT.H4LTools(self.year, self.DEBUG)
-          self.worker.InitializeElecut(cfg['Electron']['pTcut'],cfg['Electron']['Etacut'],cfg['Electron']['Sip3dcut'],cfg['Electron']['Loosedxycut'],cfg['Electron']['Loosedzcut'],
-                                       cfg['Electron']['Isocut'],cfg['Electron']['BDTWP']['LowEta']['LowPT'],cfg['Electron']['BDTWP']['MedEta']['LowPT'],cfg['Electron']['BDTWP']['HighEta']['LowPT'],
-                                       cfg['Electron']['BDTWP']['LowEta']['HighPT'],cfg['Electron']['BDTWP']['MedEta']['HighPT'],cfg['Electron']['BDTWP']['HighEta']['HighPT'])
-          self.worker.InitializeMucut(cfg['Muon']['pTcut'],cfg['Muon']['Etacut'],cfg['Muon']['Sip3dcut'],cfg['Muon']['Loosedxycut'],cfg['Muon']['Loosedzcut'],cfg['Muon']['Isocut'],
-                                       cfg['Muon']['Tightdxycut'],cfg['Muon']['Tightdzcut'],cfg['Muon']['TightTrackerLayercut'],cfg['Muon']['TightpTErrorcut'],cfg['Muon']['HighPtBound'])
-          self.worker.InitializeFsrPhotonCut(cfg['FsrPhoton']['pTcut'],cfg['FsrPhoton']['Etacut'],cfg['FsrPhoton']['Isocut'],cfg['FsrPhoton']['dRlcut'],cfg['FsrPhoton']['dRlOverPtcut'])
-          self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
-          self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
-          self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
-          self.worker.Initialize2l2nuEvtCut(cfg['HZZ2l2nu']['Leading_Lep_pT'], cfg['HZZ2l2nu']['SubLeading_Lep_pT'], cfg['HZZ2l2nu']['Lep_eta'], cfg['HZZ2l2nu']['Pt_ll'], cfg['HZZ2l2nu']['M_ll_Window'], cfg['HZZ2l2nu']['dPhi_jetMET'],  cfg['HZZ2l2nu']['MZLepcut']['down'], cfg['HZZ2l2nu']['MZLepcut']['up'])
-
         self.cfgFile = cfgFile
-        self.isMC = isMC
+        self.cfg = self._load_config(cfgFile)
+        self.worker = ROOT.H4LTools(self.year, self.DEBUG)
+        self._initialize_worker(self.cfg)
         self.worker.isFSR = isFSR
+        self._initialize_counters()
 
-        # Variables to keep track of the cut flow
+    def loadLibraries(self):
+        base_path = os.getenv('CMSSW_BASE') + '/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim'
+        libraries = [
+            'libJHUGenMELAMELA.so',
+            'libjhugenmela.so',
+            'libmcfm_707.so',
+            'libcollier.so',
+        ]
+        for lib in libraries:
+            fullPath = os.path.join(base_path, 'JHUGenMELA/MELA/data/slc7_amd64_gcc700', lib)
+            ROOT.gSystem.Load(fullPath)
+
+        # Load the C++ module
+        if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
+            print("Load C++ module")
+            if base_path:
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/src/H4LTools.cc+O" % base_path)
+            else:
+                base_path = "$CMSSW_BASE//src/PhysicsTools/NanoAODTools"
+                ROOT.gSystem.Load("libPhysicsToolsNanoAODTools.so")
+                ROOT.gROOT.ProcessLine(
+                    ".L %s/interface/H4LTools.h" % base_path)
+
+    def _load_config(self, cfgFile):
+        with open(cfgFile, 'r') as ymlfile:
+            return yaml.safe_load(ymlfile)
+
+    def _initialize_worker(self, cfg):
+        self.worker.InitializeElecut(*self._get_nested_values(cfg['Electron'], [
+            'pTcut', 'Etacut', 'Sip3dcut', 'Loosedxycut', 'Loosedzcut',
+            'Isocut', ['BDTWP', 'LowEta', 'LowPT'], ['BDTWP', 'MedEta', 'LowPT'],
+            ['BDTWP', 'HighEta', 'LowPT'], ['BDTWP', 'LowEta', 'HighPT'],
+            ['BDTWP', 'MedEta', 'HighPT'], ['BDTWP', 'HighEta', 'HighPT']
+        ]))
+
+        self.worker.InitializeMucut(*self._get_nested_values(cfg['Muon'], [
+            'pTcut', 'Etacut', 'Sip3dcut', 'Loosedxycut', 'Loosedzcut', 'Isocut',
+            'Tightdxycut', 'Tightdzcut', 'TightTrackerLayercut', 'TightpTErrorcut',
+            'HighPtBound'
+        ]))
+
+        self.worker.InitializeFsrPhotonCut(*self._get_nested_values(cfg['FsrPhoton'], [
+            'pTcut', 'Etacut', 'Isocut', 'dRlcut', 'dRlOverPtcut'
+        ]))
+
+        self.worker.InitializeJetcut(*self._get_nested_values(cfg['Jet'], ['pTcut', 'Etacut']))
+
+        self.worker.InitializeEvtCut(*self._get_nested_values(cfg, ['MZ1cut', 'MZZcut',
+                                                                    ['Higgscut', 'down'], ['Higgscut', 'up'],
+                                                                    'Zmass', ['MZcut', 'down'], ['MZcut', 'up'] ]))
+
+        self.worker.InitializeHZZ2l2qCut(*self._get_nested_values(cfg['HZZ2l2q'],
+                                                                  ['Leading_Lep_pT', 'SubLeading_Lep_pT', 'Lep_eta',
+                                                                   ['MZLepcut', 'down'], ['MZLepcut', 'up']]))
+
+        self.worker.InitializeHZZ2l2nuCut(*self._get_nested_values(cfg['HZZ2l2nu'],
+                                                                   ['Leading_Lep_pT', 'SubLeading_Lep_pT', 'Lep_eta', 'Pt_ll',
+                                                                    'M_ll_Window', 'dPhi_jetMET', ['MZLepcut', 'down'], ['MZLepcut', 'up']]))
+
+    def _get_nested_values(self, dictionary, keys):
+        values = []
+        for key in keys:
+            if isinstance(key, list):
+                sub_dict = dictionary
+                for sub_key in key:
+                    sub_dict = sub_dict.get(sub_key, {})
+                values.append(sub_dict if sub_dict else 'N/A')
+            else:
+                values.append(dictionary.get(key, 'N/A'))
+        return values
+
+    def _initialize_counters(self):
         self.passAllEvts = 0
         self.passtrigEvts = 0
         self.passMETFilters = 0
         self.passZZ4lEvts = 0
         self.passZZ2l2qEvts = 0
         self.passZZ2l2nuEvts = 0
-        pass
 
     def beginJob(self):
         pass
 
     def endJob(self):
         print("\n========== Print Cut flow table  ====================\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
-        print("{:27}:{:7} {}".format("Pass4eCut: ", str(self.worker.cut4e), " Events"))
-        print("Pass4eGhostRemoval: "+str(self.worker.cutghost4e)+" Events")
-        print("Pass4eLepPtCut: "+str(self.worker.cutLepPt4e)+" Events")
-        print("Pass4eQCDSupress: "+str(self.worker.cutQCD4e)+" Events")
-        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_4e: ", str(self.worker.cutZZ4e), " Events"))
-        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_4e: ", str(self.worker.cutm4l4e), " Events"))
-        print("{:27}:{:7} {}".format("Pass4muCut: ", str(self.worker.cut4mu), " Events"))
-        print("Pass4muGhostRemoval: "+str(self.worker.cutghost4mu)+" Events")
-        print("Pass4muLepPtCut: "+str(self.worker.cutLepPt4mu)+" Events")
-        print("Pass4muQCDSupress: "+str(self.worker.cutQCD4mu)+" Events")
-        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_4mu: ", str(self.worker.cutZZ4mu), " Events"))
-        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_4mu: ", str(self.worker.cutm4l4mu), " Events"))
-        print("{:27}:{:7} {}".format("Pass2e2muCut: ", str(self.worker.cut2e2mu), " Events"))
-        print("Pass2e2muGhostRemoval: "+str(self.worker.cutghost2e2mu)+" Events")
-        print("Pass2e2muLepPtCut: "+str(self.worker.cutLepPt2e2mu)+" Events")
-        print("Pass2e2muQCDSupress: "+str(self.worker.cutQCD2e2mu)+" Events")
-        print("{:27}:{:7} {}".format("PassmZ1mZ2Cut_2e2mu: ", str(self.worker.cutZZ2e2mu), " Events"))
-        print("{:27}:{:7} {}".format("Passm4l_105_160_Cut_2e2mu: ", str(self.worker.cutm4l2e2mu), " Events"))
-        print("{:27}:{:7} {}".format("PassZZSelection: ", str(self.passZZ4lEvts), " Events"))
+        self.cutFlowCounts = {
+            "Total": self.passAllEvts,
+            "PassTrig": self.passtrigEvts,
+            "PassMETFilters": self.passMETFilters,
+            "PassZZSelection": self.passZZ4lEvts,
+            "PassZZ2l2qSelection": self.passZZ2l2qEvts,
+            "PassZZ2l2nuSelection": self.passZZ2l2nuEvts
+        }
 
-        print("\n==================   2l2q    ==============\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
-        print("{:27}:{:7} {}".format("Pass2eCut: ", str(self.worker.cut2e), " Events"))
-        print("{:27}:{:7} {}".format("Pass2muCut: ", str(self.worker.cut2mu), " Events"))
-        print("{:27}:{:7} {}".format("Pass2lCut: ", str(self.worker.cut2l), " Events"))
-        print("{:27}:{:7} {}".format("Pass2eCut (40 < mll < 180): ", str(self.worker.cut2e_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("Pass2muCut (40 < mll < 180): ", str(self.worker.cut2mu_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("Pass2lCut (40 < mll < 180): ", str(self.worker.cut2l_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("PassMETcut(gt 150): ", str(self.worker.cutMETlt150), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l1JCut: ", str(self.worker.cut2l1J), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l2jCut: ", str(self.worker.cut2l2j), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l1Jor2jCut: ", str(self.worker.cut2l1Jor2j), " Events"))
-        print("{:27}:{:7} {}".format("passZZSelection: ", str(self.passZZ2l2qEvts), " Events"))
+        # Cut flow data for 4l, 2l2q, 2l2nu channels for json output
+        cutFlowData = {
+            "General": self.cutFlowCounts,
+            "4l_Channel": {},
+            "2l2q_Channel": {},
+            "2l2nu_Channel": {}
+        }
 
+        for key, value in self.cutFlowCounts.items():
+            print("{:27}:{:7} {}".format(key, str(value), " Events"))
 
-        print("\n==================   2l2nu    ==============\n")
-        print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
-        print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cut2l_met: ", str(self.worker.HZZ2l2nu_cut2l_met), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_CutOppositeCharge: ", str(self.worker.HZZ2l2nu_CutOppositeCharge), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutpTl1l2: ", str(self.worker.HZZ2l2nu_cutpTl1l2), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutETAl1l2: ", str(self.worker.HZZ2l2nu_cutETAl1l2), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutmZ1Window: ", str(self.worker.HZZ2l2nu_cutmZ1Window), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutZ1Pt: ", str(self.worker.HZZ2l2nu_cutZ1Pt), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutbtag: ", str(self.worker.HZZ2l2nu_cutbtag), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutdPhiJetMET: ", str(self.worker.HZZ2l2nu_cutdPhiJetMET), " Events"))
-        print("{:27}:{:7} {}".format("HZZ2l2nu_cutMETgT100: ", str(self.worker.HZZ2l2nu_cutMETgT100), " Events"))
+        # Alternatively, for dynamic worker attributes
+        dynamicCuts_4l = ["cut4e", "cutghost4e", "cutLepPt4e", "cutQCD4e", "cutZZ4e", "cutm4l4e",
+                          "cut4mu", "cutghost4mu", "cutLepPt4mu", "cutQCD4mu", "cutZZ4mu", "cutm4l4mu",
+                          "cut2e2mu", "cutghost2e2mu", "cutLepPt2e2mu", "cutQCD2e2mu", "cutZZ2e2mu",
+                          "cutm4l2e2mu"]
+        dynamicCuts_2l2q = ["HZZ2l2qNu_cut2l", "HZZ2l2qNu_cutOppositeCharge", "HZZ2l2qNu_cutpTl1l2",
+                             "HZZ2l2qNu_cutETAl1l2", "HZZ2l2qNu_cutmZ1Window", "HZZ2l2qNu_cutZ1Pt",
+                             "cut2l1J", "cut2l2j", "cut2l1Jor2j"]
+        dynamicCuts_2l2nu = ["HZZ2l2qNu_cut2l", "HZZ2l2qNu_cutOppositeCharge", "HZZ2l2qNu_cutpTl1l2",
+                             "HZZ2l2qNu_cutETAl1l2", "HZZ2l2qNu_cutmZ1Window", "HZZ2l2qNu_cutZ1Pt",
+                             "HZZ2l2nu_cutbtag", "HZZ2l2nu_cutdPhiJetMET", "HZZ2l2nu_cutMETgT100"]
+
+        print("\n4l channel cut flow table:")
+        for cut in dynamicCuts_4l:
+            print("{:27}:{:7} {}".format(cut, str(getattr(self.worker, cut)), " Events"))
+            cutFlowData["4l_Channel"][cut] = getattr(self.worker, cut, 'N/A')
+
+        print("\n2l2q channel cut flow table:")
+        for cut in dynamicCuts_2l2q:
+            print("{:27}:{:7} {}".format(cut, str(getattr(self.worker, cut)), " Events"))
+            cutFlowData["2l2q_Channel"][cut] = getattr(self.worker, cut, 'N/A')
+
+        print("\n2l2nu channel cut flow table:")
+        for cut in dynamicCuts_2l2nu:
+            print("{:27}:{:7} {}".format(cut, str(getattr(self.worker, cut)), " Events"))
+            cutFlowData["2l2nu_Channel"][cut] = getattr(self.worker, cut, 'N/A')
 
         print("\n========== END: Print Cut flow table  ====================\n")
 
-        # save the cut-flow information in a JSON file
-        with open("CutFlow.json", 'w') as f:
-            f.write("{\n")
-            f.write("\"Total\": "+str(self.passAllEvts)+",\n")
-            f.write("\"PassTrig\": "+str(self.passtrigEvts)+",\n")
-            f.write("\"PassMETFilters\": "+str(self.passMETFilters)+",\n")
-            f.write("\"HZZ2l2nu_cut2l_met\": "+str(self.worker.HZZ2l2nu_cut2l_met)+",\n")
-            f.write("\"HZZ2l2nu_CutOppositeCharge\": "+str(self.worker.HZZ2l2nu_CutOppositeCharge)+",\n")
-            f.write("\"HZZ2l2nu_cutpTl1l2\": "+str(self.worker.HZZ2l2nu_cutpTl1l2)+",\n")
-            f.write("\"HZZ2l2nu_cutETAl1l2\": "+str(self.worker.HZZ2l2nu_cutETAl1l2)+",\n")
-            f.write("\"HZZ2l2nu_cutmZ1Window\": "+str(self.worker.HZZ2l2nu_cutmZ1Window)+",\n")
-            f.write("\"HZZ2l2nu_cutZ1Pt\": "+str(self.worker.HZZ2l2nu_cutZ1Pt)+",\n")
-            f.write("\"HZZ2l2nu_cutbtag\": "+str(self.worker.HZZ2l2nu_cutbtag)+",\n")
-            f.write("\"HZZ2l2nu_cutdPhiJetMET\": "+str(self.worker.HZZ2l2nu_cutdPhiJetMET)+",\n")
-            f.write("\"HZZ2l2nu_cutMETgT100\": "+str(self.worker.HZZ2l2nu_cutMETgT100)+"\n")
-            f.write("}\n")
+        # Write the cut flow data to a json file
+        with open("CutFlowData.json", "w") as jsonFile:
+            json.dump(cutFlowData, jsonFile, indent=4)
 
         pass
 
@@ -146,8 +174,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("passZZ2l2nuSelection",  "O")
         self.out.branch("isBoosted2l2q",  "O")
         self.out.branch("HZZ2l2nu_ifVBF", "O")
-        self.out.branch("HZZ2l2nu_isELE", "O")
-        self.out.branch("HZZ2l2nu_CutOppositeChargeFlag", "O")
+        self.out.branch("HZZ2l2qNu_isELE", "O")
+        self.out.branch("HZZ2l2qNu_cutOppositeChargeFlag", "O")
 
         # Branches for leptons related varialbes: 4l, 2l2q, 2l2nu
         self.out.branch("massL1",  "F")
@@ -218,11 +246,12 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("HZZ2l2nu_ZZpT",  "F")
 
         # Branches for 2l2nu channel: VBF jets and dijet kinematics
-        self.out.branch("HZZ2l2nu_nJets", "I")
+        self.out.branch("HZZ2l2qNu_nJets", "I")
 
-        self.out.branch("nTightBtaggedJets", "I")
-        self.out.branch("nMediumBtaggedJets", "I")
-        self.out.branch("nLooseBtaggedJets", "I")
+        self.out.branch("HZZ2l2qNu_nJets", "I")
+        self.out.branch("HZZ2l2qNu_nTightBtagJets", "I")
+        self.out.branch("HZZ2l2qNu_nMediumBtagJets", "I")
+        self.out.branch("HZZ2l2qNu_nLooseBtagJets", "I")
 
         self.out.branch("HZZ2l2nu_VBFIndexJet1",  "I")
         self.out.branch("HZZ2l2nu_VBFIndexJet2",  "I")
@@ -246,10 +275,10 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("HZZ2l2nu_VBFdR_jj",  "F")
 
         # Branches for 2l2q channel
-        self.out.branch("boostedJet_PNScore", "F")
-        self.out.branch("boostedJet_Index", "I")
-        self.out.branch("resolvedJet1_Index", "I")
-        self.out.branch("resolvedJet2_Index", "I")
+        self.out.branch("HZZ2l2q_boostedJet_PNScore", "F")
+        self.out.branch("HZZ2l2q_boostedJet_Index", "I")
+        self.out.branch("HZZ2l2q_resolvedJet1_Index", "I")
+        self.out.branch("HZZ2l2q_resolvedJet2_Index", "I")
 
         # FSR branches for leptons
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
@@ -444,33 +473,36 @@ class HZZAnalysisCppProducer(Module):
         foundZZCandidate_2l2nu = False # for 2l2nu
         passZZ2l2nuSelection = False
         HZZ2l2nu_ifVBF = False
-        HZZ2l2nu_isELE = False
-        HZZ2l2nu_CutOppositeChargeFlag = False
+        HZZ2l2qNu_isELE = False
+        HZZ2l2qNu_cutOppositeChargeFlag = False
+        isBoosted2l2q = False
 
-        foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
-        isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
-        if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
+        if self.worker.GetZ1_2l2qOR2l2nu():
+            foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
+            isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
+            if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
 
-        foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
+            foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
         # FIXME: To debug 2l2q and 2l2nu channels, I am commenting out the 4l channel
         # foundZZCandidate_4l = self.worker.ZZSelection_4l()
 
-        boostedJet_PNScore = self.worker.boostedJet_PNScore
-        boostedJet_Index = self.worker.boostedJet_Index
-        resolvedJet1_Index = self.worker.resolvedJet1_Index
-        resolvedJet2_Index = self.worker.resolvedJet2_Index
+        HZZ2l2q_boostedJet_PNScore = self.worker.boostedJet_PNScore
+        HZZ2l2q_boostedJet_Index = self.worker.boostedJet_Index
+        HZZ2l2q_resolvedJet1_Index = self.worker.resolvedJet1_Index
+        HZZ2l2q_resolvedJet2_Index = self.worker.resolvedJet2_Index
         HZZ2l2nu_VBFIndexJet1 = self.worker.HZZ2l2nu_VBFIndexJet1
         HZZ2l2nu_VBFIndexJet2 = self.worker.HZZ2l2nu_VBFIndexJet2
         HZZ2l2nu_minDPhi_METAK4 = self.worker.minDeltaPhi
 
         # For 2l2nu channel
         HZZ2l2nu_ifVBF = self.worker.HZZ2l2nu_ifVBF
-        HZZ2l2nu_isELE = self.worker.HZZ2l2nu_isELE
-        HZZ2l2nu_CutOppositeChargeFlag = self.worker.HZZ2l2nu_CutOppositeChargeFlag
-        HZZ2l2nu_nJets = self.worker.HZZ2l2nu_nJets
-        nTightBtaggedJets = self.worker.nTightBtaggedJets
-        nMediumBtaggedJets = self.worker.nMediumBtaggedJets
-        nLooseBtaggedJets = self.worker.nLooseBtaggedJets
+        HZZ2l2qNu_isELE = self.worker.HZZ2l2qNu_isELE
+        HZZ2l2qNu_cutOppositeChargeFlag = self.worker.HZZ2l2qNu_cutOppositeChargeFlag
+        HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
+        HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
+        HZZ2l2qNu_nTightBtagJets = self.worker.HZZ2l2qNu_nTightBtagJets
+        HZZ2l2qNu_nMediumBtagJets = self.worker.HZZ2l2qNu_nMediumBtagJets
+        HZZ2l2qNu_nLooseBtagJets = self.worker.HZZ2l2qNu_nLooseBtagJets
 
         if (foundZZCandidate_4l or foundZZCandidate_2l2q or foundZZCandidate_2l2nu):
             if self.DEBUG: print("Found ZZ candidate (4l, 2l2q, 2l2nu): ({}, {}, {})".format(foundZZCandidate_4l, foundZZCandidate_2l2q, foundZZCandidate_2l2nu))
@@ -700,19 +732,20 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("passZZ2l2nuSelection",passZZ2l2nuSelection)
         self.out.fillBranch("isBoosted2l2q",isBoosted2l2q)
 
-        self.out.fillBranch("boostedJet_PNScore", boostedJet_PNScore)
-        self.out.fillBranch("boostedJet_Index", boostedJet_Index)
+        self.out.fillBranch("HZZ2l2q_boostedJet_PNScore", HZZ2l2q_boostedJet_PNScore)
+        self.out.fillBranch("HZZ2l2q_boostedJet_Index", HZZ2l2q_boostedJet_Index)
 
-        self.out.fillBranch("resolvedJet1_Index",resolvedJet1_Index)
-        self.out.fillBranch("resolvedJet2_Index",resolvedJet2_Index)
+        self.out.fillBranch("HZZ2l2q_resolvedJet1_Index",HZZ2l2q_resolvedJet1_Index)
+        self.out.fillBranch("HZZ2l2q_resolvedJet2_Index",HZZ2l2q_resolvedJet2_Index)
 
         self.out.fillBranch("HZZ2l2nu_ifVBF",HZZ2l2nu_ifVBF)
-        self.out.fillBranch("HZZ2l2nu_isELE",HZZ2l2nu_isELE)
-        self.out.fillBranch("HZZ2l2nu_CutOppositeChargeFlag",HZZ2l2nu_CutOppositeChargeFlag)
-        self.out.fillBranch("HZZ2l2nu_nJets",HZZ2l2nu_nJets)
-        self.out.fillBranch("nTightBtaggedJets",nTightBtaggedJets)
-        self.out.fillBranch("nMediumBtaggedJets",nMediumBtaggedJets)
-        self.out.fillBranch("nLooseBtaggedJets",nLooseBtaggedJets)
+        self.out.fillBranch("HZZ2l2qNu_isELE",HZZ2l2qNu_isELE)
+        self.out.fillBranch("HZZ2l2qNu_cutOppositeChargeFlag",HZZ2l2qNu_cutOppositeChargeFlag)
+        self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
+        self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
+        self.out.fillBranch("HZZ2l2qNu_nTightBtagJets",HZZ2l2qNu_nTightBtagJets)
+        self.out.fillBranch("HZZ2l2qNu_nMediumBtagJets",HZZ2l2qNu_nMediumBtagJets)
+        self.out.fillBranch("HZZ2l2qNu_nLooseBtagJets",HZZ2l2qNu_nLooseBtagJets)
 
         return keepIt
 

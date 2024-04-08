@@ -3,7 +3,7 @@ from collections import OrderedDict
 import json
 
 # Load the JSON data
-cutFlowPath = '/afs/cern.ch/work/r/rasharma/nanoAODToolDev_H4l/CMSSW_10_6_30/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim/CutFlow.json'  # Make sure this path is correct
+cutFlowPath = 'CutFlowData.json'  # Make sure this path is correct
 with open(cutFlowPath, 'r') as file:
     cutFlowData = json.load(file, object_pairs_hook=OrderedDict)
 

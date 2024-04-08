@@ -73,7 +73,6 @@ keep L1PreFiring*
 keep VBF*
 keep is*
 keep *Index
-keep boostedJet_*
 keep *4l
 keep *Z1
 keep *Z2
