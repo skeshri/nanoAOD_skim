@@ -137,10 +137,10 @@ def main(args):
                 outjdl_file.write("Arguments = "+(xrd_redirector+root_file)+" "+output_path+"  "+EOS_Output_path+ " " + (root_file.split('/')[-1]).split('.')[0] + "\n")
                 outjdl_file.write("Queue \n")
                 if args.debug:
-                    # break the for loop after 1 iteration
+                    # break the for loop after 1 iteration to submit only 1 job
                     break
             if args.debug:
-                # break the for loop after 1 iteration
+                # break the for loop after 1 iteration to submit only 1 job
                 break
             print("Number of files: ",count_root_files)
             print("Number of jobs (till now): ",count_jobs)

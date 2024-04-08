@@ -61,7 +61,10 @@ def main():
         print("ERROR: No input files found. Exiting.")
         exit(1)
 
-    # Determine the year and type (MC or Data)
+    """Determine the year and type (MC or Data) of input ROOT file:
+    For data the string "/data/" is always there. So, we take this
+    as handle to decide if the root file is MC or data.
+    """
     first_file = testfilelist[0]
     isMC = "/data/" not in first_file
 
