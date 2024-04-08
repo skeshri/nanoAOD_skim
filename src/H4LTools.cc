@@ -1150,7 +1150,9 @@ bool H4LTools::ZZSelection_2l2nu()
     if (DEBUG)
         std::cout << "nTightEleChgSum: " << nTightEleChgSum << "\tnTightMuChgSum: " << nTightMuChgSum << std::endl;
 
-    if (abs(nTightEleChgSum) != 0 and abs(nTightMuChgSum) != 0)
+
+    // Check if the absolute values of nTightEleChgSum and nTightMuChgSum are not zero
+    if (std::abs(nTightEleChgSum) != 0 && std::abs(nTightMuChgSum) != 0)
     {
         HZZ2l2nu_CutOppositeCharge++;
         HZZ2l2nu_CutOppositeChargeFlag = true;
@@ -1281,25 +1283,25 @@ bool H4LTools::ZZSelection_2l2nu()
                 if (VBF_jj.M() > VBF_jj_mjj)
                 {
                     VBF_jj_mjj = VBF_jj.M();
-                    VBF_jet1_index = jetidx[i];
-                    VBF_jet2_index = jetidx[j];
+                    HZZ2l2nu_VBFIndexJet1 = jetidx[i];
+                    HZZ2l2nu_VBFIndexJet2 = jetidx[j];
                     if (DEBUG)
-                        std::cout << "Inside: VBF_jj_mjj: " << VBF_jj_mjj << "\tVBF_jet1_index: " << VBF_jet1_index << "\tVBF_jet2_index: " << VBF_jet2_index << std::endl;
+                        std::cout << "Inside: VBF_jj_mjj: " << VBF_jj_mjj << "\tHZZ2l2nu_VBFIndexJet1: " << HZZ2l2nu_VBFIndexJet1 << "\tHZZ2l2nu_VBFIndexJet2: " << HZZ2l2nu_VBFIndexJet2 << std::endl;
                 }
             }
         }
     }
 
-    if (jetidx.size() >= 2 && VBF_jet1_index >= 0 && VBF_jet2_index >= 0)
+    if (jetidx.size() >= 2 && HZZ2l2nu_VBFIndexJet1 >= 0 && HZZ2l2nu_VBFIndexJet2 >= 0)
     {
         HZZ2l2nu_ifVBF = true;
         TLorentzVector VBF_jet1;
         TLorentzVector VBF_jet2;
-        VBF_jet1.SetPtEtaPhiM(Jet_pt[VBF_jet1_index], Jet_eta[VBF_jet1_index], Jet_phi[VBF_jet1_index], Jet_mass[VBF_jet1_index]);
-        VBF_jet2.SetPtEtaPhiM(Jet_pt[VBF_jet2_index], Jet_eta[VBF_jet2_index], Jet_phi[VBF_jet2_index], Jet_mass[VBF_jet2_index]);
+        VBF_jet1.SetPtEtaPhiM(Jet_pt[HZZ2l2nu_VBFIndexJet1], Jet_eta[HZZ2l2nu_VBFIndexJet1], Jet_phi[HZZ2l2nu_VBFIndexJet1], Jet_mass[HZZ2l2nu_VBFIndexJet1]);
+        VBF_jet2.SetPtEtaPhiM(Jet_pt[HZZ2l2nu_VBFIndexJet2], Jet_eta[HZZ2l2nu_VBFIndexJet2], Jet_phi[HZZ2l2nu_VBFIndexJet2], Jet_mass[HZZ2l2nu_VBFIndexJet2]);
         TLorentzVector VBF_jj = VBF_jet1 + VBF_jet2;
         if (DEBUG)
-            std::cout << "Outside: VBF_jj_mjj: " << VBF_jj.M() << "\tVBF_jet1_index: " << VBF_jet1_index << "\tVBF_jet2_index: " << VBF_jet2_index << std::endl;
+            std::cout << "Outside: VBF_jj_mjj: " << VBF_jj.M() << "\tHZZ2l2nu_VBFIndexJet1: " << HZZ2l2nu_VBFIndexJet1 << "\tHZZ2l2nu_VBFIndexJet2: " << HZZ2l2nu_VBFIndexJet2 << std::endl;
     }
 
     return foundZZCandidate;

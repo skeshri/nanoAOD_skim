@@ -14,8 +14,8 @@ keep BeamSpot*
 #
 # Event Quality and Metadata
 #
-keep Flag*
-keep HTXS*
+# keep Flag*
+# keep HTXS*
 keep Pileup*
 #
 # Vertex Information
@@ -32,8 +32,8 @@ keep OtherPV*
 #keep nLowPtElectron*
 #keep Muon*
 #keep nMuon
-#keep Photon*
-#keep nPhoton
+# keep Photon*
+# keep nPhoton
 #keep Tau*
 #keep nTau
 #keep Jet*
@@ -48,7 +48,7 @@ keep PuppiMET*
 #keep RawPuppiMET*
 #keep CaloMET*
 keep ChsMET*
-keep DeepMET*
+# keep DeepMET*
 keep TkMET*
 #
 #
@@ -57,7 +57,7 @@ keep TkMET*
 keep btag*
 #keep CorrT1METJet*
 #keep nCorrT1METJet
-keep fixedGridRho*
+# keep fixedGridRho*
 keep Rho_*
 #
 # Isolation Tracks
@@ -73,7 +73,7 @@ keep L1PreFiring*
 keep VBF*
 keep is*
 keep *Index
-keep boosted*
+keep boostedJet_*
 keep *4l
 keep *Z1
 keep *Z2
@@ -89,6 +89,7 @@ keep D_*
 keep lep*
 keep pass*
 keep higgs*
+keep HZZ*
 #
 # Generator Level Information
 #

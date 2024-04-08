@@ -140,39 +140,16 @@ class HZZAnalysisCppProducer(Module):
         self.initReaders(inputTree)  # initReaders must be called in beginFile
         self.out = wrappedOutputTree
 
-        # boolean branch for 4l, 2l2q, 2l2nu channels
+        # boolean branches for 4l, 2l2q, 2l2nu channels
         self.out.branch("passZZ4lSelection",  "O")
         self.out.branch("passZZ2l2qSelection",  "O")
         self.out.branch("passZZ2l2nuSelection",  "O")
         self.out.branch("isBoosted2l2q",  "O")
-
-        self.out.branch("boostedJet_PNScore", "F")
-        self.out.branch("boostedJet_Index", "I")
-        self.out.branch("resolvedJet1_Index", "I")
-        self.out.branch("resolvedJet2_Index", "I")
         self.out.branch("HZZ2l2nu_ifVBF", "O")
-        self.out.branch("HZZ2l2nu_nJets", "I")
-        self.out.branch("nTightBtaggedJets", "I")
-        self.out.branch("nMediumBtaggedJets", "I")
-        self.out.branch("nLooseBtaggedJets", "I")
+        self.out.branch("HZZ2l2nu_isELE", "O")
+        self.out.branch("HZZ2l2nu_CutOppositeChargeFlag", "O")
 
-        # common branches for 4l, 2l2q, 2l2nu channels
-        self.out.branch("massZ1",  "F")
-        self.out.branch("pTZ1",  "F")
-        self.out.branch("etaZ1",  "F")
-        self.out.branch("phiZ1",  "F")
-
-        self.out.branch("massZ2",  "F")
-        self.out.branch("pTZ2",  "F")
-        self.out.branch("etaZ2",  "F")
-        self.out.branch("phiZ2",  "F")
-
-        # Branches for 4l channel
-        self.out.branch("mass4l",  "F")
-        self.out.branch("pT4l",  "F")
-        self.out.branch("eta4l",  "F")
-        self.out.branch("phi4l",  "F")
-
+        # Branches for leptons related varialbes: 4l, 2l2q, 2l2nu
         self.out.branch("massL1",  "F")
         self.out.branch("pTL1",  "F")
         self.out.branch("etaL1",  "F")
@@ -190,12 +167,41 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("etaL4",  "F")
         self.out.branch("phiL4",  "F")
 
+        # Branches for 4l channel: ZZ kinematics
+        self.out.branch("mass4l",  "F")
+        self.out.branch("pT4l",  "F")
+        self.out.branch("eta4l",  "F")
+        self.out.branch("phi4l",  "F")
+
+        # Branches for 4l channel: MELA discriminants
         self.out.branch("D_CP",  "F")
         self.out.branch("D_0m",  "F")
         self.out.branch("D_0hp",  "F")
         self.out.branch("D_int",  "F")
         self.out.branch("D_L1",  "F")
         self.out.branch("D_L1Zg",  "F")
+
+        # Branches for 4l channel only; These contains the kinematics of the AK4 jets
+        self.out.branch("mj1",  "F")
+        self.out.branch("pTj1",  "F")
+        self.out.branch("etaj1",  "F")
+        self.out.branch("phij1",  "F")
+
+        self.out.branch("mj2",  "F")
+        self.out.branch("pTj2",  "F")
+        self.out.branch("etaj2",  "F")
+        self.out.branch("phij2",  "F")
+
+        # common branches for 4l, 2l2q, 2l2nu channels
+        self.out.branch("massZ1",  "F")
+        self.out.branch("pTZ1",  "F")
+        self.out.branch("etaZ1",  "F")
+        self.out.branch("phiZ1",  "F")
+
+        self.out.branch("massZ2",  "F")
+        self.out.branch("pTZ2",  "F")
+        self.out.branch("etaZ2",  "F")
+        self.out.branch("phiZ2",  "F")
 
         # Branches for 2l2q channel
         self.out.branch("massZ2_2j",  "F")
@@ -207,39 +213,43 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("pTZ2_met",  "F")
         self.out.branch("EneZ2_met",  "F")
 
-        # Branches for 2l2nu channel: VBF jets and dijet kinematics
-        self.out.branch("VBF_jet1_index",  "I")
-        self.out.branch("VBF_jet2_index",  "I")
-        self.out.branch("minDeltaPhi_METAK4jet",  "F")
+        # Branches for 2l2nu channel: ZZ kinematics
+        self.out.branch("HZZ2l2nu_ZZmT",  "F")
+        self.out.branch("HZZ2l2nu_ZZpT",  "F")
 
         # Branches for 2l2nu channel: VBF jets and dijet kinematics
-        self.out.branch("VBF_2l2nu_jet1_pT",  "F")
-        self.out.branch("VBF_2l2nu_jet1_eta",  "F")
-        self.out.branch("VBF_2l2nu_jet1_phi",  "F")
-        self.out.branch("VBF_2l2nu_jet1_mass",  "F")
+        self.out.branch("HZZ2l2nu_nJets", "I")
 
-        self.out.branch("VBF_2l2nu_jet2_pT",  "F")
-        self.out.branch("VBF_2l2nu_jet2_eta",  "F")
-        self.out.branch("VBF_2l2nu_jet2_phi",  "F")
-        self.out.branch("VBF_2l2nu_jet2_mass",  "F")
+        self.out.branch("nTightBtaggedJets", "I")
+        self.out.branch("nMediumBtaggedJets", "I")
+        self.out.branch("nLooseBtaggedJets", "I")
 
-        self.out.branch("VBF_2l2nu_dijet_mass",  "F")
-        self.out.branch("VBF_2l2nu_dijet_pT",  "F")
-        self.out.branch("VBF_2l2nu_dijet_E",  "F")
-        self.out.branch("VBF_2l2nu_dEta_jj",  "F")
-        self.out.branch("VBF_2l2nu_dPhi_jj",  "F")
-        self.out.branch("VBF_2l2nu_dR_jj",  "F")
+        self.out.branch("HZZ2l2nu_VBFIndexJet1",  "I")
+        self.out.branch("HZZ2l2nu_VBFIndexJet2",  "I")
+        self.out.branch("HZZ2l2nu_minDPhi_METAK4",  "F")
 
+        self.out.branch("HZZ2l2nu_VBFjet1_pT",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet1_eta",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet1_phi",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet1_mass",  "F")
 
-        self.out.branch("mj1",  "F")
-        self.out.branch("pTj1",  "F")
-        self.out.branch("etaj1",  "F")
-        self.out.branch("phij1",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet2_pT",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet2_eta",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet2_phi",  "F")
+        self.out.branch("HZZ2l2nu_VBFjet2_mass",  "F")
 
-        self.out.branch("mj2",  "F")
-        self.out.branch("pTj2",  "F")
-        self.out.branch("etaj2",  "F")
-        self.out.branch("phij2",  "F")
+        self.out.branch("HZZ2l2nu_VBFdijet_mass",  "F")
+        self.out.branch("HZZ2l2nu_VBFdijet_pT",  "F")
+        self.out.branch("HZZ2l2nu_VBFdijet_E",  "F")
+        self.out.branch("HZZ2l2nu_VBFdEta_jj",  "F")
+        self.out.branch("HZZ2l2nu_VBFdPhi_jj",  "F")
+        self.out.branch("HZZ2l2nu_VBFdR_jj",  "F")
+
+        # Branches for 2l2q channel
+        self.out.branch("boostedJet_PNScore", "F")
+        self.out.branch("boostedJet_Index", "I")
+        self.out.branch("resolvedJet1_Index", "I")
+        self.out.branch("resolvedJet2_Index", "I")
 
         # FSR branches for leptons
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
@@ -301,27 +311,30 @@ class HZZAnalysisCppProducer(Module):
         phiZ2_met = -999.
         pTZ2_met = -999.
         EneZ2_met = -999.
-        minDeltaPhi_METAK4jet = 999.0
+        HZZ2l2nu_minDPhi_METAK4 = 999.0
 
-        VBF_jet1_index = -999
-        VBF_jet2_index = -999
+        HZZ2l2nu_ZZmT = -999.
+        HZZ2l2nu_ZZpT = -999.
 
-        VBF_2l2nu_jet1_pT = -999.
-        VBF_2l2nu_jet1_eta = -999.
-        VBF_2l2nu_jet1_phi = -999.
-        VBF_2l2nu_jet1_mass = -999.
+        HZZ2l2nu_VBFIndexJet1 = -999
+        HZZ2l2nu_VBFIndexJet2 = -999
 
-        VBF_2l2nu_jet2_pT = -999.
-        VBF_2l2nu_jet2_eta = -999.
-        VBF_2l2nu_jet2_phi = -999.
-        VBF_2l2nu_jet2_mass = -999.
+        HZZ2l2nu_VBFjet1_pT = -999.
+        HZZ2l2nu_VBFjet1_eta = -999.
+        HZZ2l2nu_VBFjet1_phi = -999.
+        HZZ2l2nu_VBFjet1_mass = -999.
 
-        VBF_2l2nu_dijet_mass = -999.
-        VBF_2l2nu_dijet_pT = -999.
-        VBF_2l2nu_dijet_E = -999.
-        VBF_2l2nu_dEta_jj = -999.
-        VBF_2l2nu_dPhi_jj = -999.
-        VBF_2l2nu_dR_jj = -999.
+        HZZ2l2nu_VBFjet2_pT = -999.
+        HZZ2l2nu_VBFjet2_eta = -999.
+        HZZ2l2nu_VBFjet2_phi = -999.
+        HZZ2l2nu_VBFjet2_mass = -999.
+
+        HZZ2l2nu_VBFdijet_mass = -999.
+        HZZ2l2nu_VBFdijet_pT = -999.
+        HZZ2l2nu_VBFdijet_E = -999.
+        HZZ2l2nu_VBFdEta_jj = -999.
+        HZZ2l2nu_VBFdPhi_jj = -999.
+        HZZ2l2nu_VBFdR_jj = -999.
 
         pTL1 = -999.
         etaL1 = -999.
@@ -382,14 +395,15 @@ class HZZAnalysisCppProducer(Module):
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
-        Photons = Collection(event, "Photon")
+        # Photons = Collection(event, "Photon")
         jets = Collection(event, "Jet")
         FatJets = Collection(event, "FatJet")
         met = Object(event, "MET", None)
 
-        for photon in Photons:
-            # Keep photons if pT > 55, |eta| < 2.5 and skip the transition region of barrel and endcap
-            pass
+        # for photon in Photons:
+        #     # Keep photons if pT > 55, |eta| < 2.5 and skip the transition region of barrel and endcap
+        #     if photon.pt > 55 and abs(photon.eta) < 2.5 and not (1.4442 < abs(photon.eta) < 1.566):
+        #         return keepIt
 
         if isMC:
             genparts = Collection(event, "GenPart")
@@ -430,6 +444,8 @@ class HZZAnalysisCppProducer(Module):
         foundZZCandidate_2l2nu = False # for 2l2nu
         passZZ2l2nuSelection = False
         HZZ2l2nu_ifVBF = False
+        HZZ2l2nu_isELE = False
+        HZZ2l2nu_CutOppositeChargeFlag = False
 
         foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
         isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
@@ -443,12 +459,14 @@ class HZZAnalysisCppProducer(Module):
         boostedJet_Index = self.worker.boostedJet_Index
         resolvedJet1_Index = self.worker.resolvedJet1_Index
         resolvedJet2_Index = self.worker.resolvedJet2_Index
-        VBF_jet1_index = self.worker.VBF_jet1_index
-        VBF_jet2_index = self.worker.VBF_jet2_index
-        minDeltaPhi_METAK4jet = self.worker.minDeltaPhi
+        HZZ2l2nu_VBFIndexJet1 = self.worker.HZZ2l2nu_VBFIndexJet1
+        HZZ2l2nu_VBFIndexJet2 = self.worker.HZZ2l2nu_VBFIndexJet2
+        HZZ2l2nu_minDPhi_METAK4 = self.worker.minDeltaPhi
 
         # For 2l2nu channel
         HZZ2l2nu_ifVBF = self.worker.HZZ2l2nu_ifVBF
+        HZZ2l2nu_isELE = self.worker.HZZ2l2nu_isELE
+        HZZ2l2nu_CutOppositeChargeFlag = self.worker.HZZ2l2nu_CutOppositeChargeFlag
         HZZ2l2nu_nJets = self.worker.HZZ2l2nu_nJets
         nTightBtaggedJets = self.worker.nTightBtaggedJets
         nMediumBtaggedJets = self.worker.nMediumBtaggedJets
@@ -506,32 +524,35 @@ class HZZAnalysisCppProducer(Module):
             pTZ2_met = self.worker.Z2_met.Pt()
             EneZ2_met = self.worker.Z2_met.E()
 
+            HZZ2l2nu_ZZmT = self.worker.ZZ_metsystem.Mt()
+            HZZ2l2nu_ZZpT = self.worker.ZZ_metsystem.Pt()
+
             # Define TLorentzVector for VBF jets and get dijet mass
-            if VBF_jet1_index>=0 and VBF_jet2_index>=0:
+            if HZZ2l2nu_VBFIndexJet1>=0 and HZZ2l2nu_VBFIndexJet2>=0:
                 VBF_jet1 = ROOT.TLorentzVector()
                 VBF_jet2 = ROOT.TLorentzVector()
-                VBF_jet1.SetPtEtaPhiM(jets[VBF_jet1_index].pt, jets[VBF_jet1_index].eta, jets[VBF_jet1_index].phi, jets[VBF_jet1_index].mass)
-                VBF_jet2.SetPtEtaPhiM(jets[VBF_jet2_index].pt, jets[VBF_jet2_index].eta, jets[VBF_jet2_index].phi, jets[VBF_jet2_index].mass)
+                VBF_jet1.SetPtEtaPhiM(jets[HZZ2l2nu_VBFIndexJet1].pt, jets[HZZ2l2nu_VBFIndexJet1].eta, jets[HZZ2l2nu_VBFIndexJet1].phi, jets[HZZ2l2nu_VBFIndexJet1].mass)
+                VBF_jet2.SetPtEtaPhiM(jets[HZZ2l2nu_VBFIndexJet2].pt, jets[HZZ2l2nu_VBFIndexJet2].eta, jets[HZZ2l2nu_VBFIndexJet2].phi, jets[HZZ2l2nu_VBFIndexJet2].mass)
                 VBF_dijet = VBF_jet1 + VBF_jet2
                 if self.DEBUG: print("in .py file: VBF_dijet_mass: ", VBF_dijet.M())
 
-                VBF_2l2nu_jet1_pT = jets[VBF_jet1_index].pt
-                VBF_2l2nu_jet1_eta = jets[VBF_jet1_index].eta
-                VBF_2l2nu_jet1_phi = jets[VBF_jet1_index].phi
-                VBF_2l2nu_jet1_mass = jets[VBF_jet1_index].mass
+                HZZ2l2nu_VBFjet1_pT = jets[HZZ2l2nu_VBFIndexJet1].pt
+                HZZ2l2nu_VBFjet1_eta = jets[HZZ2l2nu_VBFIndexJet1].eta
+                HZZ2l2nu_VBFjet1_phi = jets[HZZ2l2nu_VBFIndexJet1].phi
+                HZZ2l2nu_VBFjet1_mass = jets[HZZ2l2nu_VBFIndexJet1].mass
 
-                VBF_2l2nu_jet2_pT = jets[VBF_jet2_index].pt
-                VBF_2l2nu_jet2_eta = jets[VBF_jet2_index].eta
-                VBF_2l2nu_jet2_phi = jets[VBF_jet2_index].phi
-                VBF_2l2nu_jet2_mass = jets[VBF_jet2_index].mass
+                HZZ2l2nu_VBFjet2_pT = jets[HZZ2l2nu_VBFIndexJet2].pt
+                HZZ2l2nu_VBFjet2_eta = jets[HZZ2l2nu_VBFIndexJet2].eta
+                HZZ2l2nu_VBFjet2_phi = jets[HZZ2l2nu_VBFIndexJet2].phi
+                HZZ2l2nu_VBFjet2_mass = jets[HZZ2l2nu_VBFIndexJet2].mass
 
-                VBF_2l2nu_dijet_mass = VBF_dijet.M()
-                VBF_2l2nu_dijet_pT = VBF_dijet.Pt()
-                VBF_2l2nu_dijet_E = VBF_dijet.E()
+                HZZ2l2nu_VBFdijet_mass = VBF_dijet.M()
+                HZZ2l2nu_VBFdijet_pT = VBF_dijet.Pt()
+                HZZ2l2nu_VBFdijet_E = VBF_dijet.E()
 
-                VBF_2l2nu_dEta_jj = abs(VBF_jet1.Eta() - VBF_jet2.Eta())
-                VBF_2l2nu_dPhi_jj = abs(VBF_jet1.DeltaPhi(VBF_jet2))
-                VBF_2l2nu_dR_jj = VBF_jet1.DeltaR(VBF_jet2)
+                HZZ2l2nu_VBFdEta_jj = abs(VBF_jet1.Eta() - VBF_jet2.Eta())
+                HZZ2l2nu_VBFdPhi_jj = abs(VBF_jet1.DeltaPhi(VBF_jet2))
+                HZZ2l2nu_VBFdR_jj = VBF_jet1.DeltaR(VBF_jet2)
 
             #print("inside 2l2nu loop")
         #self.out.fillBranch("phiZ2_met",phiZ2_met)
@@ -597,27 +618,29 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("phiZ2_met",phiZ2_met)
         self.out.fillBranch("pTZ2_met",pTZ2_met)
         self.out.fillBranch("EneZ2_met",EneZ2_met)
-        self.out.fillBranch("minDeltaPhi_METAK4jet", minDeltaPhi_METAK4jet)
+        self.out.fillBranch("HZZ2l2nu_ZZmT", HZZ2l2nu_ZZmT)
+        self.out.fillBranch("HZZ2l2nu_ZZpT", HZZ2l2nu_ZZpT)
+        self.out.fillBranch("HZZ2l2nu_minDPhi_METAK4", HZZ2l2nu_minDPhi_METAK4)
 
-        self.out.fillBranch("VBF_jet1_index", VBF_jet1_index)
-        self.out.fillBranch("VBF_jet2_index", VBF_jet2_index)
+        self.out.fillBranch("HZZ2l2nu_VBFIndexJet1", HZZ2l2nu_VBFIndexJet1)
+        self.out.fillBranch("HZZ2l2nu_VBFIndexJet2", HZZ2l2nu_VBFIndexJet2)
 
-        self.out.fillBranch("VBF_2l2nu_jet1_pT", VBF_2l2nu_jet1_pT)
-        self.out.fillBranch("VBF_2l2nu_jet1_eta", VBF_2l2nu_jet1_eta)
-        self.out.fillBranch("VBF_2l2nu_jet1_phi", VBF_2l2nu_jet1_phi)
-        self.out.fillBranch("VBF_2l2nu_jet1_mass", VBF_2l2nu_jet1_mass)
+        self.out.fillBranch("HZZ2l2nu_VBFjet1_pT", HZZ2l2nu_VBFjet1_pT)
+        self.out.fillBranch("HZZ2l2nu_VBFjet1_eta", HZZ2l2nu_VBFjet1_eta)
+        self.out.fillBranch("HZZ2l2nu_VBFjet1_phi", HZZ2l2nu_VBFjet1_phi)
+        self.out.fillBranch("HZZ2l2nu_VBFjet1_mass", HZZ2l2nu_VBFjet1_mass)
 
-        self.out.fillBranch("VBF_2l2nu_jet2_pT", VBF_2l2nu_jet2_pT)
-        self.out.fillBranch("VBF_2l2nu_jet2_eta", VBF_2l2nu_jet2_eta)
-        self.out.fillBranch("VBF_2l2nu_jet2_phi", VBF_2l2nu_jet2_phi)
-        self.out.fillBranch("VBF_2l2nu_jet2_mass", VBF_2l2nu_jet2_mass)
+        self.out.fillBranch("HZZ2l2nu_VBFjet2_pT", HZZ2l2nu_VBFjet2_pT)
+        self.out.fillBranch("HZZ2l2nu_VBFjet2_eta", HZZ2l2nu_VBFjet2_eta)
+        self.out.fillBranch("HZZ2l2nu_VBFjet2_phi", HZZ2l2nu_VBFjet2_phi)
+        self.out.fillBranch("HZZ2l2nu_VBFjet2_mass", HZZ2l2nu_VBFjet2_mass)
 
-        self.out.fillBranch("VBF_2l2nu_dijet_mass", VBF_2l2nu_dijet_mass)
-        self.out.fillBranch("VBF_2l2nu_dijet_pT", VBF_2l2nu_dijet_pT)
-        self.out.fillBranch("VBF_2l2nu_dijet_E", VBF_2l2nu_dijet_E)
-        self.out.fillBranch("VBF_2l2nu_dEta_jj", VBF_2l2nu_dEta_jj)
-        self.out.fillBranch("VBF_2l2nu_dPhi_jj", VBF_2l2nu_dPhi_jj)
-        self.out.fillBranch("VBF_2l2nu_dR_jj", VBF_2l2nu_dR_jj)
+        self.out.fillBranch("HZZ2l2nu_VBFdijet_mass", HZZ2l2nu_VBFdijet_mass)
+        self.out.fillBranch("HZZ2l2nu_VBFdijet_pT", HZZ2l2nu_VBFdijet_pT)
+        self.out.fillBranch("HZZ2l2nu_VBFdijet_E", HZZ2l2nu_VBFdijet_E)
+        self.out.fillBranch("HZZ2l2nu_VBFdEta_jj", HZZ2l2nu_VBFdEta_jj)
+        self.out.fillBranch("HZZ2l2nu_VBFdPhi_jj", HZZ2l2nu_VBFdPhi_jj)
+        self.out.fillBranch("HZZ2l2nu_VBFdR_jj", HZZ2l2nu_VBFdR_jj)
 
         self.out.fillBranch("massZ2_2j",massZ2_2j)
         self.out.fillBranch("phiZ2_2j",phiZ2_2j)
@@ -684,6 +707,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("resolvedJet2_Index",resolvedJet2_Index)
 
         self.out.fillBranch("HZZ2l2nu_ifVBF",HZZ2l2nu_ifVBF)
+        self.out.fillBranch("HZZ2l2nu_isELE",HZZ2l2nu_isELE)
+        self.out.fillBranch("HZZ2l2nu_CutOppositeChargeFlag",HZZ2l2nu_CutOppositeChargeFlag)
         self.out.fillBranch("HZZ2l2nu_nJets",HZZ2l2nu_nJets)
         self.out.fillBranch("nTightBtaggedJets",nTightBtaggedJets)
         self.out.fillBranch("nMediumBtaggedJets",nMediumBtaggedJets)

@@ -274,8 +274,8 @@ public:
     int boostedJet_Index;   // Contains the inded of 2l2q case; the boosted jet index that satisfies the P/N score and pT cut>200 GeV; No mass cut
     int resolvedJet1_Index; // Contains the index of 2l2q case; when paired using mass close to Z-boson mass
     int resolvedJet2_Index; // Contains the index of 2l2q case; when paired using mass close to Z-boson mass
-    int VBF_jet1_index;    // Contains the index of 2l2nu case
-    int VBF_jet2_index;
+    int HZZ2l2nu_VBFIndexJet1;    // Contains the index of 2l2nu case
+    int HZZ2l2nu_VBFIndexJet2;
 
     void LeptonSelection();
     std::vector<unsigned int> looseEle, looseMu, bestEle, bestMu, tighteleforjetidx, tightmuforjetidx;
@@ -454,8 +454,8 @@ public:
         boostedJet_Index = -999;
         resolvedJet1_Index = -999;
         resolvedJet2_Index = -999;
-        VBF_jet1_index = -999;
-        VBF_jet2_index = -999;
+        HZZ2l2nu_VBFIndexJet1 = -999;
+        HZZ2l2nu_VBFIndexJet2 = -999;
 
         // Flags for various final states
         isBoosted2l2q = false;
