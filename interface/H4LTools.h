@@ -19,6 +19,7 @@ public:
     float fsrphotonPtcut, fsrphotonEtacut, fsrphotonIsocut, fsrphotondRlcut, fsrphotondRlOverPtcut, JetPtcut, JetEtacut;
     float eleBDTWPLELP, eleBDTWPMELP, eleBDTWPHELP, eleBDTWPLEHP, eleBDTWPMEHP, eleBDTWPHEHP;
     float HZZ2l2q_Leading_Lep_pT, HZZ2l2q_SubLeading_Lep_pT, HZZ2l2q_Lep_eta, HZZ2l2q_MZLepcutdown, HZZ2l2q_MZLepcutup;
+    float HZZ2l2nu_Leading_Lep_pT, HZZ2l2nu_SubLeading_Lep_pT, HZZ2l2nu_Lep_eta, HZZ2l2nu_Pt_ll, HZZ2l2nu_M_ll_Window, HZZ2l2nu_dPhi_jetMET, HZZ2l2nu_MZLepcutdown, HZZ2l2nu_MZLepcutup;
     bool DEBUG;
 
     void InitializeElecut(float elePtcut_, float eleEtacut_, float elesip3dCut_, float eleLoosedxycut_, float eleLoosedzcut_, float eleIsocut_, float eleBDTWPLELP_, float eleBDTWPMELP_, float eleBDTWPHELP_, float eleBDTWPLEHP_, float eleBDTWPMEHP_, float eleBDTWPHEHP_)
@@ -44,6 +45,18 @@ public:
         HZZ2l2q_Lep_eta = HZZ2l2q_Lep_eta_;
         HZZ2l2q_MZLepcutdown = HZZ2l2q_MZLepcutdown_;
         HZZ2l2q_MZLepcutup = HZZ2l2q_MZLepcutup_;
+    }
+
+    void Initialize2l2nuEvtCut(float HZZ2l2nu_Leading_Lep_pT_, float HZZ2l2nu_SubLeading_Lep_pT_, float HZZ2l2nu_Lep_eta_, float HZZ2l2nu_Pt_ll_, float HZZ2l2nu_M_ll_Window_, float HZZ2l2nu_dPhi_jetMET_, float HZZ2l2nu_MZLepcutdown_, float HZZ2l2nu_MZLepcutup_)
+    {
+        HZZ2l2nu_Leading_Lep_pT = HZZ2l2nu_Leading_Lep_pT_;
+        HZZ2l2nu_SubLeading_Lep_pT = HZZ2l2nu_SubLeading_Lep_pT_;
+        HZZ2l2nu_Lep_eta = HZZ2l2nu_Lep_eta_;
+        HZZ2l2nu_Pt_ll = HZZ2l2nu_Pt_ll_;
+        HZZ2l2nu_M_ll_Window = HZZ2l2nu_M_ll_Window_;
+        HZZ2l2nu_dPhi_jetMET = HZZ2l2nu_dPhi_jetMET_;
+        HZZ2l2nu_MZLepcutdown = HZZ2l2nu_MZLepcutdown_;
+        HZZ2l2nu_MZLepcutup = HZZ2l2nu_MZLepcutup_;
     }
 
     void InitializeMucut(float MuPtcut_, float MuEtacut_, float Musip3dCut_, float MuLoosedxycut_, float MuLoosedzcut_, float MuIsocut_, float MuTightdxycut_, float MuTightdzcut_, float MuTightTrackerLayercut_, float MuTightpTErrorcut_, float MuHighPtBound_)
@@ -242,12 +255,16 @@ public:
     bool flag2e;
     bool flag2mu;
     bool flag2l;
-    bool flag2e_met;
-    bool flag2mu_met;
-    bool flag2l_met;
+    bool HZZ2l2nu_isELE;
+    bool HZZ2l2nu_CutOppositeChargeFlag;
+    bool HZZ2l2nu_flag2e_met;
+    bool HZZ2l2nu_flag2mu_met;
+    bool HZZ2l2nu_flag2l_met;
 
     // count number of tight, medium and loose b-tagged jets
     // FIXME: For now these b-tag numbers are only for 2l2nu case
+    bool HZZ2l2nu_ifVBF;
+    int HZZ2l2nu_nJets;
     int nTightBtaggedJets;
     int nMediumBtaggedJets;
     int nLooseBtaggedJets;
@@ -426,6 +443,8 @@ public:
         phij2 = -99;
         mj2 = -99;
 
+        HZZ2l2nu_ifVBF = false;
+        HZZ2l2nu_nJets = -999;
         nTightBtaggedJets = -999;
         nMediumBtaggedJets = -999;
         nLooseBtaggedJets = -999;
@@ -446,9 +465,12 @@ public:
         flag2e = false;
         flag2mu = false;
         flag2l = false;
-        flag2e_met = false;
-        flag2l_met = false;
-        flag2mu_met = false;
+        HZZ2l2nu_isELE = false;
+        HZZ2l2nu_CutOppositeChargeFlag = false;
+
+        HZZ2l2nu_flag2e_met = false;
+        HZZ2l2nu_flag2l_met = false;
+        HZZ2l2nu_flag2mu_met = false;
         Z1.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z1nofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z2.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
@@ -473,6 +495,7 @@ public:
     bool ZZSelection_4l();
     bool ZZSelection_2l2q();
     bool ZZSelection_2l2nu();
+    bool ZZSelection_2l2nu_EMu_CR();
     TLorentzVector Z1;
     TLorentzVector Z1nofsr;
     TLorentzVector Z2;
@@ -499,13 +522,20 @@ public:
 
     int cut2e_m40_180, cut2mu_m40_180, cut2l_m40_180;
     int cutMETlt150;
-    int cutMETgt150;
-    int cut2l_met_m40_180, cut2e_met_m40_180, cut2mu_met_m40_180;
-    int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j, cut2l1met;
-    int cut2e_met, cut2mu_met, cut2l_met;
+    int HZZ2l2nu_cutMETgT100;
+    int HZZ2l2nu_cut2l_met_m40_180, HZZ2l2nu_cut2e_met_m40_180, HZZ2l2nu_cut2mu_met_m40_180;
+    int cut2e, cut2mu, cut2l, cut2l1J, cut2l2j, cut2l1Jor2j;
+    int HZZ2l2nu_cut2e_met, HZZ2l2nu_cut2mu_met, HZZ2l2nu_cut2l_met;
     int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu, cutghost2e2mu, cutQCD2e2mu, cutLepPt2e2mu, cutghost4e, cutQCD4e, cutLepPt4e, cutghost4mu, cutQCD4mu, cutLepPt4mu;
     float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
     float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
+    int HZZ2l2nu_CutOppositeCharge;
+    int HZZ2l2nu_cutpTl1l2;
+    int HZZ2l2nu_cutETAl1l2;
+    int HZZ2l2nu_cutmZ1Window;
+    int HZZ2l2nu_cutZ1Pt ;
+    int HZZ2l2nu_cutdPhiJetMET;
+    int HZZ2l2nu_cutbtag;
 
 private:
     std::vector<float> Electron_pt, Electron_phi, Electron_eta, Electron_mass, Electron_dxy, Electron_dz, Electron_sip3d;
@@ -573,7 +603,14 @@ H4LTools::H4LTools(int year, bool DEBUG_Main)
     cutm4l4e = 0;
     cutm4l4mu = 0;
     cutMETlt150 = 0;
-    cutMETgt150 = 0;
+    HZZ2l2nu_cutMETgT100 = 0;
+    HZZ2l2nu_CutOppositeCharge = 0;
+    HZZ2l2nu_cutpTl1l2 = 0;
+    HZZ2l2nu_cutETAl1l2 = 0;
+    HZZ2l2nu_cutmZ1Window = 0;
+    HZZ2l2nu_cutZ1Pt = 0;
+    HZZ2l2nu_cutbtag = 0;
+    HZZ2l2nu_cutdPhiJetMET = 0;
 
     cut2e = 0;
     cut2mu = 0;
@@ -585,12 +622,11 @@ H4LTools::H4LTools(int year, bool DEBUG_Main)
     cut2mu_m40_180 = 0;
     cut2l_m40_180 = 0;
 
-    cut2e_met = 0;
-    cut2mu_met = 0;
-    cut2l_met = 0;
-    cut2l_met_m40_180 = 0;
-    cut2e_met_m40_180 = 0;
-    cut2mu_met_m40_180 = 0;
-    cut2l1met = 0;
+    HZZ2l2nu_cut2e_met = 0;
+    HZZ2l2nu_cut2mu_met = 0;
+    HZZ2l2nu_cut2l_met = 0;
+    HZZ2l2nu_cut2l_met_m40_180 = 0;
+    HZZ2l2nu_cut2e_met_m40_180 = 0;
+    HZZ2l2nu_cut2mu_met_m40_180 = 0;
 }
 #endif

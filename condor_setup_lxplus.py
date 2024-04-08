@@ -181,6 +181,7 @@ def main(args):
     outScript.write("\n"+'    echo "File ${4}_hadd.root exists. Copy this."');
     outScript.write("\n"+'    echo "xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
     outScript.write("\n"+'    xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
+    outScript.write("\n"+'    echo "xrdcp -f CutFlow.json  root://eosuser.cern.ch/${2}/CutFlow_${4}.json"');
     outScript.write("\n"+'else');
     outScript.write("\n"+'    echo "Something wrong: file ${4}_hadd.root does not exists, please check the post_proc.py script."');
     outScript.write("\n"+'fi');

@@ -41,6 +41,7 @@ class HZZAnalysisCppProducer(Module):
           self.worker.InitializeJetcut(cfg['Jet']['pTcut'],cfg['Jet']['Etacut'])
           self.worker.InitializeEvtCut(cfg['MZ1cut'],cfg['MZZcut'],cfg['Higgscut']['down'],cfg['Higgscut']['up'],cfg['Zmass'],cfg['MZcut']['down'],cfg['MZcut']['up'])
           self.worker.Initialize2l2qEvtCut(cfg['HZZ2l2q']['Leading_Lep_pT'], cfg['HZZ2l2q']['SubLeading_Lep_pT'], cfg['HZZ2l2q']['Lep_eta'], cfg['HZZ2l2q']['MZLepcut']['down'], cfg['HZZ2l2q']['MZLepcut']['up'])
+          self.worker.Initialize2l2nuEvtCut(cfg['HZZ2l2nu']['Leading_Lep_pT'], cfg['HZZ2l2nu']['SubLeading_Lep_pT'], cfg['HZZ2l2nu']['Lep_eta'], cfg['HZZ2l2nu']['Pt_ll'], cfg['HZZ2l2nu']['M_ll_Window'], cfg['HZZ2l2nu']['dPhi_jetMET'],  cfg['HZZ2l2nu']['MZLepcut']['down'], cfg['HZZ2l2nu']['MZLepcut']['up'])
 
         self.cfgFile = cfgFile
         self.isMC = isMC
@@ -104,16 +105,34 @@ class HZZAnalysisCppProducer(Module):
         print("{:27}:{:7} {}".format("Total: ", str(self.passAllEvts), " Events"))
         print("{:27}:{:7} {}".format("PassTrig: ", str(self.passtrigEvts), " Events"))
         print("{:27}:{:7} {}".format("PassMETFilters: ", str(self.passMETFilters), " Events"))
-        print("{:27}:{:7} {}".format("Pass2e_metCut: ", str(self.worker.cut2e_met), " Events"))
-        print("{:27}:{:7} {}".format("Pass2mu_metCut: ", str(self.worker.cut2mu_met), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l_metCut: ", str(self.worker.cut2l_met), " Events"))
-        print("{:27}:{:7} {}".format("Pass2e_metCut (40 < mll < 180): ", str(self.worker.cut2e_met_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("Pass2mu_metCut (40 < mll < 180): ", str(self.worker.cut2mu_met_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l_metCut (40 < mll < 180): ", str(self.worker.cut2l_met_m40_180), " Events"))
-        print("{:27}:{:7} {}".format("PassMETcut(gt 150): ", str(self.worker.cutMETgt150), " Events"))
-        print("{:27}:{:7} {}".format("Pass2l1metCut: ", str(self.worker.cut2l1met), " Events"))
-        print("{:27}:{:7} {}".format("passZZSelection: ", str(self.passZZ2l2nuEvts), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cut2l_met: ", str(self.worker.HZZ2l2nu_cut2l_met), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_CutOppositeCharge: ", str(self.worker.HZZ2l2nu_CutOppositeCharge), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutpTl1l2: ", str(self.worker.HZZ2l2nu_cutpTl1l2), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutETAl1l2: ", str(self.worker.HZZ2l2nu_cutETAl1l2), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutmZ1Window: ", str(self.worker.HZZ2l2nu_cutmZ1Window), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutZ1Pt: ", str(self.worker.HZZ2l2nu_cutZ1Pt), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutbtag: ", str(self.worker.HZZ2l2nu_cutbtag), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutdPhiJetMET: ", str(self.worker.HZZ2l2nu_cutdPhiJetMET), " Events"))
+        print("{:27}:{:7} {}".format("HZZ2l2nu_cutMETgT100: ", str(self.worker.HZZ2l2nu_cutMETgT100), " Events"))
+
         print("\n========== END: Print Cut flow table  ====================\n")
+
+        # save the cut-flow information in a JSON file
+        with open("CutFlow.json", 'w') as f:
+            f.write("{\n")
+            f.write("\"Total\": "+str(self.passAllEvts)+",\n")
+            f.write("\"PassTrig\": "+str(self.passtrigEvts)+",\n")
+            f.write("\"PassMETFilters\": "+str(self.passMETFilters)+",\n")
+            f.write("\"HZZ2l2nu_cut2l_met\": "+str(self.worker.HZZ2l2nu_cut2l_met)+",\n")
+            f.write("\"HZZ2l2nu_CutOppositeCharge\": "+str(self.worker.HZZ2l2nu_CutOppositeCharge)+",\n")
+            f.write("\"HZZ2l2nu_cutpTl1l2\": "+str(self.worker.HZZ2l2nu_cutpTl1l2)+",\n")
+            f.write("\"HZZ2l2nu_cutETAl1l2\": "+str(self.worker.HZZ2l2nu_cutETAl1l2)+",\n")
+            f.write("\"HZZ2l2nu_cutmZ1Window\": "+str(self.worker.HZZ2l2nu_cutmZ1Window)+",\n")
+            f.write("\"HZZ2l2nu_cutZ1Pt\": "+str(self.worker.HZZ2l2nu_cutZ1Pt)+",\n")
+            f.write("\"HZZ2l2nu_cutbtag\": "+str(self.worker.HZZ2l2nu_cutbtag)+",\n")
+            f.write("\"HZZ2l2nu_cutdPhiJetMET\": "+str(self.worker.HZZ2l2nu_cutdPhiJetMET)+",\n")
+            f.write("\"HZZ2l2nu_cutMETgT100\": "+str(self.worker.HZZ2l2nu_cutMETgT100)+"\n")
+            f.write("}\n")
 
         pass
 
@@ -131,6 +150,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("boostedJet_Index", "I")
         self.out.branch("resolvedJet1_Index", "I")
         self.out.branch("resolvedJet2_Index", "I")
+        self.out.branch("HZZ2l2nu_ifVBF", "O")
+        self.out.branch("HZZ2l2nu_nJets", "I")
         self.out.branch("nTightBtaggedJets", "I")
         self.out.branch("nMediumBtaggedJets", "I")
         self.out.branch("nLooseBtaggedJets", "I")
@@ -359,13 +380,17 @@ class HZZAnalysisCppProducer(Module):
         else:
             return keepIt
         electrons = Collection(event, "Electron")
-        #electrons = Object(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
+        Photons = Collection(event, "Photon")
         jets = Collection(event, "Jet")
-
         FatJets = Collection(event, "FatJet")
         met = Object(event, "MET", None)
+
+        for photon in Photons:
+            # Keep photons if pT > 55, |eta| < 2.5 and skip the transition region of barrel and endcap
+            pass
+
         if isMC:
             genparts = Collection(event, "GenPart")
             for xg in genparts:
@@ -378,20 +403,25 @@ class HZZAnalysisCppProducer(Module):
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
             if self.DEBUG:
                 print("Electrons: pT, eta: {}, {}".format(xe.pt, xe.eta))
+
         for xm in muons:
             self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all)
             if self.DEBUG:
                 print("Muons: pT, eta: {}, {}".format(xm.corrected_pt, xm.eta))
+
         for xf in fsrPhotons:
             self.worker.SetFsrPhotons(xf.dROverEt2,xf.eta,xf.phi,xf.pt,xf.relIso03)
+
         for xj in jets:
             self.worker.SetJets(xj.pt,xj.eta,xj.phi,xj.mass,xj.jetId, xj.btagDeepFlavB, xj.puId)
 
         for xj in FatJets:
             self.worker.SetFatJets(xj.pt, xj.eta, xj.phi, xj.msoftdrop, xj.jetId, xj.btagDeepB, xj.particleNet_ZvsQCD)
+
         self.worker.SetMET(met.pt,met.phi,met.sumEt)
+
         self.worker.LeptonSelection()
         foundZZCandidate_4l = False    # for 4l
         passZZ4lSelection = False
@@ -399,12 +429,15 @@ class HZZAnalysisCppProducer(Module):
         passZZ2l2qSelection = False
         foundZZCandidate_2l2nu = False # for 2l2nu
         passZZ2l2nuSelection = False
+        HZZ2l2nu_ifVBF = False
 
-	#print("=="*51)
         foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
+        isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
+        if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
+
         foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
-        foundZZCandidate_4l = self.worker.ZZSelection_4l()
-        isBoosted2l2q = self.worker.isBoosted2l2q
+        # FIXME: To debug 2l2q and 2l2nu channels, I am commenting out the 4l channel
+        # foundZZCandidate_4l = self.worker.ZZSelection_4l()
 
         boostedJet_PNScore = self.worker.boostedJet_PNScore
         boostedJet_Index = self.worker.boostedJet_Index
@@ -414,15 +447,15 @@ class HZZAnalysisCppProducer(Module):
         VBF_jet2_index = self.worker.VBF_jet2_index
         minDeltaPhi_METAK4jet = self.worker.minDeltaPhi
 
+        # For 2l2nu channel
+        HZZ2l2nu_ifVBF = self.worker.HZZ2l2nu_ifVBF
+        HZZ2l2nu_nJets = self.worker.HZZ2l2nu_nJets
         nTightBtaggedJets = self.worker.nTightBtaggedJets
         nMediumBtaggedJets = self.worker.nMediumBtaggedJets
         nLooseBtaggedJets = self.worker.nLooseBtaggedJets
 
-        if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
-
         if (foundZZCandidate_4l or foundZZCandidate_2l2q or foundZZCandidate_2l2nu):
-            #print("inside loop 4l or 2l2q")
-            #print(passZZ2l2qSelection)
+            if self.DEBUG: print("Found ZZ candidate (4l, 2l2q, 2l2nu): ({}, {}, {})".format(foundZZCandidate_4l, foundZZCandidate_2l2q, foundZZCandidate_2l2nu))
             pTL1 = self.worker.pTL1
             etaL1 = self.worker.etaL1
             phiL1 = self.worker.phiL1
@@ -650,6 +683,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("resolvedJet1_Index",resolvedJet1_Index)
         self.out.fillBranch("resolvedJet2_Index",resolvedJet2_Index)
 
+        self.out.fillBranch("HZZ2l2nu_ifVBF",HZZ2l2nu_ifVBF)
+        self.out.fillBranch("HZZ2l2nu_nJets",HZZ2l2nu_nJets)
         self.out.fillBranch("nTightBtaggedJets",nTightBtaggedJets)
         self.out.fillBranch("nMediumBtaggedJets",nMediumBtaggedJets)
         self.out.fillBranch("nLooseBtaggedJets",nLooseBtaggedJets)

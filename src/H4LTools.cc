@@ -462,7 +462,9 @@ bool H4LTools::findZCandidate(){
     if(TightEleindex.size()>1){
         for(unsigned int ke=0; ke<(TightEleindex.size()-1);ke++){
             for(unsigned int je=ke+1;je<TightEleindex.size();je++){
-                if ((Elechg[TightEleindex[ke]]+Elechg[TightEleindex[je]])==0){
+                // FIXME: Removed the charge requirement for the Z candidate. It should be propagated correctly for the ZZ->4l analysis
+                // if ((Elechg[TightEleindex[ke]]+Elechg[TightEleindex[je]])==0)
+                {
                     TLorentzVector Zcan;
                     Zcan = ElelistFsr[TightEleindex[ke]] + ElelistFsr[TightEleindex[je]];
                     if((Zcan.M()>MZcutdown)&&(Zcan.M()<MZcutup)){
@@ -497,7 +499,8 @@ bool H4LTools::findZCandidate(){
     if(TightMuindex.size()>1){
         for(unsigned int kmu=0; kmu<(TightMuindex.size()-1);kmu++){
             for(unsigned int jmu=kmu+1;jmu<TightMuindex.size();jmu++){
-                if ((Muchg[TightMuindex[kmu]]+Muchg[TightMuindex[jmu]])==0){
+                // if ((Muchg[TightMuindex[kmu]]+Muchg[TightMuindex[jmu]])==0)
+                {
                     TLorentzVector Zcan;
                     Zcan = MulistFsr[TightMuindex[kmu]] + MulistFsr[TightMuindex[jmu]];
                     if((Zcan.M()>MZcutdown)&&(Zcan.M()<MZcutup)){
@@ -1124,98 +1127,105 @@ if(foundZZCandidate == false){
 
 }
 
-bool H4LTools::ZZSelection_2l2nu(){
- //   std::cout<<"===> Start of loop" << std::endl;
-   bool foundZZCandidate = false;
-    if(!findZCandidate()){
-        return foundZZCandidate;
-    }
-    //if((nTightMu+nTightEle)<2){
-    if(!(nTightMu==2 || nTightEle == 2)){
-        return foundZZCandidate;
-    }
-
-    if (nTightEle==2) {
-        cut2e_met++;
-        cut2l_met++;
-        flag2e_met = true;
-        flag2l_met = true;
-    }
-    if (nTightMu==2) {
-        cut2mu_met++;
-        cut2l_met++;
-        flag2mu_met = true;
-        flag2l_met = true;
-    }
-
-    if (abs(nTightEleChgSum) != 0 and abs(nTightMuChgSum) != 0)
+bool H4LTools::ZZSelection_2l2nu()
+{
+    if (DEBUG)
+        std::cout << "Inside 2l2nu loop" << std::endl;
+    bool foundZZCandidate = false;
+    if (!findZCandidate())
     {
         return foundZZCandidate;
     }
-
-    if(Zlist.size()<1){
+    if (!(nTightMu == 2 || nTightEle == 2))
+    {
         return foundZZCandidate;
     }
+    if (DEBUG)
+        std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
 
-    if ( (Zlep1pt[0] < HZZ2l2q_Leading_Lep_pT)) {
+    // Set HZZ2l2nu_isELE to true if there are 2 tight electrons, false if there are 2 tight muons
+    HZZ2l2nu_isELE = (nTightEle == 2);
+    HZZ2l2nu_cut2l_met++;
+
+    if (DEBUG)
+        std::cout << "nTightEleChgSum: " << nTightEleChgSum << "\tnTightMuChgSum: " << nTightMuChgSum << std::endl;
+
+    if (abs(nTightEleChgSum) != 0 and abs(nTightMuChgSum) != 0)
+    {
+        HZZ2l2nu_CutOppositeCharge++;
+        HZZ2l2nu_CutOppositeChargeFlag = true;
+    }
+
+
+    if (DEBUG)
+        std::cout << "Zlist size (Before): " << Zlist.size() << std::endl;
+    // if (!(Zlist.size() == 1)) // There should be exactly 1 Z candidate
+    // {
+    //     return foundZZCandidate;
+    // }
+    if (DEBUG)
+        std::cout << "Zlist size (After): " << Zlist.size() << std::endl;
+
+    if ((Zlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+    {
         return foundZZCandidate;
-
     }
-    if ( (Zlep2pt[0] < HZZ2l2q_SubLeading_Lep_pT)) {
-       return foundZZCandidate;
+    HZZ2l2nu_cutpTl1l2++;
 
+    // eta < HZZ2l2nu_Lep_eta
+    if (fabs(Zlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Zlep2eta[0]) > HZZ2l2nu_Lep_eta)
+    {
+        return foundZZCandidate;
     }
+    HZZ2l2nu_cutETAl1l2++;
 
     // Find ZZ candidate
     std::vector<int> Z1CanIndex;
     std::vector<int> Z2CanIndex;
-    for (unsigned int m=0; m<(Zlist.size()); m++){
+    for (unsigned int m = 0; m < (Zlist.size()); m++)
+    {
         Z1CanIndex.push_back(m);
     }
 
-    int Z1index,Z2index;
+    int Z1index, Z2index;
     Z1index = Z1CanIndex[0];
     Z1 = Zlist[Z1index];
     Z1nofsr = Zlistnofsr[Z1index];
 
-    if (Z1.M() < 40.0 || Z1.M() > 180)
+    // The invariant mass of dilepton system within 15 GeV of the known Z boson mass, ensuring that the pair likely originates from a Z-boson decay
+    if (Z1.M() - Zmass > HZZ2l2nu_M_ll_Window)
     {
         return foundZZCandidate;
     }
+    HZZ2l2nu_cutmZ1Window++;
 
-    cut2l_met_m40_180++;
-    if (flag2e_met)
-        cut2e_met_m40_180++;
-    if (flag2mu)
-        cut2mu_met_m40_180++;
-
- //   std::cout<<"H4LTools.cc#1150: MET pt, phi, sumET: " << MET_pt << "\t" << MET_phi << "\t" << MET_sumEt << std::endl;
-    if (MET_pt < 150) {
-   //     std::cout << " Inside the .cc file, 2l2nu loop=>found MET < 150" << std::endl;
+    // Also, the transverse momentum of the dilepton system should be > 55 GeV, indicating boosted Z-boson which is coming from High-mass Higgs boson
+    if (Z1.Pt() < HZZ2l2nu_Pt_ll)
+    {
         return foundZZCandidate;
     }
-    cutMETgt150++;
-    foundZZCandidate = true;
+    HZZ2l2nu_cutZ1Pt++;
 
     jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
-    //FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
-
-    Z2_met.SetPtEtaPhiE(MET_pt, 0,  MET_phi, MET_pt);
-    cut2l1met++;
-
-    ZZ_metsystem = Z1 + Z2_met;
-    ZZ_metsystemnofsr = Z1nofsr + Z2_met;
-
-    float METZZ_met;
-    METZZ_met = ZZ_metsystem.E();
+    // FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
 
     // count the number of tight, medium and loose b-tagged jets
     for (unsigned int i = 0; i < jetidx.size(); i++)
     {
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.7100)  nTightBtaggedJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.2783)  nMediumBtaggedJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.0490)  nLooseBtaggedJets++;
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.7100)
+            nTightBtaggedJets++;
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.2783)
+            nMediumBtaggedJets++;
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.0490)
+            nLooseBtaggedJets++;
     }
+
+    // No b-tagged jets
+    if (nMediumBtaggedJets > 0)
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutbtag++;
 
     // Get Angle between MET and nearest good jet
     for (unsigned int i = 0; i < jetidx.size(); i++)
@@ -1226,15 +1236,38 @@ bool H4LTools::ZZSelection_2l2nu(){
             minDeltaPhi = dPhi;
         }
     }
+    // If there are no jets, set the kinematics of ZZ system
+    if (minDeltaPhi < HZZ2l2nu_dPhi_jetMET)
+    {
+        return foundZZCandidate;
+    }
+    foundZZCandidate = true;
+    HZZ2l2nu_cutdPhiJetMET++;
+
+    if (MET_pt > 100)
+    {
+        HZZ2l2nu_cutMETgT100++;
+    }
+
+    Z2_met.SetPtEtaPhiE(MET_pt, 0, MET_phi, MET_pt);
+
+    ZZ_metsystem = Z1 + Z2_met;
+    ZZ_metsystemnofsr = Z1nofsr + Z2_met;
+
+    float METZZ_met;
+    METZZ_met = ZZ_metsystem.E();
+
+    // Fetch number of jets
+    HZZ2l2nu_nJets = jetidx.size();
+    if (DEBUG)
+        std::cout << "Size of jets: " << HZZ2l2nu_nJets << std::endl;
 
     // Get VBF jets having dEta>4.0 and mjj>500
     // If there are more than one pair of VBF jets, select the pair with highest mjj
     float VBF_jj_mjj = 0.0;
-    if (DEBUG)
-        std::cout << "Size of jets: " << jetidx.size() << std::endl;
     for (unsigned int i = 0; i < jetidx.size(); i++)
     {
-        for (unsigned int j = i+1; j < jetidx.size(); j++)
+        for (unsigned int j = i + 1; j < jetidx.size(); j++)
         {
             // std::cout << "Inside: i: " << i << ", j: " << j << std::endl;
             TLorentzVector VBF_jet1;
@@ -1259,7 +1292,7 @@ bool H4LTools::ZZSelection_2l2nu(){
 
     if (jetidx.size() >= 2 && VBF_jet1_index >= 0 && VBF_jet2_index >= 0)
     {
-
+        HZZ2l2nu_ifVBF = true;
         TLorentzVector VBF_jet1;
         TLorentzVector VBF_jet2;
         VBF_jet1.SetPtEtaPhiM(Jet_pt[VBF_jet1_index], Jet_eta[VBF_jet1_index], Jet_phi[VBF_jet1_index], Jet_mass[VBF_jet1_index]);
@@ -1269,22 +1302,138 @@ bool H4LTools::ZZSelection_2l2nu(){
             std::cout << "Outside: VBF_jj_mjj: " << VBF_jj.M() << "\tVBF_jet1_index: " << VBF_jet1_index << "\tVBF_jet2_index: " << VBF_jet2_index << std::endl;
     }
 
-    // // If there are VBF jets, set the kinematics of VBF jets
-    // if (VBF_jj_mjj > 0.0)
-    // {
-    //     TLorentzVector VBF_jet1;
-    //     TLorentzVector VBF_jet2;
-    //     VBF_jet1.SetPtEtaPhiM(Jet_pt[VBF_jet1_index], Jet_eta[VBF_jet1_index], Jet_phi[VBF_jet1_index], Jet_mass[VBF_jet1_index]);
-    //     VBF_jet2.SetPtEtaPhiM(Jet_pt[VBF_jet2_index], Jet_eta[VBF_jet2_index], Jet_phi[VBF_jet2_index], Jet_mass[VBF_jet2_index]);
-    //     VBF_jj = VBF_jet1 + VBF_jet2;
-
-    //     cut2lMETVBF++;
-    // }
-
-
     return foundZZCandidate;
 }
 
+bool H4LTools::ZZSelection_2l2nu_EMu_CR()
+{
+    // FIXME: Not working
+    if (DEBUG)
+        std::cout << "Inside 2l2nu loop" << std::endl;
+    bool foundZZCandidate = false;
+    if (!findZCandidate())
+    {
+        return foundZZCandidate;
+    }
+    if (!(nTightMu == 1 && nTightEle == 1))
+    {
+        return foundZZCandidate;
+    }
+    if (DEBUG)
+        std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
+
+    HZZ2l2nu_cut2l_met++;
+
+    if (DEBUG)
+        std::cout << "nTightEleChgSum: " << nTightEleChgSum << "\tnTightMuChgSum: " << nTightMuChgSum << std::endl;
+
+    if (DEBUG)
+        std::cout << "Zlist size (Before): " << Zlist.size() << std::endl;
+    // if (!(Zlist.size() == 1)) // There should be exactly 1 Z candidate
+    // {
+    //     return foundZZCandidate;
+    // }
+    if (DEBUG)
+        std::cout << "Zlist size (After): " << Zlist.size() << std::endl;
+
+    if ((Zlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutpTl1l2++;
+
+    // eta < HZZ2l2nu_Lep_eta
+    if (fabs(Zlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Zlep2eta[0]) > HZZ2l2nu_Lep_eta)
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutETAl1l2++;
+
+    // Find ZZ candidate
+    std::vector<int> Z1CanIndex;
+    std::vector<int> Z2CanIndex;
+    for (unsigned int m = 0; m < (Zlist.size()); m++)
+    {
+        Z1CanIndex.push_back(m);
+    }
+
+    int Z1index, Z2index;
+    Z1index = Z1CanIndex[0];
+    Z1 = Zlist[Z1index];
+    Z1nofsr = Zlistnofsr[Z1index];
+
+    // The invariant mass of dilepton system within 15 GeV of the known Z boson mass, ensuring that the pair likely originates from a Z-boson decay
+    if (Z1.M() - Zmass > HZZ2l2nu_M_ll_Window)
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutmZ1Window++;
+
+    // Also, the transverse momentum of the dilepton system should be > 55 GeV, indicating boosted Z-boson which is coming from High-mass Higgs boson
+    if (Z1.Pt() < HZZ2l2nu_Pt_ll)
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutZ1Pt++;
+
+    jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
+    // FatJetidx = SelectedFatJets(tighteleforjetidx, tightmuforjetidx);
+
+    // count the number of tight, medium and loose b-tagged jets
+    for (unsigned int i = 0; i < jetidx.size(); i++)
+    {
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.7100)
+            nTightBtaggedJets++;
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.2783)
+            nMediumBtaggedJets++;
+        if (Jet_btagDeepFlavB[jetidx[i]] > 0.0490)
+            nLooseBtaggedJets++;
+    }
+
+    // No b-tagged jets
+    if (nMediumBtaggedJets > 0)
+    {
+        return foundZZCandidate;
+    }
+    HZZ2l2nu_cutbtag++;
+
+    // Get Angle between MET and nearest good jet
+    for (unsigned int i = 0; i < jetidx.size(); i++)
+    {
+        float dPhi = fabs(TVector2::Phi_mpi_pi(Jet_phi[jetidx[i]] - MET_phi));
+        if (dPhi < minDeltaPhi)
+        {
+            minDeltaPhi = dPhi;
+        }
+    }
+    // If there are no jets, set the kinematics of ZZ system
+    if (minDeltaPhi < HZZ2l2nu_dPhi_jetMET)
+    {
+        return foundZZCandidate;
+    }
+    foundZZCandidate = true;
+    HZZ2l2nu_cutdPhiJetMET++;
+
+    if (MET_pt > 100)
+    {
+        HZZ2l2nu_cutMETgT100++;
+    }
+
+    Z2_met.SetPtEtaPhiE(MET_pt, 0, MET_phi, MET_pt);
+
+    ZZ_metsystem = Z1 + Z2_met;
+    ZZ_metsystemnofsr = Z1nofsr + Z2_met;
+
+    float METZZ_met;
+    METZZ_met = ZZ_metsystem.E();
+
+    // Fetch number of jets
+    HZZ2l2nu_nJets = jetidx.size();
+    if (DEBUG)
+        std::cout << "Size of jets: " << HZZ2l2nu_nJets << std::endl;
+
+    return foundZZCandidate;
+}
 
 
 float H4LTools::getDg4Constant(float ZZMass){
