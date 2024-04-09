@@ -12,10 +12,11 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class HZZAnalysisCppProducer(Module):
 
-    def __init__(self, year, cfgFile, isMC, isFSR, DEBUG=False):
+    def __init__(self, year, cfgFile, isMC, isFSR, cutFlowJSONFile, DEBUG=False):
         self.loadLibraries()
         self.year = year
         self.isMC = isMC
+        self.cutFlowJSONFile = cutFlowJSONFile
         self.DEBUG = DEBUG
         self.cfgFile = cfgFile
         self.cfg = self._load_config(cfgFile)
@@ -159,7 +160,7 @@ class HZZAnalysisCppProducer(Module):
         print("\n========== END: Print Cut flow table  ====================\n")
 
         # Write the cut flow data to a json file
-        with open("CutFlowData.json", "w") as jsonFile:
+        with open(self.cutFlowJSONFile, "w") as jsonFile:
             json.dump(cutFlowData, jsonFile, indent=4)
 
         pass

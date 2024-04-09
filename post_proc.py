@@ -21,6 +21,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
     parser.add_argument('-o', '--outputFile', default="skimmed_nano.root", type=str, help="Output file name")
+    parser.add_argument('-c', '--cutFlowFile', default="cutFlow.json", type=str, help="Cut flow file name")
     parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
@@ -87,7 +88,7 @@ def main():
         jsonFileName = "golden_Json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
         sfFileName = "DeepCSV_102XSF_V2.csv"
         modulesToRun.extend([muonScaleRes2016()])
-    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, args.DEBUG)
+    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, args.cutFlowFile, args.DEBUG)
     # GenVarModule = lambda : GenVarsProducer() # FIXME: Gen variable producer module is not working
     modulesToRun.extend([H4LCppModule()])
     # modulesToRun.extend([H4LCppModule(), GenVarModule()])

@@ -173,7 +173,10 @@ def main(args):
     outScript.write("\n"+'cat post_proc.py');
     outScript.write("\n"+'echo "..."');
     outScript.write("\n"+'echo "========================================="');
-    outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --DownloadFileToLocalThenRun True");
+    if args.NOsyst:
+        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --DownloadFileToLocalThenRun True  --NOsyst");
+    else:
+        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --cutFlowFile ${4}.json --DownloadFileToLocalThenRun True");
     outScript.write("\n"+'echo "====> List root files : " ');
     outScript.write("\n"+'ls -ltrh *.root');
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
@@ -181,7 +184,7 @@ def main(args):
     outScript.write("\n"+'    echo "File ${4}_hadd.root exists. Copy this."');
     outScript.write("\n"+'    echo "xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
     outScript.write("\n"+'    xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
-    outScript.write("\n"+'    echo "xrdcp -f CutFlowData.json  root://eosuser.cern.ch/${2}/CutFlow_${4}.json"');
+    outScript.write("\n"+'    echo "xrdcp -f ${4}.json  root://eosuser.cern.ch/${2}/cutFlow_${4}.json"');
     outScript.write("\n"+'else');
     outScript.write("\n"+'    echo "Something wrong: file ${4}_hadd.root does not exists, please check the post_proc.py script."');
     outScript.write("\n"+'fi');
@@ -231,6 +234,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--post_proc", default="post_proc.py", help="Post process script to run.")
     parser.add_argument("--transfer_input_files", default="keep_and_drop.txt", help="Files to be transferred as input.")
+    parser.add_argument("--NOsyst", default=False, action='store_true', help="Run without systematics.")
     parser.add_argument("--debug", default=False, action='store_true', help="Debug mode.")
 
     args = parser.parse_args()
