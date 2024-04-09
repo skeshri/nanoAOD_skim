@@ -185,6 +185,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("phiZ2_met",  "F")
         self.out.branch("pTZ2_met",  "F")
         self.out.branch("EneZ2_met",  "F")
+        self.out.branch("MT_2l2nu",  "F")
 
         # Branches for 2l2nu channel: VBF jets and dijet kinematics
         self.out.branch("VBF_jet1_index",  "I")
@@ -281,6 +282,7 @@ class HZZAnalysisCppProducer(Module):
         pTZ2_met = -999.
         EneZ2_met = -999.
         minDeltaPhi_METAK4jet = 999.0
+        MT_2l2nu = -999.
 
         VBF_jet1_index = -999
         VBF_jet2_index = -999
@@ -472,6 +474,7 @@ class HZZAnalysisCppProducer(Module):
             phiZ2_met = self.worker.Z2_met.Phi()
             pTZ2_met = self.worker.Z2_met.Pt()
             EneZ2_met = self.worker.Z2_met.E()
+            MT_2l2nu = self.worker.ZZ_metsystem.Mt()
 
             # Define TLorentzVector for VBF jets and get dijet mass
             if VBF_jet1_index>=0 and VBF_jet2_index>=0:
@@ -564,6 +567,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("phiZ2_met",phiZ2_met)
         self.out.fillBranch("pTZ2_met",pTZ2_met)
         self.out.fillBranch("EneZ2_met",EneZ2_met)
+        self.out.fillBranch("MT_2l2nu",MT_2l2nu)
         self.out.fillBranch("minDeltaPhi_METAK4jet", minDeltaPhi_METAK4jet)
 
         self.out.fillBranch("VBF_jet1_index", VBF_jet1_index)

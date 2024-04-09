@@ -109,7 +109,7 @@ def main():
         if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
         if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
 
-        p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
+        p=PostProcessor("/eos/user/a/avijay/2l2nu_MT_SIGNAL",testfilelist, None, None,modules = modulesToRun,
                         provenance=True,fwkJobReport=False,
                         haddFileName="skimmed_nano_mc.root",
                         maxEntries=entriesToRun,
@@ -121,7 +121,7 @@ def main():
             fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
             modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
-        p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
+        p=PostProcessor("/eos/user/a/avijay/2l2nu_MT_SIGNAL",testfilelist, None, None, modules = modulesToRun,
                         provenance=True, fwkJobReport=False,
                         haddFileName="skimmed_nano_data.root",
                         jsonInput=jsonFileName,

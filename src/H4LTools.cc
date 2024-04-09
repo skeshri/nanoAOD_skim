@@ -1209,6 +1209,8 @@ bool H4LTools::ZZSelection_2l2nu(){
     float METZZ_met;
     METZZ_met = ZZ_metsystem.E();
 
+    float MT_2l2nu;
+    MT_2l2nu = ZZ_metsystem.Mt();
     // count the number of tight, medium and loose b-tagged jets
     for (unsigned int i = 0; i < jetidx.size(); i++)
     {

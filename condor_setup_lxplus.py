@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
     # input_file mandatory
     parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
-    parser.add_argument("--eos_output_path", default='/eos/user/r/rasharma/HZZCondorjob_28Jan', help="Initial path for operations.")
+    parser.add_argument("--eos_output_path", default='/eos/user/a/avijay/HZZCondorjob', help="Initial path for operations.")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="testmatch", help="""

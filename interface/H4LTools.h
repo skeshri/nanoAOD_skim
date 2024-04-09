@@ -401,6 +401,7 @@ public:
         Zlep2massNoFsr.clear();
 
         pTL1 = -999;
+        MT_2l2nu = -999;
         etaL1 = -999;
         phiL1 = -999;
         massL1 = -999;
@@ -515,7 +516,7 @@ private:
     std::vector<float> Jet_pt, Jet_phi, Jet_eta, Jet_mass, Jet_btagDeepFlavB;
     std::vector<int> Jet_jetId, Jet_puId;
     float MET_pt, MET_phi;
-    float MET_sumEt;
+    float MET_sumEt, MT_2l2nu;
 
     std::vector<float> FatJet_pt, FatJet_phi, FatJet_eta, FatJet_SDmass, FatJet_btagDeepB, FatJet_PNZvsQCD;
     std::vector<int> FatJet_jetId;
