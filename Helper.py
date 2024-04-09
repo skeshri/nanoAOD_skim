@@ -1,16 +1,12 @@
 import ROOT
-import yaml
+
 
 PI=3.14159
-def PassTrig(event,cfgFile):
-
-
+def PassTrig(event, cfg, TriggerCh):
     PassTrig = False
-    with open(cfgFile, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
-        TriggerList = []
-        for TriggerName in cfg['Triggers']:
-            TriggerList.append(eval(TriggerName))
+    TriggerList = []
+    for TriggerName in cfg[TriggerCh]:
+        TriggerList.append(eval(TriggerName))
 
     for i in range(len(TriggerList)):
         PassTrig = PassTrig | TriggerList[i]
