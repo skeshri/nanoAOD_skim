@@ -90,6 +90,7 @@ keep lep*
 keep pass*
 keep higgs*
 keep HZZ*
+keep Triggers_HZZ*
 #
 # Generator Level Information
 #

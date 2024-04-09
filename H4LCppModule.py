@@ -169,6 +169,9 @@ class HZZAnalysisCppProducer(Module):
         self.initReaders(inputTree)  # initReaders must be called in beginFile
         self.out = wrappedOutputTree
 
+        # Boolean branches for Trigger channels
+        for TriggerChannel in self.cfg['TriggerChannels']:
+            self.out.branch(TriggerChannel, "O")
         # boolean branches for 4l, 2l2q, 2l2nu channels
         self.out.branch("passZZ4lSelection",  "O")
         self.out.branch("passZZ2l2qSelection",  "O")
@@ -413,11 +416,20 @@ class HZZAnalysisCppProducer(Module):
         phi4l = -999.
         mass4l = -999.
 
-        passedTrig = PassTrig(event, self.cfgFile)
-        if (passedTrig==True):
-            self.passtrigEvts += 1
-        else:
+        TriggerMap = {}
+        passedTrig = False
+        for TriggerChannel in self.cfg['TriggerChannels']:
+            TriggerMap[TriggerChannel] = PassTrig(event, self.cfg, TriggerChannel)
+
+        # If any of the trigger channel from TriggerMap passes, then the event is kept else return keepIt
+        for value in TriggerMap.values():
+            if value:
+                passedTrig = True
+                break
+        if not passedTrig:
             return keepIt
+        self.passtrigEvts += 1
+
         if passFilters(event, int(self.year)):
             self.passMETFilters += 1
         else:
@@ -643,11 +655,9 @@ class HZZAnalysisCppProducer(Module):
             if (foundZZCandidate_2l2q):
                 print("==> pTL1: {}, \t pTL2: {}".format(pTL1, pTL2))
 
-        # if (foundZZCandidate_2l2q or foundZZCandidate_2l2nu or foundZZCandidate_4l):
-            # print("(found candidates: 2l2q, 2l2nu, 4l): ({:1}, {:1}, {:1}), pTL1: {:7.3f}, pTL2: {:7.3f}, pTZ1: {:7.3f}, pTZ2: {:7.3f}, pTZ2_2j: {:7.3f}, pTZ2_met: {:7.3f}".format(foundZZCandidate_2l2q, foundZZCandidate_2l2nu, foundZZCandidate_4l, pTL1, pTL2, pTZ1, pTZ2, pTZ2_2j, pTZ2_met))
-
-        # if foundZZCandidate_2l2q == True:
-            # exit()
+        # Fill the branches with the Trigger information for each channel
+        for TriggerChannel in self.cfg['TriggerChannels']:
+            self.out.fillBranch(TriggerChannel, TriggerMap[TriggerChannel])
         self.out.fillBranch("phiZ2_met",phiZ2_met)
         self.out.fillBranch("pTZ2_met",pTZ2_met)
         self.out.fillBranch("EneZ2_met",EneZ2_met)

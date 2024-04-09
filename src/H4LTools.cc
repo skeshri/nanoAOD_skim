@@ -508,7 +508,6 @@ bool H4LTools::findZCandidate(){
 
                     if((Zcan.M()>MZcutdown)&&(Zcan.M()<MZcutup)){
                         Zlist.push_back(Zcan);
-                        std::cout << "Zlist.size() = " << Zlist.size() << "\t Zcan.M() = " << Zcan.M() << std::endl;
                         Zlep1index.push_back(TightMuindex[kmu]);
                         Zlep2index.push_back(TightMuindex[jmu]);
                         Zflavor.push_back(13);

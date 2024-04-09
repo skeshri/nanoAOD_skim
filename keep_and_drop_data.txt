@@ -90,5 +90,6 @@ keep lep*
 keep pass*
 keep higgs*
 keep HZZ*
+keep Triggers_HZZ*
 keep *Weight
 keep *Weight*
