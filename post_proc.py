@@ -20,6 +20,8 @@ def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--inputFile", default="", type=str, help="Input file name")
+    parser.add_argument('-o', '--outputFile', default="skimmed_nano.root", type=str, help="Output file name")
+    parser.add_argument('-c', '--cutFlowFile', default="cutFlow.json", type=str, help="Cut flow file name")
     parser.add_argument("-n", "--entriesToRun", default=100, type=int, help="Set  to 0 if need to run over all entries else put number of entries to run")
     parser.add_argument("-d", "--DownloadFileToLocalThenRun", default=True, type=bool, help="Download file to local then run")
     parser.add_argument("--NOsyst", default=False, action="store_true", help="Do not run systematics")
@@ -60,7 +62,10 @@ def main():
         print("ERROR: No input files found. Exiting.")
         exit(1)
 
-    # Determine the year and type (MC or Data)
+    """Determine the year and type (MC or Data) of input ROOT file:
+    For data the string "/data/" is always there. So, we take this
+    as handle to decide if the root file is MC or data.
+    """
     first_file = testfilelist[0]
     isMC = "/data/" not in first_file
 
@@ -83,7 +88,7 @@ def main():
         jsonFileName = "golden_Json/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt"
         sfFileName = "DeepCSV_102XSF_V2.csv"
         modulesToRun.extend([muonScaleRes2016()])
-    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, args.DEBUG)
+    H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, args.cutFlowFile, args.DEBUG)
     # GenVarModule = lambda : GenVarsProducer() # FIXME: Gen variable producer module is not working
     modulesToRun.extend([H4LCppModule()])
     # modulesToRun.extend([H4LCppModule(), GenVarModule()])
@@ -109,9 +114,11 @@ def main():
         if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
         if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
 
-        p=PostProcessor("/eos/user/a/avijay/2l2nu_MT_SIGNAL",testfilelist, None, None,modules = modulesToRun,
-                        provenance=True,fwkJobReport=False,
-                        haddFileName="skimmed_nano_mc.root",
+        # INFO: Keep the `fwkJobReport=False` to trigger `haddnano.py`
+        #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
+        p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
+                        provenance=True,fwkJobReport=True,
+                        haddFileName=args.outputFile,
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun, longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
                         outputbranchsel="keep_and_drop.txt")
@@ -121,11 +128,12 @@ def main():
             fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
             modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
-        p=PostProcessor("/eos/user/a/avijay/2l2nu_MT_SIGNAL",testfilelist, None, None, modules = modulesToRun,
-                        provenance=True, fwkJobReport=False,
-                        haddFileName="skimmed_nano_data.root",
+        p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
+                        provenance=True, fwkJobReport=True,
+                        haddFileName=args.outputFile,
                         jsonInput=jsonFileName,
-                        maxEntries=entriesToRun, prefetch=DownloadFileToLocalThenRun, longTermCache= True,
+                        maxEntries=entriesToRun,
+                        prefetch=DownloadFileToLocalThenRun, longTermCache= True,
                         outputbranchsel="keep_and_drop_data.txt")
 
     p.run()
