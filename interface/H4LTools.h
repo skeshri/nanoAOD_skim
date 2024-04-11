@@ -15,6 +15,7 @@ class H4LTools
 public:
     H4LTools(int year, bool DEBUG_Main);
     float elePtcut, MuPtcut, eleEtacut, MuEtacut, elesip3dCut, Musip3dCut, Zmass, MZ1cut, MZcutup, MZcutdown, MZZcut, HiggscutUp, HiggscutDown;
+    float btag_deepJet_Loose, btag_deepJet_Medium, btag_deepJet_Tight;
     float eleLoosedxycut, eleLoosedzcut, MuLoosedxycut, MuLoosedzcut, MuTightdxycut, MuTightdzcut, MuTightTrackerLayercut, MuTightpTErrorcut, MuHighPtBound, eleIsocut, MuIsocut;
     float fsrphotonPtcut, fsrphotonEtacut, fsrphotonIsocut, fsrphotondRlcut, fsrphotondRlOverPtcut, JetPtcut, JetEtacut;
     float eleBDTWPLELP, eleBDTWPMELP, eleBDTWPHELP, eleBDTWPLEHP, eleBDTWPMEHP, eleBDTWPHEHP;
@@ -86,7 +87,7 @@ public:
         JetPtcut = JetPtcut_;
         JetEtacut = JetEtacut_;
     }
-    void InitializeEvtCut(float MZ1cut_, float MZZcut_, float HiggscutDown_, float HiggscutUp_, float Zmass_, float MZcutdown_, float MZcutup_)
+    void InitializeEvtCut(float MZ1cut_, float MZZcut_, float HiggscutDown_, float HiggscutUp_, float Zmass_, float MZcutdown_, float MZcutup_, float btag_deepJet_Loose_, float btag_deepJet_Medium_, float btag_deepJet_Tight_)
     {
         MZ1cut = MZ1cut_;
         MZZcut = MZZcut_;
@@ -95,6 +96,9 @@ public:
         Zmass = Zmass_;
         MZcutdown = MZcutdown_;
         MZcutup = MZcutup_;
+        btag_deepJet_Loose = btag_deepJet_Loose_;
+        btag_deepJet_Medium = btag_deepJet_Medium_;
+        btag_deepJet_Tight = btag_deepJet_Tight_;
     }
 
     void SetElectrons(float Electron_pt_, float Electron_eta_, float Electron_phi_, float Electron_mass_, float Electron_dxy_, float Electron_dz_,
@@ -376,9 +380,9 @@ public:
         FatJetidx.clear();
 
         // MET related variables
-        MET_pt = 0.0;
-        MET_phi = 0.0; ////new
-        MET_sumEt = 0.0;
+        MET_pt = -999.0;
+        MET_phi = -999.0; ////new
+        MET_sumEt = -999.0;
 
         // FsrPhoton related variables
         nFsrPhoton = 0;
@@ -417,38 +421,37 @@ public:
         Zlep2phiNoFsr.clear();
         Zlep2massNoFsr.clear();
 
-        pTL1 = -999;
-        etaL1 = -999;
-        phiL1 = -999;
-        massL1 = -999;
-        pTL2 = -999;
-        etaL2 = -999;
-        phiL2 = -999;
-        massL2 = -999;
-        pTL3 = -999;
-        etaL3 = -999;
-        phiL3 = -999;
-        massL3 = -999;
-        pTL4 = -999;
-        etaL4 = -999;
-        phiL4 = -999;
-        massL4 = -999;
+        pTL1 = -999.0;
+        etaL1 = -999.0;
+        phiL1 = -999.0;
+        massL1 = -999.0;
+        pTL2 = -999.0;
+        etaL2 = -999.0;
+        phiL2 = -999.0;
+        massL2 = -999.0;
+        pTL3 = -999.0;
+        etaL3 = -999.0;
+        phiL3 = -999.0;
+        massL3 = -999.0;
+        pTL4 = -999.0;
+        etaL4 = -999.0;
+        phiL4 = -999.0;
+        massL4 = -999.0;
 
-        pTj1 = -99;
-        etaj1 = -99;
-        phij1 = -99;
-        mj1 = -99;
-        pTj2 = -99;
-        etaj2 = -99;
-        phij2 = -99;
-        mj2 = -99;
+        pTj1 = -999.0;
+        etaj1 = -999.0;
+        phij1 = -999.0;
+        mj1 = -999.0;
+        pTj2 = -999.0;
+        etaj2 = -999.0;
+        phij2 = -999.0;
+        mj2 = -999.0;
 
         HZZ2l2nu_ifVBF = false;
-        HZZ2l2qNu_nJets = -999;
-        HZZ2l2qNu_nJets = -999;
-        HZZ2l2qNu_nTightBtagJets = -999;
-        HZZ2l2qNu_nMediumBtagJets = -999;
-        HZZ2l2qNu_nLooseBtagJets = -999;
+        HZZ2l2qNu_nJets = 0;
+        HZZ2l2qNu_nTightBtagJets = 0;
+        HZZ2l2qNu_nMediumBtagJets = 0;
+        HZZ2l2qNu_nLooseBtagJets = 0;
         minDeltaPhi = 999.0;
 
         boostedJet_PNScore = -999.0;

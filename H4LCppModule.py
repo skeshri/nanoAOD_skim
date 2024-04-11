@@ -75,7 +75,8 @@ class HZZAnalysisCppProducer(Module):
 
         self.worker.InitializeEvtCut(*self._get_nested_values(cfg, ['MZ1cut', 'MZZcut',
                                                                     ['Higgscut', 'down'], ['Higgscut', 'up'],
-                                                                    'Zmass', ['MZcut', 'down'], ['MZcut', 'up'] ]))
+                                                                    'Zmass', ['MZcut', 'down'], ['MZcut', 'up'],
+                                                                    ['Jet','deepJet_btag','Loose'], ['Jet','deepJet_btag','Medium'], ['Jet','deepJet_btag','Tight']]))
 
         self.worker.InitializeHZZ2l2qCut(*self._get_nested_values(cfg['HZZ2l2q'],
                                                                   ['Leading_Lep_pT', 'SubLeading_Lep_pT', 'Lep_eta',
@@ -252,7 +253,6 @@ class HZZAnalysisCppProducer(Module):
         # Branches for 2l2nu channel: VBF jets and dijet kinematics
         self.out.branch("HZZ2l2qNu_nJets", "I")
 
-        self.out.branch("HZZ2l2qNu_nJets", "I")
         self.out.branch("HZZ2l2qNu_nTightBtagJets", "I")
         self.out.branch("HZZ2l2qNu_nMediumBtagJets", "I")
         self.out.branch("HZZ2l2qNu_nLooseBtagJets", "I")
@@ -757,6 +757,9 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("HZZ2l2qNu_nTightBtagJets",HZZ2l2qNu_nTightBtagJets)
         self.out.fillBranch("HZZ2l2qNu_nMediumBtagJets",HZZ2l2qNu_nMediumBtagJets)
         self.out.fillBranch("HZZ2l2qNu_nLooseBtagJets",HZZ2l2qNu_nLooseBtagJets)
+
+        # FIXME: Add weight branch having following:
+        # puWeight*btagWeight_DeepCSVB*L1PreFiringWeight_ECAL_Nom*L1PreFiringWeight_Muon_Nom*L1PreFiringWeight_Nom
 
         return keepIt
 

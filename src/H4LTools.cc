@@ -997,7 +997,7 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     Z1nofsr = Zlistnofsr[Z1index];
 
     // The invariant mass of dilepton system within 15 GeV of the known Z boson mass, ensuring that the pair likely originates from a Z-boson decay
-    if (Z1.M() - Zmass > HZZ2l2nu_M_ll_Window)
+    if (fabs(Z1.M() - Zmass) > HZZ2l2nu_M_ll_Window)
     {
         return foundZ1Candidate;
     }
@@ -1031,13 +1031,17 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     HZZ2l2qNu_nJets = jetidx.size();
 
     // count the number of tight, medium and loose b-tagged jets
-    for (unsigned int i = 0; i < jetidx.size(); i++)
+    for (unsigned int i = 0; i < jetidx.size(); i++) // FIXME: These variables seems to be wrong.
     {
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.7100)
+        // Reference: https://btv-wiki.docs.cern.ch/ScaleFactors/UL2018/#ak4-b-tagging
+        if (DEBUG){
+            std::cout << "Jet_btagDeepFlavB[" << jetidx[i] << "]: " << Jet_btagDeepFlavB[jetidx[i]] << std::endl;
+        }
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Tight)
             HZZ2l2qNu_nTightBtagJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.2783)
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Medium)
             HZZ2l2qNu_nMediumBtagJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.0490)
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Loose)
             HZZ2l2qNu_nLooseBtagJets++;
     }
 
@@ -1147,11 +1151,11 @@ bool H4LTools::ZZSelection_2l2nu()
     if (DEBUG)
         std::cout << "Number of jets: " << jetidx.size() << std::endl;
 
-    // No b-tagged jets
-    if (HZZ2l2qNu_nMediumBtagJets > 0)
-    {
-        return foundZZCandidate;
-    }
+    // // No b-tagged jets
+    // if (HZZ2l2qNu_nMediumBtagJets > 0)
+    // {
+    //     return foundZZCandidate;
+    // }
     HZZ2l2nu_cutbtag++;
     if (DEBUG)
         std::cout << "Number of b-tagged jets: (Tight, Med, Loose): " << HZZ2l2qNu_nTightBtagJets << ", " << HZZ2l2qNu_nMediumBtagJets << ", " << HZZ2l2qNu_nLooseBtagJets << std::endl;
