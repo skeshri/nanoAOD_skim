@@ -94,6 +94,9 @@ def main(args):
             print(style.RED +"="*51+style.RESET+"\n")
             print ("==> Sample : ",count)
             sample_name = SampleDASName.split('/')[1]
+            # if SampleDASName contains `ext` then add it
+            if 'ext' in SampleDASName:
+                sample_name = sample_name + '_ext' + SampleDASName.split('ext')[-1].split('/')[0]
             print("==> sample_name = ",sample_name)
             campaign = SampleDASName.split('/')[2].split('-')[0]
             print("==> campaign = ",campaign)
@@ -174,11 +177,12 @@ def main(args):
     outScript.write("\n"+'echo "..."');
     outScript.write("\n"+'echo "========================================="');
     if args.NOsyst:
-        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --DownloadFileToLocalThenRun True  --NOsyst");
+        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --cutFlowFile ${4}.json --DownloadFileToLocalThenRun True  --NOsyst");
     else:
         outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --cutFlowFile ${4}.json --DownloadFileToLocalThenRun True");
     outScript.write("\n"+'echo "====> List root files : " ');
     outScript.write("\n"+'ls -ltrh *.root');
+    outScript.write("\n"+'ls -ltrh *.json');
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
     outScript.write("\n"+'if ls ${4}_hadd.root 1> /dev/null 2>&1; then');
     outScript.write("\n"+'    echo "File ${4}_hadd.root exists. Copy this."');
@@ -231,7 +235,6 @@ if __name__ == "__main__":
                         testmatch          3d
                         nextweek           1w
                         """)
-
     parser.add_argument("--post_proc", default="post_proc.py", help="Post process script to run.")
     parser.add_argument("--transfer_input_files", default="keep_and_drop.txt", help="Files to be transferred as input.")
     parser.add_argument("--NOsyst", default=False, action='store_true', help="Run without systematics.")
