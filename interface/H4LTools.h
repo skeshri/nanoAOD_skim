@@ -232,6 +232,7 @@ class H4LTools {
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
       std::vector<int> lep_genindex;
+      std::vector<int> lep_tightId;
       std::vector<int> Elelep_index;
       std::vector<int> Mulep_index;
       int lep_Hindex[4];
@@ -252,6 +253,7 @@ class H4LTools {
         Elelep_index.clear();
         Mulep_index.clear();
         lep_genindex.clear();
+        lep_tightId.clear();
         Muonindex.clear();
         AllEid.clear();
         AllMuid.clear();

@@ -140,6 +140,7 @@ class HZZAnalysisCppProducer(Module):
         GENZNum = 2
         self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
         self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
+        self.out.branch("lep_tightId",  "O", lenVar = "Lepointer")
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron_Fsr")
@@ -281,11 +282,18 @@ class HZZAnalysisCppProducer(Module):
             for i in range(len(lep_Hindex_vec)):
                 lep_Hindex.append(lep_Hindex_vec[i])
         lep_genindex = []
+        lep_tightId = []
+        lep_tightId_vec = self.worker.lep_tightId
+        if len(lep_tightId_vec)>0:
+            for i in range(len(lep_tightId_vec)):
+                if (lep_tightId_vec[i] == 1): lep_tightId.append(True)
+                else: lep_tightId.append(False)
         if isMC:
             lep_genindex_vec = self.worker.lep_genindex
             if len(lep_genindex_vec)>0:
                 for i in range(len(lep_genindex_vec)):
                     lep_genindex.append(lep_genindex_vec[i])
+        
         if (foundZZCandidate):
             self.passZZEvts += 1
         pTZ1 = self.worker.Z1.Pt()
@@ -418,6 +426,10 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("pileupWeight",pileupWeight)
         self.out.fillBranch("dataMCWeight_new",dataMCWeight_new)
         self.out.fillBranch("prefiringWeight",prefiringWeight)
+        self.out.fillBranch("lep_Hindex", lep_Hindex)
+        self.out.fillBranch("lep_genindex", lep_genindex)
+        self.out.fillBranch("lep_tightId", lep_tightId)
+        
 
         # self.out.fillBranch("nElectron_Fsr", len(electrons))
         # self.out.fillBranch("nMuon_Fsr", len(muons))
