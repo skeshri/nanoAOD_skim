@@ -69,7 +69,7 @@ class H4LTools {
         MZcutup = MZcutup_;
       }
       void SetElectrons(float Electron_pt_, float Electron_eta_, float Electron_phi_, float Electron_mass_, float Electron_dxy_,float Electron_dz_,
-                        float Electron_sip3d_, float Electron_mvaFall17V2Iso_, int Electron_pdgId_, float Electron_pfRelIso03_all_){
+                        float Electron_sip3d_, float Electron_mvaFall17V2Iso_, int Electron_pdgId_, int Electron_charge_, float Electron_pfRelIso03_all_){
         Electron_pt.push_back(Electron_pt_); 
         Electron_phi.push_back(Electron_phi_);
         Electron_eta.push_back(Electron_eta_);
@@ -80,6 +80,7 @@ class H4LTools {
         Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
         Electron_pdgId.push_back(Electron_pdgId_);
         Electron_pfRelIso03_all.push_back(Electron_pfRelIso03_all_);
+        Electron_charge.push_back(Electron_charge_);
       }
 
       void SetJets(float Jet_pt_, float Jet_eta_, float Jet_phi_, float Jet_mass_, int Jet_jetId_, float Jet_btagDeepC_,
@@ -131,8 +132,10 @@ class H4LTools {
         FsrPhoton_electronIdx.push_back(FsrPhoton_electronIdx_);
         FsrPhoton_muonIdx.push_back(FsrPhoton_muonIdx_);
       }
-      void SetGenParts(float GenPart_pt_){
+      void SetGenParts(float GenPart_pt_, int GenPart_genPartIdxMother_, int GenPart_pdgId_){
         GenPart_pt.push_back(GenPart_pt_);
+        GenPart_genPartIdxMother.push_back(GenPart_genPartIdxMother_);
+        GenPart_pdgId.push_back(GenPart_genPartIdxMother_);
       }
       void SetObjectNum(unsigned nElectron_,unsigned nMuon_,unsigned nJet_,unsigned nFsrPhoton_){
         nElectron = nElectron_; 
@@ -233,6 +236,14 @@ class H4LTools {
       std::vector<int> TightMuindex;
       std::vector<int> lep_genindex;
       std::vector<int> lep_tightId;
+      std::vector<float> lep_pt;
+      std::vector<float> lep_eta;
+      std::vector<float> lep_phi;
+      std::vector<float> lep_mass;
+      std::vector<int> lep_matchedR03_PdgId;
+      std::vector<int> lep_matchedR03_MomId;
+      std::vector<int> lep_matchedR03_MomMomId;
+      std::vector<int> lep_id;
       std::vector<int> Elelep_index;
       std::vector<int> Mulep_index;
       int lep_Hindex[4];
@@ -254,6 +265,7 @@ class H4LTools {
         Mulep_index.clear();
         lep_genindex.clear();
         lep_tightId.clear();
+        lep_pt.clear();lep_eta.clear(); lep_phi.clear();lep_mass.clear();lep_matchedR03_PdgId.clear();lep_matchedR03_MomId.clear();lep_matchedR03_MomMomId.clear();lep_id.clear();
         Muonindex.clear();
         AllEid.clear();
         AllMuid.clear();
@@ -263,7 +275,7 @@ class H4LTools {
         MulistFsr.clear();
         Muondressed_Run3.clear();
         Electrondressed_Run3.clear();
-        Electron_pt.clear();Electron_phi.clear();Electron_eta.clear();Electron_mass.clear();Electron_dxy.clear();Electron_dz.clear();Electron_sip3d.clear();
+        Electron_pt.clear();Electron_phi.clear();Electron_eta.clear();Electron_mass.clear();Electron_dxy.clear();Electron_dz.clear();Electron_sip3d.clear(); Electron_charge.clear();
         Electron_mvaFall17V2Iso.clear();Electron_pdgId.clear();Electron_pfRelIso03_all.clear();
         Muon_pt.clear();Muon_phi.clear();Muon_eta.clear();Muon_mass.clear();Muon_dxy.clear();Muon_dz.clear();Muon_sip3d.clear();Muon_ptErr.clear();Muon_pfRelIso03_all.clear();
         Muon_nTrackerLayers.clear();Muon_genPartIdx.clear();Muon_pdgId.clear();Muon_charge.clear();
@@ -333,12 +345,13 @@ class H4LTools {
       float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
       float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
-      
+      int motherID(int Genidx);
+      int mothermotherID(int Genidx);
       
     private:
       std::vector<float> Electron_pt,Electron_phi,Electron_eta,Electron_mass,Electron_dxy,Electron_dz,Electron_sip3d;
       std::vector<float> Electron_mvaFall17V2Iso,Electron_pfRelIso03_all;
-      std::vector<int> Electron_pdgId,Electron_genPartIdx;
+      std::vector<int> Electron_pdgId,Electron_genPartIdx,Electron_charge;
 
       std::vector<float> Jet_pt,Jet_phi,Jet_eta,Jet_mass,Jet_btagDeepC;
       std::vector<int> Jet_jetId,Jet_puId;
@@ -350,6 +363,7 @@ class H4LTools {
       std::vector<float> FsrPhoton_dROverEt2,FsrPhoton_phi,FsrPhoton_pt,FsrPhoton_relIso03,FsrPhoton_eta,FsrPhoton_muonIdx,FsrPhoton_electronIdx;
       
       std::vector<float> GenPart_pt;
+      std::vector<int> GenPart_pdgId, GenPart_genPartIdxMother;
       
       
       unsigned nElectron,nMuon,nJet,nGenPart,nFsrPhoton;
@@ -400,6 +414,31 @@ H4LTools::H4LTools(int year, bool isMC_){
   cutm4l4mu = 0;
 
   
+}
+
+int H4LTools::motherID(int Genidx){
+    int ID=0;
+    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])!=21 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])>6){
+        if(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=GenPart_pdgId[Genidx]){
+            ID=GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]; return ID;
+        }
+        else{
+            Genidx=GenPart_genPartIdxMother[Genidx];
+        }
+    }
+    return 2212;
+}
+int H4LTools::mothermotherID(int Genidx){
+    int ID=0;
+    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])!=21 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])>6){
+        if(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=GenPart_pdgId[Genidx] && GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]!=GenPart_pdgId[Genidx] && GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]!=GenPart_pdgId[GenPart_genPartIdxMother[Genidx]] ){
+            ID=GenPart_pdgId[GenPart_genPartIdxMother[GenPart_genPartIdxMother[Genidx]]]; return ID;
+        }
+        else{
+            Genidx=GenPart_genPartIdxMother[Genidx];
+        }
+    }
+    return 2212;
 }
 #endif
 

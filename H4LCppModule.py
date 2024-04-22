@@ -141,6 +141,14 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
         self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
         self.out.branch("lep_tightId",  "O", lenVar = "Lepointer")
+        self.out.branch("lep_id",  "I", lenVar = "Lepointer")
+        self.out.branch("lep_pt",  "F", lenVar = "Lepointer")
+        self.out.branch("lep_eta",  "F", lenVar = "Lepointer")
+        self.out.branch("lep_phi",  "F", lenVar = "Lepointer")
+        self.out.branch("lep_mass",  "F", lenVar = "Lepointer")
+        self.out.branch("lep_matchedR03_PdgId",  "I", lenVar = "Lepointer")
+        self.out.branch("lep_matchedR03_MomId",  "I", lenVar = "Lepointer")
+        self.out.branch("lep_matchedR03_MomMomId",  "I", lenVar = "Lepointer")
         self.out.branch("Electron_Fsr_pt",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_eta",  "F", lenVar = "nElectron_Fsr")
         self.out.branch("Electron_Fsr_phi",  "F", lenVar = "nElectron_Fsr")
@@ -175,7 +183,7 @@ class HZZAnalysisCppProducer(Module):
         self.worker.SetObjectNum(event.nElectron,event.nMuon,event.nJet,event.nFsrPhoton)
         if isMC:
             self.worker.SetObjectNumGen(event.nGenPart)
-        keepIt = True
+        keepIt = False
 
         passedTrig=False
         passedFullSelection=False
@@ -220,14 +228,14 @@ class HZZAnalysisCppProducer(Module):
             genparts = Collection(event, "GenPart")
             genjets = Collection(event, "GenJet")
             for xg in genparts:
-                self.worker.SetGenParts(xg.pt)
+                self.worker.SetGenParts(xg.pt, xg.genPartIdxMother, xg.pdgId)
             for xm in muons:
                 self.worker.SetMuonsGen(xm.genPartIdx)
             for xe in electrons:
                 self.worker.SetElectronsGen(xe.genPartIdx)
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
-                                      xe.dz, xe.sip3d, xe.mvaHZZIso, xe.pdgId, xe.pfRelIso03_all)
+                                      xe.dz, xe.sip3d, xe.mvaHZZIso, xe.pdgId,xe.charge, xe.pfRelIso03_all)
         for xm in muons:
             self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
@@ -275,6 +283,7 @@ class HZZAnalysisCppProducer(Module):
         passedZ1LSelection = self.worker.passedZ1LSelection
         passedZXCRSelection = self.worker.passedZXCRSelection
         nZXCRFailedLeptons = self.worker.nfailedleptons
+        if (passedZ1LSelection | passedFullSelection | passedZXCRSelection): keepIt = True
         Lepointer = self.worker.Lepointer
         lep_Hindex = []
         lep_Hindex_vec = self.worker.lep_Hindex
@@ -293,6 +302,34 @@ class HZZAnalysisCppProducer(Module):
             if len(lep_genindex_vec)>0:
                 for i in range(len(lep_genindex_vec)):
                     lep_genindex.append(lep_genindex_vec[i])
+        lep_pt = []
+        lep_eta = []
+        lep_phi = []
+        lep_mass = []
+        lep_id = []
+        lep_matchedR03_PdgId = []
+        lep_matchedR03_MomId = []
+        lep_matchedR03_MomMomId = []
+
+        lep_pt_vec = self.worker.lep_pt
+        lep_eta_vec = self.worker.lep_eta
+        lep_phi_vec = self.worker.lep_phi
+        lep_mass_vec = self.worker.lep_mass
+        lep_id_vec = self.worker.lep_id
+        lep_matchedR03_PdgId_vec = self.worker.lep_matchedR03_PdgId
+        lep_matchedR03_MomId_vec = self.worker.lep_matchedR03_MomId
+        lep_matchedR03_MomMomId_vec = self.worker.lep_matchedR03_MomMomId
+
+        if len(lep_pt_vec)>0:
+            for i in range(len(lep_pt_vec)):
+                lep_pt.append(lep_pt_vec[i])
+                lep_eta.append(lep_eta_vec[i])
+                lep_phi.append(lep_phi_vec[i])
+                lep_mass.append(lep_mass_vec[i])
+                lep_id.append(lep_id_vec[i])
+                lep_matchedR03_PdgId.append(lep_matchedR03_PdgId_vec[i])
+                lep_matchedR03_MomId.append(lep_matchedR03_MomId_vec[i])
+                lep_matchedR03_MomMomId.append(lep_matchedR03_MomMomId_vec[i])
         
         if (foundZZCandidate):
             self.passZZEvts += 1
@@ -428,7 +465,15 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("prefiringWeight",prefiringWeight)
         self.out.fillBranch("lep_Hindex", lep_Hindex)
         self.out.fillBranch("lep_genindex", lep_genindex)
-        self.out.fillBranch("lep_tightId", lep_tightId)
+        self.out.fillBranch("lep_pt", lep_pt)
+        self.out.fillBranch("lep_eta", lep_eta)
+        self.out.fillBranch("lep_phi", lep_phi)
+        self.out.fillBranch("lep_mass", lep_mass)
+        self.out.fillBranch("lep_id", lep_id)
+        self.out.fillBranch("lep_matchedR03_MomId", lep_matchedR03_MomId)
+        self.out.fillBranch("lep_matchedR03_PdgId", lep_matchedR03_PdgId)
+        self.out.fillBranch("lep_matchedR03_MomMomId", lep_matchedR03_MomMomId)
+        
         
 
         # self.out.fillBranch("nElectron_Fsr", len(electrons))

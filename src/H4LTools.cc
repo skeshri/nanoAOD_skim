@@ -420,6 +420,12 @@ void H4LTools::LeptonSelection(){
         FsrEleidx = doFsrRecovery_Run3(goodFsrPhotons(), Electronindex[ae], 11);
         Elelep_index.push_back(Lepointer);
         Lepointer++;
+        lep_pt.push_back(Elelist[ae].Pt());
+        lep_eta.push_back(Elelist[ae].Eta());
+        lep_phi.push_back(Elelist[ae].Phi());
+        lep_mass.push_back(Elelist[ae].M());
+        if (Electron_charge[Electronindex[ae]]<0) lep_id.push_back(11);
+        else lep_id.push_back(-11);
         if (isFSR && (FsrEleidx < 900)){
             TLorentzVector fsrele;
             fsrele.SetPtEtaPhiM(FsrPhoton_pt[FsrEleidx],FsrPhoton_eta[FsrEleidx],FsrPhoton_phi[FsrEleidx],0);
@@ -447,9 +453,18 @@ void H4LTools::LeptonSelection(){
             istightele.push_back(false);
             lep_tightId.push_back(0);
         }
-        if (isMC) lep_genindex.push_back(Electron_genPartIdx[Electronindex[ae]]);
-        else lep_genindex.push_back(-1);
-        
+        if (isMC){
+            lep_genindex.push_back(Electron_genPartIdx[Electronindex[ae]]);
+            lep_matchedR03_PdgId.push_back(GenPart_pdgId[Electron_genPartIdx[Electronindex[ae]]]);
+            lep_matchedR03_MomId.push_back(motherID(Electron_genPartIdx[Electronindex[ae]]));
+            lep_matchedR03_MomMomId.push_back(motherID(motherID(Electron_genPartIdx[Electronindex[ae]])));
+        } 
+        else {
+            lep_genindex.push_back(-1);
+            lep_matchedR03_PdgId.push_back(-1);
+            lep_matchedR03_MomId.push_back(-1);
+            lep_matchedR03_MomMomId.push_back(-1);
+        }
     }
 
     for(unsigned int amu=0; amu<muid.size();amu++){
@@ -459,6 +474,12 @@ void H4LTools::LeptonSelection(){
         FsrMuonidx = doFsrRecovery_Run3(goodFsrPhotons(), Muonindex[amu], 13);
         Mulep_index.push_back(Lepointer);
         Lepointer++;
+        lep_pt.push_back(Mulist[amu].Pt());
+        lep_eta.push_back(Mulist[amu].Eta());
+        lep_phi.push_back(Mulist[amu].Phi());
+        lep_mass.push_back(Mulist[amu].M());
+        if (Muon_charge[Muonindex[amu]]<0) lep_id.push_back(13);
+        else lep_id.push_back(-13);
         if (isFSR && (FsrMuonidx < 900)){
             TLorentzVector fsrmuon;
             fsrmuon.SetPtEtaPhiM(FsrPhoton_pt[FsrMuonidx],FsrPhoton_eta[FsrMuonidx],FsrPhoton_phi[FsrMuonidx],0);
@@ -485,8 +506,18 @@ void H4LTools::LeptonSelection(){
             istightmu.push_back(false);
             lep_tightId.push_back(0);
         }
-        if (isMC) lep_genindex.push_back(Muon_genPartIdx[Muonindex[amu]]);
-        else lep_genindex.push_back(-1);
+        if (isMC) {
+            lep_genindex.push_back(Muon_genPartIdx[Muonindex[amu]]);
+            lep_matchedR03_PdgId.push_back(GenPart_pdgId[Muon_genPartIdx[Muonindex[amu]]]);
+            lep_matchedR03_MomId.push_back(motherID(Muon_genPartIdx[Muonindex[amu]]));
+            lep_matchedR03_MomMomId.push_back(motherID(motherID(Muon_genPartIdx[Muonindex[amu]])));
+        }
+        else {
+            lep_genindex.push_back(-1);
+            lep_matchedR03_PdgId.push_back(-1);
+            lep_matchedR03_MomId.push_back(-1);
+            lep_matchedR03_MomMomId.push_back(-1);
+        }
         
     }
     
