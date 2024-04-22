@@ -496,11 +496,14 @@ public:
     bool findZCandidate();
     bool ZZSelection_4l();
     bool GetZ1_2l2qOR2l2nu();
+    bool GetZ1_emuCR();
     bool ZZSelection_2l2q();
     bool ZZSelection_2l2nu();
     bool ZZSelection_2l2nu_EMu_CR();
     TLorentzVector Z1;
+    TLorentzVector Z1_emuCR;
     TLorentzVector Z1nofsr;
+    TLorentzVector Z1_emuCRnofsr;
     TLorentzVector Z2;
     TLorentzVector Z2_2j;
     TLorentzVector Z2_met;
@@ -539,6 +542,12 @@ public:
     int HZZ2l2qNu_cutZ1Pt ;
     int HZZ2l2nu_cutdPhiJetMET;
     int HZZ2l2nu_cutbtag;
+    int HZZemuCR_cut2l;
+    int HZZemuCR_cutpTl1l2;
+    int HZZemuCR_cutETAl1l2;
+    int HZZemuCR_cutmZ1Window;
+    int HZZemuCR_cutZ1Pt;
+
 
 private:
     std::vector<float> Electron_pt, Electron_phi, Electron_eta, Electron_mass, Electron_dxy, Electron_dz, Electron_sip3d;
@@ -631,5 +640,10 @@ H4LTools::H4LTools(int year, bool DEBUG_Main)
     HZZ2l2nu_cut2l_met_m40_180 = 0;
     HZZ2l2nu_cut2e_met_m40_180 = 0;
     HZZ2l2nu_cut2mu_met_m40_180 = 0;
+    HZZemuCR_cut2l = 0;
+    HZZemuCR_cutpTl1l2 = 0;
+    HZZemuCR_cutETAl1l2 = 0;
+    HZZemuCR_cutmZ1Window = 0;
+    HZZemuCR_cutZ1Pt = 0;
 }
 #endif

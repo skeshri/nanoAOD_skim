@@ -1044,6 +1044,70 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     return foundZ1Candidate;
 }
 
+////// emu control region (Z1 candidate selection) /////////
+bool H4LTools::GetZ1_emuCR()
+{
+ if (DEBUG)
+        std::cout << "Inside function GetZ1_emuCR()" << std::endl;
+ bool foundZ1_emuCRCandidate = false;
+ if (!findZCandidate())
+    {
+        return foundZ1_emuCRCandidate;
+    }
+ if (!(nTightMu == 1 && nTightEle == 1))
+    {
+        return foundZ1_emuCRCandidate;
+    }
+ if (DEBUG)
+        std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
+
+ HZZemuCR_cut2l++;
+///pT selection 
+ if ((Zlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+    {
+        return foundZ1_emuCRCandidate;
+    }
+    HZZemuCR_cutpTl1l2++;
+///eta selection
+ if (fabs(Zlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Zlep2eta[0]) > HZZ2l2nu_Lep_eta)
+    {
+        return foundZ1_emuCRCandidate;
+    }
+    HZZemuCR_cutETAl1l2++;
+  
+ std::vector<int> Z1CanIndex;
+    for (unsigned int m = 0; m < (Zlist.size()); m++)
+    {
+        Z1CanIndex.push_back(m);
+    }
+
+    int Z1index;
+    Z1index = Z1CanIndex[0];
+    Z1_emuCR = Zlist[Z1index];
+    Z1_emuCRnofsr = Zlistnofsr[Z1index];
+///invariant mass of dilepton system within 15GeV
+ if (Z1_emuCR.M() - Zmass > HZZ2l2nu_M_ll_Window)
+    {
+        return foundZ1_emuCRCandidate;
+    }
+    HZZemuCR_cutmZ1Window++;
+
+///pT selection of dilepton
+ if (Z1_emuCR.Pt() < HZZ2l2nu_Pt_ll)
+    {
+        return foundZ1_emuCRCandidate;
+    }
+    HZZemuCR_cutZ1Pt++;
+    foundZ1_emuCRCandidate = true;
+    if (DEBUG)
+        std::cout << "Found Z1_emuCR candidate: " << foundZ1_emuCRCandidate << std::endl;
+
+    return foundZ1_emuCRCandidate;
+}   
+
+//////////////////////////////////////////////////
+
+
 bool H4LTools::ZZSelection_2l2q()
 {
     if (DEBUG)
