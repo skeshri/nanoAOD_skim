@@ -457,7 +457,7 @@ void H4LTools::LeptonSelection(){
             lep_genindex.push_back(Electron_genPartIdx[Electronindex[ae]]);
             lep_matchedR03_PdgId.push_back(GenPart_pdgId[Electron_genPartIdx[Electronindex[ae]]]);
             lep_matchedR03_MomId.push_back(motherID(Electron_genPartIdx[Electronindex[ae]]));
-            lep_matchedR03_MomMomId.push_back(motherID(motherID(Electron_genPartIdx[Electronindex[ae]])));
+            lep_matchedR03_MomMomId.push_back(motherID(motheridx(Electron_genPartIdx[Electronindex[ae]])));
         } 
         else {
             lep_genindex.push_back(-1);
@@ -510,7 +510,7 @@ void H4LTools::LeptonSelection(){
             lep_genindex.push_back(Muon_genPartIdx[Muonindex[amu]]);
             lep_matchedR03_PdgId.push_back(GenPart_pdgId[Muon_genPartIdx[Muonindex[amu]]]);
             lep_matchedR03_MomId.push_back(motherID(Muon_genPartIdx[Muonindex[amu]]));
-            lep_matchedR03_MomMomId.push_back(motherID(motherID(Muon_genPartIdx[Muonindex[amu]])));
+            lep_matchedR03_MomMomId.push_back(motherID(motheridx(Muon_genPartIdx[Muonindex[amu]])));
         }
         else {
             lep_genindex.push_back(-1);

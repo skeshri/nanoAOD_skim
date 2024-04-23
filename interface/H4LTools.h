@@ -346,6 +346,7 @@ class H4LTools {
       float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
 
       int motherID(int Genidx);
+      int motheridx(int Genidx);
       int mothermotherID(int Genidx);
       
     private:
@@ -427,6 +428,19 @@ int H4LTools::motherID(int Genidx){
         }
     }
     return 2212;
+}
+
+int H4LTools::motheridx(int Genidx){
+    int ID=0;
+    while(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=2212 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])!=21 || abs(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]])>6){
+        if(GenPart_pdgId[GenPart_genPartIdxMother[Genidx]]!=GenPart_pdgId[Genidx]){
+            ID=GenPart_genPartIdxMother[Genidx]; return ID;
+        }
+        else{
+            Genidx=GenPart_genPartIdxMother[Genidx];
+        }
+    }
+    return 0;
 }
 int H4LTools::mothermotherID(int Genidx){
     int ID=0;
