@@ -15,6 +15,7 @@ class H4LTools
 public:
     H4LTools(int year, bool DEBUG_Main);
     float elePtcut, MuPtcut, eleEtacut, MuEtacut, elesip3dCut, Musip3dCut, Zmass, MZ1cut, MZcutup, MZcutdown, MZZcut, HiggscutUp, HiggscutDown;
+    float photonPtcut, photonEtacut, photondRlcut, photondRlOverPtcut;
     float btag_deepJet_Loose, btag_deepJet_Medium, btag_deepJet_Tight;
     float eleLoosedxycut, eleLoosedzcut, MuLoosedxycut, MuLoosedzcut, MuTightdxycut, MuTightdzcut, MuTightTrackerLayercut, MuTightpTErrorcut, MuHighPtBound, eleIsocut, MuIsocut;
     float fsrphotonPtcut, fsrphotonEtacut, fsrphotonIsocut, fsrphotondRlcut, fsrphotondRlOverPtcut, JetPtcut, JetEtacut;
@@ -37,6 +38,14 @@ public:
         eleBDTWPLEHP = eleBDTWPLEHP_;
         eleBDTWPMEHP = eleBDTWPMEHP_;
         eleBDTWPHEHP = eleBDTWPHEHP_;
+    }
+
+    void InitializePhotonCut(float photonPtcut_, float photonEtacut_, float photondRlcut_, float photondRlOverPtcut_)
+    {
+        photonPtcut = photonPtcut_;
+        photonEtacut = photonEtacut_;
+        photondRlcut = photondRlcut_;
+        photondRlOverPtcut = photondRlOverPtcut_;
     }
 
     void InitializeHZZ2l2qCut(float HZZ2l2q_Leading_Lep_pT_, float HZZ2l2q_SubLeading_Lep_pT_, float HZZ2l2q_Lep_eta_, float HZZ2l2q_MZLepcutdown_, float HZZ2l2q_MZLepcutup_)
@@ -114,6 +123,15 @@ public:
         Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
         Electron_pdgId.push_back(Electron_pdgId_);
         Electron_pfRelIso03_all.push_back(Electron_pfRelIso03_all_);
+    }
+
+    void SetPhotons(float Photon_pt_, float Photon_eta_, float Photon_phi_, float Photon_mass_, float Photon_mvaid_WP90_)
+    {
+        Photon_pt.push_back(Photon_pt_);
+        Photon_phi.push_back(Photon_phi_);
+        Photon_eta.push_back(Photon_eta_);
+        Photon_mass.push_back(Photon_mass_);
+        Photon_mvaid_WP90.push_back(Photon_mvaid_WP90_);
     }
 
     void SetJets(float Jet_pt_, float Jet_eta_, float Jet_phi_, float Jet_mass_, int Jet_jetId_, float Jet_btagDeepFlavB_,
@@ -205,6 +223,7 @@ public:
     std::vector<unsigned int> goodLooseMuons2012();
     std::vector<unsigned int> goodMuons2015_noIso_noPf(std::vector<unsigned int> Muonindex);
     std::vector<unsigned int> goodElectrons2015_noIso_noBdt(std::vector<unsigned int> Electronindex);
+    std::vector<unsigned int> goodTightPhoton();
     std::vector<bool> passTight_BDT_Id();
     std::vector<bool> passTight_Id();
     std::vector<unsigned int> goodFsrPhotons();
@@ -272,6 +291,7 @@ public:
     int HZZ2l2qNu_nTightBtagJets;
     int HZZ2l2qNu_nMediumBtagJets;
     int HZZ2l2qNu_nLooseBtagJets;
+    int HZZ2l2q_nFatJet;
     float minDeltaPhi;
 
     float boostedJet_PNScore;
@@ -334,6 +354,14 @@ public:
         TightEleindex.clear();
         nTightEle = 0;
         nTightEleChgSum = 0;
+
+        // Photon related variables
+        nPhoton = 0;
+        Photon_pt.clear();
+        Photon_phi.clear();
+        Photon_eta.clear();
+        Photon_mass.clear();
+        Photon_mvaid_WP90.clear();
 
         // Muon related variables
         nMuon = 0;
@@ -452,6 +480,7 @@ public:
         HZZ2l2qNu_nTightBtagJets = 0;
         HZZ2l2qNu_nMediumBtagJets = 0;
         HZZ2l2qNu_nLooseBtagJets = 0;
+        HZZ2l2q_nFatJet = 0;
         minDeltaPhi = 999.0;
 
         boostedJet_PNScore = -999.0;
@@ -547,6 +576,8 @@ private:
     std::vector<float> Electron_mvaFall17V2Iso, Electron_pfRelIso03_all;
     std::vector<int> Electron_pdgId;
 
+    std::vector<float> Photon_pt, Photon_phi, Photon_eta, Photon_mass, Photon_mvaid_WP90;
+
     std::vector<float> Jet_pt, Jet_phi, Jet_eta, Jet_mass, Jet_btagDeepFlavB;
     std::vector<int> Jet_jetId, Jet_puId;
     float MET_pt, MET_phi;
@@ -563,7 +594,7 @@ private:
 
     std::vector<float> GenPart_pt;
 
-    unsigned nElectron, nMuon, nJet, nGenPart, nFsrPhoton;
+    unsigned nElectron, nMuon, nPhoton, nJet, nGenPart, nFsrPhoton;
 };
 
 H4LTools::H4LTools(int year, bool DEBUG_Main)

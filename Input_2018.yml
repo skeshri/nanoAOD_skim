@@ -66,6 +66,9 @@ Higgscut:
 Electron:
     pTcut: 7
     Etacut: 2.5
+    BarrelAndEndCapInterface:
+        low: 1.4442
+        high: 1.566
     Sip3dcut: 4
     Loosedxycut: 0.5
     Loosedzcut: 1
@@ -83,7 +86,6 @@ Electron:
 
 Muon:
     pTcut: 5
-
     Etacut: 2.4
     Sip3dcut: 4
     Loosedxycut: 0.5
@@ -101,6 +103,13 @@ FsrPhoton:
     Isocut: 0.8
     dRlcut: 0.5
     dRlOverPtcut: 0.012
+
+Photon:
+    pTcut: 55
+    Etacut: 2.5
+    BarrelAndEndCapInterface:
+        low: 1.4442
+        high: 1.566
 
 Jet:
     pTcut: 30

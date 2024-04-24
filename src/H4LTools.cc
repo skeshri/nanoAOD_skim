@@ -18,6 +18,22 @@ std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
     return LooseElectronindex;
 }
 
+std::vector<unsigned int> H4LTools::goodTightPhoton(){
+    std::vector<unsigned int> TightPhotonindex;
+    for (unsigned int i=0; i<Photon_pt.size(); i++){
+        if ((Photon_pt[i]>photonPtcut)&&(fabs(Photon_eta[i])<photonEtacut)){
+            TightPhotonindex.push_back(i);
+        }
+    }
+
+    if (DEBUG)
+    {
+        std::cout << "Inside goodTightPhoton:: TightPhotonindex.size() = " << TightPhotonindex.size() << std::endl;
+    }
+
+    return TightPhotonindex;
+}
+
 std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
     std::vector<unsigned int> LooseMuonindex;
     for (unsigned int i=0; i<Muon_eta.size(); i++){
@@ -467,6 +483,10 @@ bool H4LTools::findZCandidate(){
                 {
                     TLorentzVector Zcan;
                     Zcan = ElelistFsr[TightEleindex[ke]] + ElelistFsr[TightEleindex[je]];
+                    // if dR between two electrons is less than 0.02, skip this combination
+                    if (ElelistFsr[TightEleindex[ke]].DeltaR(ElelistFsr[TightEleindex[je]]) < 0.02)
+                        continue;
+
                     if((Zcan.M()>MZcutdown)&&(Zcan.M()<MZcutup)){
                         Zlist.push_back(Zcan);
                         Zlep1index.push_back(TightEleindex[ke]);
@@ -1033,6 +1053,9 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     // count the number of tight, medium and loose b-tagged jets
     for (unsigned int i = 0; i < jetidx.size(); i++) // FIXME: These variables seems to be wrong.
     {
+        // Don't check b-jet criteria if the jet is not inside the tracker acceptance
+        if (fabs(Jet_eta[jetidx[i]]) > 2.4)
+            continue;
         // Reference: https://btv-wiki.docs.cern.ch/ScaleFactors/UL2018/#ak4-b-tagging
         if (DEBUG){
             std::cout << "Jet_btagDeepFlavB[" << jetidx[i] << "]: " << Jet_btagDeepFlavB[jetidx[i]] << std::endl;
@@ -1071,6 +1094,7 @@ bool H4LTools::ZZSelection_2l2q()
                 // if (FatJet_msoftdrop[FatJetidx[i]] > 180.0) continue;
 
                 foundZZCandidate = true;
+                HZZ2l2q_nFatJet++;
                 isBoosted2l2q = true;
                 cut2l1J++;
                 cut2l1Jor2j++;
@@ -1242,6 +1266,44 @@ bool H4LTools::ZZSelection_2l2nu()
 
     return foundZZCandidate;
 }
+
+/*
+// Add function to get the Z1 candidate using 1 tight lepton and 1 photon
+bool H4LTools::GetZ1_1l1g()
+{
+    if (DEBUG)
+        std::cout << "Inside function GetZ1_1l1g()" << std::endl;
+    bool foundZ1Candidate = false;
+    if (!findZCandidate())
+    {
+        return foundZ1Candidate;
+    }
+    if (!(nTightMu == 1 || nTightEle == 1))
+    {
+        return foundZ1Candidate;
+    }
+    if (DEBUG)
+        std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
+
+    // Set HZZ2l2qNu_isELE to true if there are 2 tight electrons, false if there are 2 tight muons
+    HZZ2l2qNu_isELE = (nTightEle == 1);
+    HZZ2l2qNu_cut1l1g++;
+
+
+    if ((Zlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+    {
+        return foundZ1Candidate;
+    }
+    HZZ2l2qNu_cutpTl1l2++;
+
+    // eta < HZZ2l2nu_Lep_eta
+    if (fabs(Zlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Zlep2eta[0]) > HZZ2l2nu_Lep_eta)
+    {
+        return foundZ1Candidate;
+    }
+    HZZ2l2qNu_cutETAl1l2++;
+}
+*/
 
 float H4LTools::getDg4Constant(float ZZMass){
     return spline_g4->Eval(ZZMass);

@@ -71,6 +71,10 @@ class HZZAnalysisCppProducer(Module):
             'pTcut', 'Etacut', 'Isocut', 'dRlcut', 'dRlOverPtcut'
         ]))
 
+        self.worker.InitializePhotonCut(*self._get_nested_values(cfg['Photon'], [
+            'pTcut', 'Etacut', ['BarrelAndEndCapInterface', 'low'], ['BarrelAndEndCapInterface', 'high']
+        ]))
+
         self.worker.InitializeJetcut(*self._get_nested_values(cfg['Jet'], ['pTcut', 'Etacut']))
 
         self.worker.InitializeEvtCut(*self._get_nested_values(cfg, ['MZ1cut', 'MZZcut',
@@ -245,6 +249,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("phiZ2_met",  "F")
         self.out.branch("pTZ2_met",  "F")
         self.out.branch("EneZ2_met",  "F")
+        self.out.branch("HZZ2l2q_nFatJet", "I")
 
         # Branches for 2l2nu channel: ZZ kinematics
         self.out.branch("HZZ2l2nu_ZZmT",  "F")
@@ -437,15 +442,10 @@ class HZZAnalysisCppProducer(Module):
         electrons = Collection(event, "Electron")
         muons = Collection(event, "Muon")
         fsrPhotons = Collection(event, "FsrPhoton")
-        # Photons = Collection(event, "Photon")
+        Photons = Collection(event, "Photon")
         jets = Collection(event, "Jet")
         FatJets = Collection(event, "FatJet")
         met = Object(event, "MET", None)
-
-        # for photon in Photons:
-        #     # Keep photons if pT > 55, |eta| < 2.5 and skip the transition region of barrel and endcap
-        #     if photon.pt > 55 and abs(photon.eta) < 2.5 and not (1.4442 < abs(photon.eta) < 1.566):
-        #         return keepIt
 
         if isMC:
             genparts = Collection(event, "GenPart")
@@ -459,6 +459,12 @@ class HZZAnalysisCppProducer(Module):
                                       xe.dz, xe.sip3d, xe.mvaFall17V2Iso, xe.pdgId, xe.pfRelIso03_all)
             if self.DEBUG:
                 print("Electrons: pT, eta: {}, {}".format(xe.pt, xe.eta))
+
+        for photon in Photons:
+            # Keep photons if pT > 55, |eta| < 2.5 and skip the transition region of barrel and endcap
+            self.worker.SetPhotons(photon.pt, photon.eta, photon.phi, photon.mass, photon.mvaID_WP90)
+            if self.DEBUG:
+                print("Photons: pT, eta: {}, {}".format(photon.pt, photon.eta))
 
         for xm in muons:
             self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
@@ -505,13 +511,13 @@ class HZZAnalysisCppProducer(Module):
         HZZ2l2q_resolvedJet2_Index = self.worker.resolvedJet2_Index
         HZZ2l2nu_VBFIndexJet1 = self.worker.HZZ2l2nu_VBFIndexJet1
         HZZ2l2nu_VBFIndexJet2 = self.worker.HZZ2l2nu_VBFIndexJet2
+        HZZ2l2q_nFatJet = self.worker.HZZ2l2q_nFatJet
         HZZ2l2nu_minDPhi_METAK4 = self.worker.minDeltaPhi
 
         # For 2l2nu channel
         HZZ2l2nu_ifVBF = self.worker.HZZ2l2nu_ifVBF
         HZZ2l2qNu_isELE = self.worker.HZZ2l2qNu_isELE
         HZZ2l2qNu_cutOppositeChargeFlag = self.worker.HZZ2l2qNu_cutOppositeChargeFlag
-        HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
         HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
         HZZ2l2qNu_nTightBtagJets = self.worker.HZZ2l2qNu_nTightBtagJets
         HZZ2l2qNu_nMediumBtagJets = self.worker.HZZ2l2qNu_nMediumBtagJets
@@ -745,6 +751,7 @@ class HZZAnalysisCppProducer(Module):
 
         self.out.fillBranch("HZZ2l2q_boostedJet_PNScore", HZZ2l2q_boostedJet_PNScore)
         self.out.fillBranch("HZZ2l2q_boostedJet_Index", HZZ2l2q_boostedJet_Index)
+        self.out.fillBranch("HZZ2l2q_nFatJet",HZZ2l2q_nFatJet)
 
         self.out.fillBranch("HZZ2l2q_resolvedJet1_Index",HZZ2l2q_resolvedJet1_Index)
         self.out.fillBranch("HZZ2l2q_resolvedJet2_Index",HZZ2l2q_resolvedJet2_Index)
@@ -752,7 +759,6 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("HZZ2l2nu_ifVBF",HZZ2l2nu_ifVBF)
         self.out.fillBranch("HZZ2l2qNu_isELE",HZZ2l2qNu_isELE)
         self.out.fillBranch("HZZ2l2qNu_cutOppositeChargeFlag",HZZ2l2qNu_cutOppositeChargeFlag)
-        self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
         self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
         self.out.fillBranch("HZZ2l2qNu_nTightBtagJets",HZZ2l2qNu_nTightBtagJets)
         self.out.fillBranch("HZZ2l2qNu_nMediumBtagJets",HZZ2l2qNu_nMediumBtagJets)
