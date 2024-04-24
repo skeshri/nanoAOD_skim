@@ -242,6 +242,10 @@ public:
     std::vector<float> Zlep2massNoFsr;
     std::vector<unsigned int> jetidx;
     std::vector<unsigned int> FatJetidx;
+    std::vector<float> Z_emuCRlep1pt;
+    std::vector<float> Z_emuCRlep2pt;
+    std::vector<float> Z_emuCRlep1eta;
+    std::vector<float> Z_emuCRlep2eta;
 
     int nTightEle;
     int nTightMu;
@@ -416,6 +420,10 @@ public:
         Zlep2etaNoFsr.clear();
         Zlep2phiNoFsr.clear();
         Zlep2massNoFsr.clear();
+        Z_emuCRlep1pt.clear();
+        Z_emuCRlep2pt.clear();
+        Z_emuCRlep1eta.clear();
+        Z_emuCRlep2eta.clear();
 
         pTL1 = -999;
         MT_2l2nu = -999;
@@ -475,6 +483,8 @@ public:
         HZZ2l2nu_flag2mu_met = false;
         Z1.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z1nofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
+        Z1_emuCR.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
+        Z1_emuCRnofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z2.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z2_2j.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         Z2_met.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);

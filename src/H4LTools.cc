@@ -1050,10 +1050,6 @@ bool H4LTools::GetZ1_emuCR()
  if (DEBUG)
         std::cout << "Inside function GetZ1_emuCR()" << std::endl;
  bool foundZ1_emuCRCandidate = false;
- if (!findZCandidate())
-    {
-        return foundZ1_emuCRCandidate;
-    }
  if (!(nTightMu == 1 && nTightEle == 1))
     {
         return foundZ1_emuCRCandidate;
@@ -1062,19 +1058,47 @@ bool H4LTools::GetZ1_emuCR()
         std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
 
  HZZemuCR_cut2l++;
+
+
+   if((TightEleindex.size()>1) && (TightMuindex.size()>1)){
+     for(unsigned int ke=0; ke<(TightEleindex.size()-1);ke++){
+     for(unsigned int jmu=ke+1; jmu<(TightMuindex.size()-1);jmu++){
+     if((Z1_emuCR.M()>MZcutdown)&&(Z1_emuCR.M()<MZcutup)){
+     Z_emuCRlep1pt.push_back(ElelistFsr[TightEleindex[ke]].Pt());
+     Z_emuCRlep2pt.push_back(MulistFsr[TightMuindex[jmu]].Pt());
+     Z_emuCRlep1eta.push_back(ElelistFsr[TightEleindex[ke]].Eta());
+     Z_emuCRlep2eta.push_back(MulistFsr[TightMuindex[jmu]].Eta());
+     } 
+     }
+     }
+
+     for(unsigned int kmu=0; kmu<(TightMuindex.size()-1);kmu++){
+     for(unsigned int je=kmu+1; je<(TightEleindex.size()-1);je++){
+     if((Z1_emuCR.M()>MZcutdown)&&(Z1_emuCR.M()<MZcutup)){
+     Z_emuCRlep1pt.push_back(MulistFsr[TightMuindex[kmu]].Pt());
+     Z_emuCRlep2pt.push_back(ElelistFsr[TightEleindex[je]].Pt());
+     Z_emuCRlep1eta.push_back(MulistFsr[TightMuindex[kmu]].Eta());
+     Z_emuCRlep2eta.push_back(ElelistFsr[TightEleindex[je]].Eta());
+     }
+     }
+     }
+
+     }
+
+
 ///pT selection 
- if ((Zlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Zlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+ if ((Z_emuCRlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Z_emuCRlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutpTl1l2++;
 ///eta selection
- if (fabs(Zlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Zlep2eta[0]) > HZZ2l2nu_Lep_eta)
+ if (fabs(Z_emuCRlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Z_emuCRlep2eta[0]) > HZZ2l2nu_Lep_eta)
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutETAl1l2++;
-  
+
  std::vector<int> Z1CanIndex;
     for (unsigned int m = 0; m < (Zlist.size()); m++)
     {
@@ -1084,8 +1108,8 @@ bool H4LTools::GetZ1_emuCR()
     int Z1index;
     Z1index = Z1CanIndex[0];
     Z1_emuCR = Zlist[Z1index];
-    Z1_emuCRnofsr = Zlistnofsr[Z1index];
-///invariant mass of dilepton system within 15GeV
+    Z1_emuCRnofsr = Zlistnofsr[Z1index];   
+
  if (Z1_emuCR.M() - Zmass > HZZ2l2nu_M_ll_Window)
     {
         return foundZ1_emuCRCandidate;
