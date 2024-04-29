@@ -246,6 +246,10 @@ public:
     std::vector<float> Z_emuCRlep2pt;
     std::vector<float> Z_emuCRlep1eta;
     std::vector<float> Z_emuCRlep2eta;
+    std::vector<float> Z_emuCRlep1phi;
+    std::vector<float> Z_emuCRlep2phi;
+    std::vector<float> Z_emuCRlep1mass;
+    std::vector<float> Z_emuCRlep2mass;
 
     int nTightEle;
     int nTightMu;
@@ -268,6 +272,7 @@ public:
     // count number of tight, medium and loose b-tagged jets
     // FIXME: For now these b-tag numbers are only for 2l2nu case
     bool HZZ2l2nu_ifVBF;
+    bool HZZ2l2nu_isEMuCR;
     int HZZ2l2qNu_nJets;
     int HZZ2l2qNu_nTightBtagJets;
     int HZZ2l2qNu_nMediumBtagJets;
@@ -424,6 +429,10 @@ public:
         Z_emuCRlep2pt.clear();
         Z_emuCRlep1eta.clear();
         Z_emuCRlep2eta.clear();
+        Z_emuCRlep1phi.clear();
+        Z_emuCRlep2phi.clear();
+        Z_emuCRlep1mass.clear();
+        Z_emuCRlep2mass.clear();
 
         pTL1 = -999;
         MT_2l2nu = -999;
@@ -442,6 +451,14 @@ public:
         etaL4 = -999;
         phiL4 = -999;
         massL4 = -999;
+        pTL1_emu = -999;
+        etaL1_emu = -999;
+        phiL1_emu = -999;
+        massL1_emu = -999;
+        pTL2_emu = -999;
+        etaL2_emu = -999;
+        phiL2_emu = -999;
+        massL2_emu = -999;
 
         pTj1 = -99;
         etaj1 = -99;
@@ -495,6 +512,8 @@ public:
         ZZ_metsystem.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         ZZ_2jsystemnofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
         ZZ_metsystemnofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
+        ZZ_emuCRsystemnofsr.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
+        ZZ_emuCRsystem.SetPtEtaPhiM(0.0, 0.0, 0.0, 0.0);
     }
 
     bool isFSR = true;
@@ -524,6 +543,8 @@ public:
     TLorentzVector ZZ_metsystem;
     TLorentzVector ZZ_2jsystemnofsr;
     TLorentzVector ZZ_metsystemnofsr;
+    TLorentzVector ZZ_emuCRsystem;
+    TLorentzVector ZZ_emuCRsystemnofsr;
 
     Mela *mela;
     float me_0plus_JHU, me_qqZZ_MCFM, p0plus_m4l, bkg_m4l;
@@ -544,6 +565,7 @@ public:
     int HZZ2l2nu_cut2e_met, HZZ2l2nu_cut2mu_met, HZZ2l2qNu_cut2l;
     int cut4e, cut4mu, cut2e2mu, cutZZ4e, cutZZ4mu, cutZZ2e2mu, cutm4l4e, cutm4l4mu, cutm4l2e2mu, cutghost2e2mu, cutQCD2e2mu, cutLepPt2e2mu, cutghost4e, cutQCD4e, cutLepPt4e, cutghost4mu, cutQCD4mu, cutLepPt4mu;
     float pTL1, etaL1, phiL1, massL1, pTL2, etaL2, phiL2, massL2, pTL3, etaL3, phiL3, massL3, pTL4, etaL4, phiL4, massL4;
+    float pTL1_emu, etaL1_emu, phiL1_emu, massL1_emu, pTL2_emu, etaL2_emu, phiL2_emu, massL2_emu;
     float pTj1, etaj1, phij1, mj1, pTj2, etaj2, phij2, mj2;
     int HZZ2l2qNu_cutOppositeCharge;
     int HZZ2l2qNu_cutpTl1l2;
@@ -557,7 +579,9 @@ public:
     int HZZemuCR_cutETAl1l2;
     int HZZemuCR_cutmZ1Window;
     int HZZemuCR_cutZ1Pt;
-
+    int HZZ_emuCR_cutbtag;
+    int HZZ_emuCR_cutdPhiJetMET;
+    int HZZ_emuCR_cutMETgT100;
 
 private:
     std::vector<float> Electron_pt, Electron_phi, Electron_eta, Electron_mass, Electron_dxy, Electron_dz, Electron_sip3d;
@@ -655,5 +679,8 @@ H4LTools::H4LTools(int year, bool DEBUG_Main)
     HZZemuCR_cutETAl1l2 = 0;
     HZZemuCR_cutmZ1Window = 0;
     HZZemuCR_cutZ1Pt = 0;
+    HZZ_emuCR_cutbtag = 0;
+    HZZ_emuCR_cutdPhiJetMET = 0;
+    HZZ_emuCR_cutMETgT100 = 0;
 }
 #endif

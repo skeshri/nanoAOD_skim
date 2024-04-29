@@ -1048,86 +1048,89 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
 bool H4LTools::GetZ1_emuCR()
 {
  if (DEBUG)
-        std::cout << "Inside function GetZ1_emuCR()" << std::endl;
+     std::cout << "##Inside function GetZ1_emuCR()" << std::endl;
  bool foundZ1_emuCRCandidate = false;
- if (!(nTightMu == 1 && nTightEle == 1))
+ if (!((nTightMu == 1) && (nTightEle == 1)))
     {
         return foundZ1_emuCRCandidate;
     }
- if (DEBUG)
-        std::cout << "Number of leptons: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
 
  HZZemuCR_cut2l++;
+  if (DEBUG)
+      std::cout << "##Number of leptons inside emu control region: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
 
+     if((TightEleindex.size() == 1) && (TightMuindex.size() == 1)){
 
-   if((TightEleindex.size()>1) && (TightMuindex.size()>1)){
-     for(unsigned int ke=0; ke<(TightEleindex.size()-1);ke++){
-     for(unsigned int jmu=ke+1; jmu<(TightMuindex.size()-1);jmu++){
-     if((Z1_emuCR.M()>MZcutdown)&&(Z1_emuCR.M()<MZcutup)){
-     Z_emuCRlep1pt.push_back(ElelistFsr[TightEleindex[ke]].Pt());
-     Z_emuCRlep2pt.push_back(MulistFsr[TightMuindex[jmu]].Pt());
-     Z_emuCRlep1eta.push_back(ElelistFsr[TightEleindex[ke]].Eta());
-     Z_emuCRlep2eta.push_back(MulistFsr[TightMuindex[jmu]].Eta());
-     } 
-     }
-     }
-
-     for(unsigned int kmu=0; kmu<(TightMuindex.size()-1);kmu++){
-     for(unsigned int je=kmu+1; je<(TightEleindex.size()-1);je++){
-     if((Z1_emuCR.M()>MZcutdown)&&(Z1_emuCR.M()<MZcutup)){
-     Z_emuCRlep1pt.push_back(MulistFsr[TightMuindex[kmu]].Pt());
-     Z_emuCRlep2pt.push_back(ElelistFsr[TightEleindex[je]].Pt());
-     Z_emuCRlep1eta.push_back(MulistFsr[TightMuindex[kmu]].Eta());
-     Z_emuCRlep2eta.push_back(ElelistFsr[TightEleindex[je]].Eta());
-     }
-     }
+	std::cout << "Size of tight ele: " << TightEleindex[0] << "\t " << ElelistFsr[TightEleindex[0]].Pt() << std::endl; 
+	std::cout << "Size of tight mu: " << TightMuindex[0] << "\t " << MulistFsr[TightMuindex[0]].Pt() << std::endl; 
+     Z_emuCRlep1pt.push_back(ElelistFsr[TightEleindex[0]].Pt());
+     Z_emuCRlep2pt.push_back(MulistFsr[TightMuindex[0]].Pt());
+     Z_emuCRlep1eta.push_back(ElelistFsr[TightEleindex[0]].Eta());
+     Z_emuCRlep2eta.push_back(MulistFsr[TightMuindex[0]].Eta());
+     Z_emuCRlep1phi.push_back(ElelistFsr[TightEleindex[0]].Phi());
+     Z_emuCRlep2phi.push_back(MulistFsr[TightMuindex[0]].Phi());
+     Z_emuCRlep1mass.push_back(ElelistFsr[TightEleindex[0]].M());
+     Z_emuCRlep2mass.push_back(MulistFsr[TightMuindex[0]].M());
      }
 
-     }
+    // if (DEBUG)
+    // std::cout << "##Zlep1pt,Zlep2pt (emu control region): " << ElelistFsr[TightEleindex[0]].Pt() << ", " << MulistFsr[TightMuindex[0]].Pt() << std::endl;
+
+    Z1 = ElelistFsr[TightEleindex[0]] + MulistFsr[TightMuindex[0]];
+    TLorentzVector Lep1, Lep2;
+    Lep1 = ElelistFsr[TightEleindex[0]];
+    Lep2 = MulistFsr[TightMuindex[0]];
+
+    pTL1 = ElelistFsr[TightEleindex[0]].Pt();
+    pTL2 = MulistFsr[TightMuindex[0]].Pt();
+    etaL1 = ElelistFsr[TightEleindex[0]].Eta();
+    etaL2 = MulistFsr[TightMuindex[0]].Eta();
+    phiL1 = ElelistFsr[TightEleindex[0]].Phi();
+    phiL2 = MulistFsr[TightMuindex[0]].Phi();
+    massL1 = ElelistFsr[TightEleindex[0]].M();
+    massL2 = MulistFsr[TightMuindex[0]].M(); 
 
 
 ///pT selection 
- if ((Z_emuCRlep1pt[0] < HZZ2l2nu_Leading_Lep_pT || Z_emuCRlep2pt[0] < HZZ2l2nu_SubLeading_Lep_pT))
+    if ((pTL1 < HZZ2l2nu_Leading_Lep_pT || pTL2 < HZZ2l2nu_SubLeading_Lep_pT))
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutpTl1l2++;
+
+     if (DEBUG)
+     std::cout << "##Zlep1pt,Zlep2pt (emu control region): " << pTL1 << ", " << pTL2 << std::endl; 
+
 ///eta selection
- if (fabs(Z_emuCRlep1eta[0]) > HZZ2l2nu_Lep_eta || fabs(Z_emuCRlep2eta[0]) > HZZ2l2nu_Lep_eta)
+ if (fabs(etaL1) > HZZ2l2nu_Lep_eta || fabs(etaL2) > HZZ2l2nu_Lep_eta)
     {
         return foundZ1_emuCRCandidate;
     }
-    HZZemuCR_cutETAl1l2++;
-
- std::vector<int> Z1CanIndex;
-    for (unsigned int m = 0; m < (Zlist.size()); m++)
-    {
-        Z1CanIndex.push_back(m);
-    }
-
-    int Z1index;
-    Z1index = Z1CanIndex[0];
-    Z1_emuCR = Zlist[Z1index];
-    Z1_emuCRnofsr = Zlistnofsr[Z1index];   
-
- if (Z1_emuCR.M() - Zmass > HZZ2l2nu_M_ll_Window)
+    HZZemuCR_cutETAl1l2++; 
+    if (DEBUG)
+    std::cout << "##Zlep1eta,Zlep2eta (emu control region): " << etaL1 << ", " << etaL2 << std::endl;
+    //std::cout << "##HELLO##Z_emu mass: " << Z1_emuCR.M() <<  std::endl;
+    //std::cout << "##HELLO#Z_emu Pt: " << Z1_emuCR.Pt() <<  std::endl;
+ if (fabs(Z1.M() - Zmass) > HZZ2l2nu_M_ll_Window)
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutmZ1Window++;
+     if (DEBUG)
+     std::cout << "##Z_emu mass: " << Z1.M() <<  std::endl; 
 
 ///pT selection of dilepton
- if (Z1_emuCR.Pt() < HZZ2l2nu_Pt_ll)
+ if (Z1.Pt() < 25)
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutZ1Pt++;
     foundZ1_emuCRCandidate = true;
     if (DEBUG)
-        std::cout << "Found Z1_emuCR candidate: " << foundZ1_emuCRCandidate << std::endl;
+        std::cout << "Found Z1_emuCR candidate: " << foundZ1_emuCRCandidate << std::endl;  
 
     return foundZ1_emuCRCandidate;
-}   
+}  
 
 //////////////////////////////////////////////////
 
@@ -1328,6 +1331,7 @@ bool H4LTools::ZZSelection_2l2nu()
 
     return foundZZCandidate;
 }
+
 
 float H4LTools::getDg4Constant(float ZZMass){
     return spline_g4->Eval(ZZMass);

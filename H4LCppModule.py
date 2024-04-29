@@ -104,6 +104,7 @@ class HZZAnalysisCppProducer(Module):
         self.passZZ4lEvts = 0
         self.passZZ2l2qEvts = 0
         self.passZZ2l2nuEvts = 0
+        self.passZZ2l2nu_emuCR_Evts = 0
 
     def beginJob(self):
         pass
@@ -176,10 +177,12 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("passZZ4lSelection",  "O")
         self.out.branch("passZZ2l2qSelection",  "O")
         self.out.branch("passZZ2l2nuSelection",  "O")
+        self.out.branch("passZZ2l2nu_emuCR_Selection", "O")
         self.out.branch("isBoosted2l2q",  "O")
         self.out.branch("HZZ2l2nu_ifVBF", "O")
         self.out.branch("HZZ2l2qNu_isELE", "O")
         self.out.branch("HZZ2l2qNu_cutOppositeChargeFlag", "O")
+        self.out.branch("HZZ2l2nu_isEMuCR", "O")
 
         # Branches for leptons related varialbes: 4l, 2l2q, 2l2nu
         self.out.branch("massL1",  "F")
@@ -487,8 +490,11 @@ class HZZAnalysisCppProducer(Module):
         passZZ2l2qSelection = False
         foundZZCandidate_2l2nu = False # for 2l2nu
         passZZ2l2nuSelection = False
+        foundZZCandidate_2l2nu_emuCR = False   # for 2l2nu emu control region
+        passZZ2l2nu_emuCR_Selection = False    # for 2l2nu emu control region
         HZZ2l2nu_ifVBF = False
         HZZ2l2qNu_isELE = False
+	HZZ2l2nu_isEMuCR = False
         HZZ2l2qNu_cutOppositeChargeFlag = False
         isBoosted2l2q = False
 
@@ -500,6 +506,10 @@ class HZZAnalysisCppProducer(Module):
             foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
         # FIXME: To debug 2l2q and 2l2nu channels, I am commenting out the 4l channel
         # foundZZCandidate_4l = self.worker.ZZSelection_4l()
+        if self.worker.GetZ1_emuCR():
+	    HZZ2l2nu_isEMuCR = True;
+            foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
+            #foundZZCandidate_2l2nu_emuCR = self.worker.ZZSelection_2l2nu_EMu_CR()
 
         HZZ2l2q_boostedJet_PNScore = self.worker.boostedJet_PNScore
         HZZ2l2q_boostedJet_Index = self.worker.boostedJet_Index
@@ -512,6 +522,7 @@ class HZZAnalysisCppProducer(Module):
         # For 2l2nu channel
         HZZ2l2nu_ifVBF = self.worker.HZZ2l2nu_ifVBF
         HZZ2l2qNu_isELE = self.worker.HZZ2l2qNu_isELE
+        HZZ2l2nu_isEMuCR = self.worker.HZZ2l2nu_isEMuCR
         HZZ2l2qNu_cutOppositeChargeFlag = self.worker.HZZ2l2qNu_cutOppositeChargeFlag
         HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
         HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
@@ -755,6 +766,7 @@ class HZZAnalysisCppProducer(Module):
 
         self.out.fillBranch("HZZ2l2nu_ifVBF",HZZ2l2nu_ifVBF)
         self.out.fillBranch("HZZ2l2qNu_isELE",HZZ2l2qNu_isELE)
+        self.out.fillBranch("HZZ2l2nu_isEMuCR",HZZ2l2nu_isEMuCR)
         self.out.fillBranch("HZZ2l2qNu_cutOppositeChargeFlag",HZZ2l2qNu_cutOppositeChargeFlag)
         self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
         self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
