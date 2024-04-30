@@ -5,7 +5,6 @@ python3 condor_setup_lxplus.py
 import argparse
 import os
 import sys
-import datetime
 
 sys.path.append("Utils/.")
 
@@ -31,13 +30,9 @@ def main(args):
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
     condor_file_name = args.condor_file_name
-    # Add time stamp to the condor_file_name
-    now = datetime.datetime.now()
-    condor_file_name = condor_file_name + "_" + now.strftime("%Y%m%d_%H%M%S")
-    condor_file_name = condor_file_name + "_" + submission_name
-
     condor_queue = args.condor_queue
     DontCreateTarFile = args.DontCreateTarFile
+    condor_file_name = 'submit_condor_jobs_lnujj_'+submission_name
 
     # Create log files
     import infoCreaterGit
@@ -61,7 +56,7 @@ def main(args):
     import makeTarFile
     if not DontCreateTarFile: makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
     print("copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n")
-    os.system('xrdcp ' + CMSSWRel+".tgz" + '  root://eosuser.cern.ch/'+storeDir+'/' + CMSSWRel+".tgz")
+    os.system('cp ' + CMSSWRel+".tgz" + ' '+storeDir+'/' + CMSSWRel+".tgz")
 
     post_proc_to_run = "post_proc.py"
     command = "python "+post_proc_to_run
@@ -147,14 +142,8 @@ def main(args):
     outScript.write("\n"+'echo "Running on: `uname -a`"');
     outScript.write("\n"+'echo "System software: `cat /etc/redhat-release`"');
     outScript.write("\n"+'source /cvmfs/cms.cern.ch/cmsset_default.sh');
-    outScript.write("\n"+'echo "====> List input arguments : " ');
-    outScript.write("\n"+'echo "1. nanoAOD ROOT file: ${1}"');
-    outScript.write("\n"+'echo "2. EOS path to store output root file: ${2}"');
-    outScript.write("\n"+'echo "3. EOS path from where we copy CMSSW: ${3}"');
-    outScript.write("\n"+'echo "4. Output root file name: ${4}"');
-    outScript.write("\n"+'echo "========================================="');
     outScript.write("\n"+'echo "copy cmssw tar file from store area"');
-    outScript.write("\n"+'xrdcp -f  root://eosuser.cern.ch/${3}/'+CMSSWRel +'.tgz  .');
+    outScript.write("\n"+'cp -s ${3}/'+CMSSWRel +'.tgz  .');
     outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'cd ' + CMSSWRel + '/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/'+TOP_LEVEL_DIR_NAME+'/' );
@@ -171,16 +160,18 @@ def main(args):
     outScript.write("\n"+'cat post_proc.py');
     outScript.write("\n"+'echo "..."');
     outScript.write("\n"+'echo "========================================="');
-    outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root");
+    outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} ");
     outScript.write("\n"+'echo "====> List root files : " ');
-    outScript.write("\n"+'ls -ltrh *.root');
+    outScript.write("\n"+'ls *.root');
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
-    outScript.write("\n"+'if ls ${4}_hadd.root 1> /dev/null 2>&1; then');
-    outScript.write("\n"+'    echo "File ${4}_hadd.root exists. Copy this."');
-    outScript.write("\n"+'    echo "xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
-    outScript.write("\n"+'    xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
+    outScript.write("\n"+'if ls skimmed_nano.root 1> /dev/null 2>&1; then');
+    outScript.write("\n"+'    echo "File skimmed_nano.root exists. Copy this."');
+    outScript.write("\n"+'    echo "cp skimmed_nano.root ${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    cp  skimmed_nano.root ${2}/${4}_Skim.root');
     outScript.write("\n"+'else');
-    outScript.write("\n"+'    echo "file ${4}_hadd.root does not exists."');
+    outScript.write("\n"+'    echo "file skimmed_nano.root does not exists, so copy *.root file."');
+    outScript.write("\n"+'    echo "cp *.root ${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    cp  *.root ${2}/${4}_Skim.root');
     outScript.write("\n"+'fi');
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
@@ -212,8 +203,8 @@ if __name__ == "__main__":
     parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
     parser.add_argument("--eos_output_path", default='', help="EOS path for output files. By default it is `/eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples`")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
-    parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj', help="Name for the condor file.")
-    parser.add_argument("--condor_queue", default="testmatch", help="""
+    parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
+    parser.add_argument("--condor_queue", default="tomorrow", help="""
                         Condor queue options: (Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours)
 
                         name            Duration

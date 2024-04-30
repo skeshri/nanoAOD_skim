@@ -926,21 +926,21 @@ bool H4LTools::ZZSelection(){
                 if (Zistight[Z1CanIndex[iz]] && Zistight[Z2CanIndex[iz]]) foundSRCandidate=true; //it is a global switch.
                 bool same4l = false;
                 bool foundZ11=false; bool foundZ12=false; bool foundZ21=false; bool foundZ22=false;
-                vector<int> lep_Hindex,lep_Hflavor;
-                lep_Hindex.clear();lep_Hflavor.clear();;
-                lep_Hindex.push_back(Zlep1index[Z1index]);
-                lep_Hindex.push_back(Zlep2index[Z1index]);
-                lep_Hindex.push_back(Zlep1index[Z2index]);
-                lep_Hindex.push_back(Zlep2index[Z2index]);
+                vector<int> lep_Hindex_,lep_Hflavor;
+                lep_Hindex_.clear();lep_Hflavor.clear();;
+                lep_Hindex_.push_back(Zlep1lepindex[Z1index]);
+                lep_Hindex_.push_back(Zlep2lepindex[Z1index]);
+                lep_Hindex_.push_back(Zlep1lepindex[Z2index]);
+                lep_Hindex_.push_back(Zlep2lepindex[Z2index]);
                 lep_Hflavor.push_back(Zflavor[Z1index]);
                 lep_Hflavor.push_back(Zflavor[Z1index]);
                 lep_Hflavor.push_back(Zflavor[Z2index]);
                 lep_Hflavor.push_back(Zflavor[Z2index]);
                 for(int l = 0; l < 4; l++){
-                    if ((lep_Hindex[l]==Zlep1index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ11 = true;
-                    if ((lep_Hindex[l]==Zlep2index[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ12 = true;
-                    if ((lep_Hindex[l]==Zlep1index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ21 = true;
-                    if ((lep_Hindex[l]==Zlep2index[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ22 = true;
+                    if ((lep_Hindex_[l]==Zlep1lepindex[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ11 = true;
+                    if ((lep_Hindex_[l]==Zlep2lepindex[Z1CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z1CanIndex[iz]])) foundZ12 = true;
+                    if ((lep_Hindex_[l]==Zlep1lepindex[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ21 = true;
+                    if ((lep_Hindex_[l]==Zlep2lepindex[Z2CanIndex[iz]])&&(lep_Hflavor[l]==Zflavor[Z2CanIndex[iz]])) foundZ22 = true;
                 }
                 same4l = (foundZ11 && foundZ12 && foundZ21 && foundZ22);
                 if ((!same4l) && foundSRCandidate){ //SR has the priority
