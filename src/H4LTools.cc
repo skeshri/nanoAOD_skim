@@ -447,11 +447,11 @@ void H4LTools::LeptonSelection(){
             TightEleindex.push_back(ae);
             nTightEleChgSum += Elechg[ae];
             istightele.push_back(true);
-            lep_tightId.push_back(1);
+            lep_tightId.push_back(1.);
         }
         else{
             istightele.push_back(false);
-            lep_tightId.push_back(0);
+            lep_tightId.push_back(0.);
         }
         if (isMC){
             lep_genindex.push_back(Electron_genPartIdx[Electronindex[ae]]);
@@ -500,11 +500,11 @@ void H4LTools::LeptonSelection(){
             TightMuindex.push_back(amu);
             nTightMuChgSum += Muchg[amu];
             istightmu.push_back(true);
-            lep_tightId.push_back(1);
+            lep_tightId.push_back(1.);
         }
         else{
             istightmu.push_back(false);
-            lep_tightId.push_back(0);
+            lep_tightId.push_back(0.);
         }
         if (isMC) {
             lep_genindex.push_back(Muon_genPartIdx[Muonindex[amu]]);

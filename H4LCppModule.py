@@ -140,7 +140,7 @@ class HZZAnalysisCppProducer(Module):
         GENZNum = 2
         self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
         self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
-        self.out.branch("lep_tightId",  "O", lenVar = "Lepointer")
+        self.out.branch("lep_tightId",  "F", lenVar = "Lepointer")
         self.out.branch("lep_id",  "I", lenVar = "Lepointer")
         self.out.branch("lep_pt",  "F", lenVar = "Lepointer")
         self.out.branch("lep_eta",  "F", lenVar = "Lepointer")
@@ -283,7 +283,9 @@ class HZZAnalysisCppProducer(Module):
         passedZ1LSelection = self.worker.passedZ1LSelection
         passedZXCRSelection = self.worker.passedZXCRSelection
         nZXCRFailedLeptons = self.worker.nfailedleptons
-        if (passedZ1LSelection | passedFullSelection | passedZXCRSelection): keepIt = True
+        if (passedZ1LSelection): keepIt = True
+        if (passedFullSelection): keepIt = True
+        if (passedZXCRSelection): keepIt = True
         Lepointer = self.worker.Lepointer
         lep_Hindex = []
         lep_Hindex_vec = self.worker.lep_Hindex
@@ -295,8 +297,7 @@ class HZZAnalysisCppProducer(Module):
         lep_tightId_vec = self.worker.lep_tightId
         if len(lep_tightId_vec)>0:
             for i in range(len(lep_tightId_vec)):
-                if (lep_tightId_vec[i] == 1): lep_tightId.append(True)
-                else: lep_tightId.append(False)
+                lep_tightId.append(lep_tightId_vec[i])
         if isMC:
             lep_genindex_vec = self.worker.lep_genindex
             if len(lep_genindex_vec)>0:

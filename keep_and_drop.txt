@@ -41,6 +41,7 @@ keep GEN*
 keep njet*
 keep D_*
 keep lep*
+keep nZXCR*
 keep *Weight
 keep *Weight*
 #keep nPhoton

@@ -235,7 +235,7 @@ class H4LTools {
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
       std::vector<int> lep_genindex;
-      std::vector<int> lep_tightId;
+      std::vector<float> lep_tightId;
       std::vector<float> lep_pt;
       std::vector<float> lep_eta;
       std::vector<float> lep_phi;
@@ -301,6 +301,7 @@ class H4LTools {
         Electronindex.clear();  Muonindex.clear(); AllEid.clear(); AllMuid.clear(); Elelist.clear(); Mulist.clear(); ElelistFsr.clear(); Mulist.clear(); 
         Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); istightele.clear(); istightmu.clear(); TightEleindex.clear(); TightMuindex.clear();
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0; mass3l = -99;
+        for (int i=0; i<4; i++) {lep_Hindex[i]=-1;}
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0; nTightZ = 0; nfailedleptons=0;
         Z1LZ1index = -1;
         Lepointer = 0; njets_pt30_eta4p7=0;
