@@ -140,7 +140,7 @@ class HZZAnalysisCppProducer(Module):
         GENZNum = 2
         self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
         self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
-        self.out.branch("lep_tightId",  "F", lenVar = "Lepointer")
+        self.out.branch("lep_tightId",  "O", lenVar = "Lepointer")
         self.out.branch("lep_id",  "I", lenVar = "Lepointer")
         self.out.branch("lep_pt",  "F", lenVar = "Lepointer")
         self.out.branch("lep_eta",  "F", lenVar = "Lepointer")
@@ -297,7 +297,8 @@ class HZZAnalysisCppProducer(Module):
         lep_tightId_vec = self.worker.lep_tightId
         if len(lep_tightId_vec)>0:
             for i in range(len(lep_tightId_vec)):
-                lep_tightId.append(lep_tightId_vec[i])
+                if lep_tightId_vec[i] : lep_tightId.append(1)
+                else : lep_tightId.append(0)
         if isMC:
             lep_genindex_vec = self.worker.lep_genindex
             if len(lep_genindex_vec)>0:
@@ -470,6 +471,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("lep_eta", lep_eta)
         self.out.fillBranch("lep_phi", lep_phi)
         self.out.fillBranch("lep_mass", lep_mass)
+        self.out.fillBranch("lep_tightId", lep_tightId)
         self.out.fillBranch("lep_id", lep_id)
         self.out.fillBranch("lep_matchedR03_MomId", lep_matchedR03_MomId)
         self.out.fillBranch("lep_matchedR03_PdgId", lep_matchedR03_PdgId)
