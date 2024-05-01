@@ -235,7 +235,7 @@ class H4LTools {
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
       std::vector<int> lep_genindex;
-      std::vector<float> lep_tightId;
+      std::vector<bool> lep_tightId;
       std::vector<float> lep_pt;
       std::vector<float> lep_eta;
       std::vector<float> lep_phi;

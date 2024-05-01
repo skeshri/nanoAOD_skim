@@ -424,6 +424,7 @@ void H4LTools::LeptonSelection(){
         lep_eta.push_back(Elelist[ae].Eta());
         lep_phi.push_back(Elelist[ae].Phi());
         lep_mass.push_back(Elelist[ae].M());
+        lep_tightId.push_back(Eid[ae]);
         if (Electron_charge[Electronindex[ae]]<0) lep_id.push_back(11);
         else lep_id.push_back(-11);
         if (isFSR && (FsrEleidx < 900)){
@@ -447,11 +448,11 @@ void H4LTools::LeptonSelection(){
             TightEleindex.push_back(ae);
             nTightEleChgSum += Elechg[ae];
             istightele.push_back(true);
-            lep_tightId.push_back(1.);
+            //lep_tightId.push_back(1.);
         }
         else{
             istightele.push_back(false);
-            lep_tightId.push_back(0.);
+            //lep_tightId.push_back(0.);
         }
         if (isMC){
             lep_genindex.push_back(Electron_genPartIdx[Electronindex[ae]]);
@@ -478,6 +479,7 @@ void H4LTools::LeptonSelection(){
         lep_eta.push_back(Mulist[amu].Eta());
         lep_phi.push_back(Mulist[amu].Phi());
         lep_mass.push_back(Mulist[amu].M());
+        lep_tightId.push_back(muid[amu]);
         if (Muon_charge[Muonindex[amu]]<0) lep_id.push_back(13);
         else lep_id.push_back(-13);
         if (isFSR && (FsrMuonidx < 900)){
@@ -500,11 +502,11 @@ void H4LTools::LeptonSelection(){
             TightMuindex.push_back(amu);
             nTightMuChgSum += Muchg[amu];
             istightmu.push_back(true);
-            lep_tightId.push_back(1.);
+            //lep_tightId.push_back(1.);
         }
         else{
             istightmu.push_back(false);
-            lep_tightId.push_back(0.);
+            //lep_tightId.push_back(0.);
         }
         if (isMC) {
             lep_genindex.push_back(Muon_genPartIdx[Muonindex[amu]]);
