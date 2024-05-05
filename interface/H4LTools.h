@@ -241,6 +241,7 @@ class H4LTools {
       std::vector<float> lep_phi;
       std::vector<float> lep_mass;
       std::vector<int> lep_matchedR03_PdgId;
+      std::vector<float> lep_RelIsoNoFSR;
       std::vector<int> lep_matchedR03_MomId;
       std::vector<int> lep_matchedR03_MomMomId;
       std::vector<int> lep_id;
@@ -264,7 +265,7 @@ class H4LTools {
         Elelep_index.clear();
         Mulep_index.clear();
         lep_genindex.clear();
-        lep_tightId.clear();
+        lep_tightId.clear();lep_RelIsoNoFSR.clear();
         lep_pt.clear();lep_eta.clear(); lep_phi.clear();lep_mass.clear();lep_matchedR03_PdgId.clear();lep_matchedR03_MomId.clear();lep_matchedR03_MomMomId.clear();lep_id.clear();
         Muonindex.clear();
         AllEid.clear();

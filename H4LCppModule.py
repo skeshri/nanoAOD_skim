@@ -139,6 +139,7 @@ class HZZAnalysisCppProducer(Module):
         GENHlepNum = 4
         GENZNum = 2
         self.out.branch("lep_Hindex",  "I", lenVar = "GENHlepNum")
+        self.out.branch("lep_RelIsoNoFSR",  "F", lenVar = "Lepointer")
         self.out.branch("lep_genindex",  "I", lenVar = "Lepointer")
         self.out.branch("lep_tightId",  "O", lenVar = "Lepointer")
         self.out.branch("lep_id",  "I", lenVar = "Lepointer")
@@ -312,12 +313,14 @@ class HZZAnalysisCppProducer(Module):
         lep_matchedR03_PdgId = []
         lep_matchedR03_MomId = []
         lep_matchedR03_MomMomId = []
+        lep_RelIsoNoFSR = []
 
         lep_pt_vec = self.worker.lep_pt
         lep_eta_vec = self.worker.lep_eta
         lep_phi_vec = self.worker.lep_phi
         lep_mass_vec = self.worker.lep_mass
         lep_id_vec = self.worker.lep_id
+        lep_RelIsoNoFSR_vec = self.worker.lep_RelIsoNoFSR
         lep_matchedR03_PdgId_vec = self.worker.lep_matchedR03_PdgId
         lep_matchedR03_MomId_vec = self.worker.lep_matchedR03_MomId
         lep_matchedR03_MomMomId_vec = self.worker.lep_matchedR03_MomMomId
@@ -332,6 +335,7 @@ class HZZAnalysisCppProducer(Module):
                 lep_matchedR03_PdgId.append(lep_matchedR03_PdgId_vec[i])
                 lep_matchedR03_MomId.append(lep_matchedR03_MomId_vec[i])
                 lep_matchedR03_MomMomId.append(lep_matchedR03_MomMomId_vec[i])
+                lep_RelIsoNoFSR.append(lep_RelIsoNoFSR_vec[i])
         
         if (foundZZCandidate):
             self.passZZEvts += 1
@@ -473,6 +477,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("lep_mass", lep_mass)
         self.out.fillBranch("lep_tightId", lep_tightId)
         self.out.fillBranch("lep_id", lep_id)
+        self.out.fillBranch("lep_RelIsoNoFSR", lep_RelIsoNoFSR)
         self.out.fillBranch("lep_matchedR03_MomId", lep_matchedR03_MomId)
         self.out.fillBranch("lep_matchedR03_PdgId", lep_matchedR03_PdgId)
         self.out.fillBranch("lep_matchedR03_MomMomId", lep_matchedR03_MomMomId)

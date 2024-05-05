@@ -443,6 +443,7 @@ void H4LTools::LeptonSelection(){
               }
           }*/
         }
+        lep_RelIsoNoFSR.push_back(RelEleIsoNoFsr);
         if((Eid[ae]==true)&&(RelEleIsoNoFsr<9999)){
             nTightEle++;
             TightEleindex.push_back(ae);
@@ -497,6 +498,7 @@ void H4LTools::LeptonSelection(){
               }
           }*/
         }
+        lep_RelIsoNoFSR.push_back(RelIsoNoFsr);
         if((muid[amu]==true)&&(RelIsoNoFsr<0.35)){
             nTightMu++;
             TightMuindex.push_back(amu);
