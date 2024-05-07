@@ -510,6 +510,14 @@ bool H4LTools::findZCandidate(){
                         Zlep2massNoFsr.push_back(Elelist[TightEleindex[je]].M());
                         Zlep1chg.push_back(Elechg[TightEleindex[ke]]);
                         Zlep2chg.push_back(Elechg[TightEleindex[je]]);
+                        Zlep1dZ.push_back(Electron_dz[TightEleindex[ke]]);
+                        Zlep2dZ.push_back(Electron_dz[TightEleindex[je]]);
+                        Zlep1dxy.push_back(Electron_dxy[TightEleindex[ke]]);
+                        Zlep2dxy.push_back(Electron_dxy[TightEleindex[je]]);
+                        Zlep1mvaFall17V2IsoWP90.push_back(Electron_mvaFall17V2Iso[TightEleindex[ke]]);
+                        Zlep2mvaFall17V2IsoWP90.push_back(Electron_mvaFall17V2Iso[TightEleindex[je]]);
+                        Zlep1iso.push_back(Eiso[TightEleindex[ke]]);
+                        Zlep2iso.push_back(Eiso[TightEleindex[je]]);
                     }
                 }
             }
@@ -549,6 +557,14 @@ bool H4LTools::findZCandidate(){
                         Zlep2massNoFsr.push_back(Mulist[TightMuindex[jmu]].M());
                         Zlep1chg.push_back(Muchg[TightMuindex[kmu]]);
                         Zlep2chg.push_back(Muchg[TightMuindex[jmu]]);
+                        Zlep1dZ.push_back(Muon_dz[TightMuindex[kmu]]);
+                        Zlep2dZ.push_back(Muon_dz[TightMuindex[jmu]]);
+                        Zlep1dxy.push_back(Muon_dxy[TightMuindex[kmu]]);
+                        Zlep2dxy.push_back(Muon_dxy[TightMuindex[jmu]]);
+                        Zlep1iso.push_back(Muiso[TightMuindex[kmu]]);
+                        Zlep2iso.push_back(Muiso[TightMuindex[jmu]]);
+                        Zlep1mvaFall17V2IsoWP90.push_back(-999);
+                        Zlep2mvaFall17V2IsoWP90.push_back(-999);
                     }
                 }
             }
@@ -1044,8 +1060,16 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     etaL2 = Lep2.Eta();
     phiL2 = Lep2.Phi();
     massL2 = Lep2.M();
+    dZL1 = Zlep1dZ[Z1index];
+    dZL2 = Zlep2dZ[Z1index];
+    dxyL1 = Zlep1dxy[Z1index];
+    dxyL2 = Zlep2dxy[Z1index];
+    mvaFall17V2Iso_WP90_L1 = Zlep1mvaFall17V2IsoWP90[Z1index];
+    mvaFall17V2Iso_WP90_L2 = Zlep2mvaFall17V2IsoWP90[Z1index];
+    isoL1 = Zlep1iso[Z1index];
+    isoL2 = Zlep2iso[Z1index];
 
-    jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
+        jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
     if (DEBUG)
         std::cout << "Number of jets: " << jetidx.size() << std::endl;
     HZZ2l2qNu_nJets = jetidx.size();

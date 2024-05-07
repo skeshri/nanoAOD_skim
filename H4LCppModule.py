@@ -297,8 +297,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("Muon_Fsr_eta",  "F", lenVar = "nMuon_Fsr")
         self.out.branch("Muon_Fsr_phi",  "F", lenVar = "nMuon_Fsr")
 
-        with open("SyncLepton2018GGH.txt", 'w') as f:
-            f.write("Sync data list:"+"\n")
+        # with open("SyncLepton2018GGH.txt", 'w') as f:
+        #     f.write("Sync data list:"+"\n")
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -567,6 +567,19 @@ class HZZAnalysisCppProducer(Module):
 
         if (foundZZCandidate_2l2nu):
             keepIt = True
+            # if (HZZ2l2qNu_isELE):
+            #     print("ee", event.luminosityBlock, event.event, event.run, self.worker.ZZ_metsystem.Pt(), pTL1, pTL2, self.worker.isoL1, self.worker.isoL2, etaL1, etaL2, self.worker.dZL1, self.worker.dZL2, self.worker.dxyL1, self.worker.dxyL2, met.pt, met.phi, self.worker.mvaFall17V2Iso_WP90_L1, self.worker.mvaFall17V2Iso_WP90_L2)
+            # else:
+            #     print("mumu", event.luminosityBlock, event.event, event.run, self.worker.ZZ_metsystem.Pt(), pTL1, pTL2, self.worker.isoL1, self.worker.isoL2, etaL1, etaL2, self.worker.dZL1, self.worker.dZL2, self.worker.dxyL1, self.worker.dxyL2, met.pt, met.phi, self.worker.mvaFall17V2Iso_WP90_L1, self.worker.mvaFall17V2Iso_WP90_L2)
+
+            # save above two print statement in text file for sync. Print using .format() method having 3 decimal points and with 1 spaces instead of comma
+            with open("SyncLepton2018_DYJetsToLL_LHEFilterPtZ-100To250.txt", 'a') as f:
+                if (HZZ2l2qNu_isELE):
+                    f.write("ee {} {} {} {:.3f} {:.1f} {:.1f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}\n".format(event.luminosityBlock, event.event, event.run, self.worker.ZZ_metsystem.Pt(), pTL1, pTL2, self.worker.isoL1, self.worker.isoL2, etaL1, etaL2, self.worker.dZL1, self.worker.dZL2, self.worker.dxyL1, self.worker.dxyL2, met.pt, met.phi, self.worker.mvaFall17V2Iso_WP90_L1, self.worker.mvaFall17V2Iso_WP90_L2))
+                else:
+                    f.write("mumu {} {} {} {:.3f} {:.1f} {:.1f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f} {:.3f}\n".format(event.luminosityBlock, event.event, event.run, self.worker.ZZ_metsystem.Pt(), pTL1, pTL2, self.worker.isoL1, self.worker.isoL2, etaL1, etaL2, self.worker.dZL1, self.worker.dZL2, self.worker.dxyL1, self.worker.dxyL2, met.pt, met.phi, self.worker.mvaFall17V2Iso_WP90_L1, self.worker.mvaFall17V2Iso_WP90_L2))
+
+
             passZZ2l2nuSelection = True
             self.passZZ2l2nuEvts += 1
         #     FatJet_PNZvsQCD = self.worker.FatJet_PNZvsQCD

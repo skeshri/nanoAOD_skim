@@ -110,9 +110,9 @@ def main():
             modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), puidSF()])
         # # modulesToRun.extend([jetmetCorrector(), fatJetCorrector(), btagSF(), puidSF()])
 
-        if year == 2018: modulesToRun.extend([puAutoWeight_2018()])
-        if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
-        if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
+        # if year == 2018: modulesToRun.extend([puAutoWeight_2018()])
+        # if year == 2017: modulesToRun.extend([puAutoWeight_2017()])
+        # if year == 2016: modulesToRun.extend([puAutoWeight_2016()])
 
         # INFO: Keep the `fwkJobReport=False` to trigger `haddnano.py`
         #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
