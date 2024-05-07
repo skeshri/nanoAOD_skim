@@ -668,6 +668,7 @@ void H4LTools::findZ1LCandidate(){
         lep_i2_nofsr.SetPtEtaPhiM(Zlep2ptNoFsr[i],Zlep2etaNoFsr[i], Zlep2phiNoFsr[i], Zlep2mass[i]);
         lep_i1_chg = Zlep1chg[i]; lep_i2_chg = Zlep2chg[i];
         bool foundj1 = false;
+        int j1 = -1;
         for (unsigned int findj1e=0;findj1e<Electronindex.size();findj1e++){
             if (abs(ElelistFsr[Electronindex[findj1e]].Eta()-lep_i1.Eta())<0.001) continue;
             if (abs(ElelistFsr[Electronindex[findj1e]].Phi()-lep_i1.Phi())<0.001) continue;
@@ -689,6 +690,16 @@ void H4LTools::findZ1LCandidate(){
             lep_j1_nofsr.SetPtEtaPhiM(Mulist[Muonindex[findj1mu]].Pt(),Mulist[Muonindex[findj1mu]].Eta(),Mulist[Muonindex[findj1mu]].Phi(),Mulist[Muonindex[findj1mu]].M());
         }
         if(!foundj1) continue;
+        bool getj1index = false;
+        for (unsigned int getj1=0; getj1<Lepointer; getj1++){
+            if (abs(lep_eta[getj1]-lep_i1.Eta())<0.001) continue;
+            if (abs(lep_phi[getj1]-lep_i1.Phi())<0.001) continue;
+            if (abs(lep_eta[getj1]-lep_i2.Eta())<0.001) continue;
+            if (abs(lep_phi[getj1]-lep_i2.Phi())<0.001) continue;
+            getj1index = true;
+            j1 = getj1;
+        }
+        if(!getj1index) continue;
         //Check PtCut
         if((lep_i1.Pt()<20)&&(lep_i2.Pt()<20)) continue;
         if((lep_i1.Pt()<10) || (lep_i2.Pt()<10)) continue;
@@ -721,6 +732,9 @@ void H4LTools::findZ1LCandidate(){
             Z1L = Zlist[i]+lep_j1;
             mass3l = Z1L.M();
             Z1LZ1index = i;
+            lep_Hindex[0] = Zlep1lepindex[i];
+            lep_Hindex[1] = Zlep2lepindex[i];
+            lep_Hindex[2] = j1;
             passedZ1LSelection = true;
         }
     }
