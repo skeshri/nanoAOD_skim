@@ -83,8 +83,8 @@ keep PS*
 #keep L1*
 #keep nLowPtElectron
 #keep LowPtElectron*
-#keep GenMET*
-#keep MET*
+keep GenMET*
+keep MET*
 keep Pileup*
 #keep PuppiMET*
 #keep RawMET*
