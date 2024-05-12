@@ -5,6 +5,7 @@ python3 condor_setup_lxplus.py
 import argparse
 import os
 import sys
+import datetime
 
 sys.path.append("Utils/.")
 
@@ -30,9 +31,13 @@ def main(args):
     # Get top-level directory name from PWD
     TOP_LEVEL_DIR_NAME = os.path.basename(os.getcwd())
     condor_file_name = args.condor_file_name
+    # Add time stamp to the condor_file_name
+    now = datetime.datetime.now()
+    condor_file_name = condor_file_name + "_" + now.strftime("%Y%m%d_%H%M%S")
+    condor_file_name = condor_file_name + "_" + submission_name
+
     condor_queue = args.condor_queue
     DontCreateTarFile = args.DontCreateTarFile
-    condor_file_name = 'submit_condor_jobs_lnujj_'+submission_name
 
     # Create log files
     import infoCreaterGit
@@ -56,7 +61,7 @@ def main(args):
     import makeTarFile
     if not DontCreateTarFile: makeTarFile.make_tarfile(cmsswDirPath, CMSSWRel+".tgz")
     print("copying the "+CMSSWRel+".tgz  file to eos path: "+storeDir+"\n")
-    os.system('cp ' + CMSSWRel+".tgz" + ' '+storeDir+'/' + CMSSWRel+".tgz")
+    os.system('xrdcp ' + CMSSWRel+".tgz" + '  root://eosuser.cern.ch/'+storeDir+'/' + CMSSWRel+".tgz")
 
     post_proc_to_run = "post_proc.py"
     command = "python "+post_proc_to_run
@@ -89,6 +94,9 @@ def main(args):
             print(style.RED +"="*51+style.RESET+"\n")
             print ("==> Sample : ",count)
             sample_name = SampleDASName.split('/')[1]
+            # if SampleDASName contains `ext` then add it
+            if 'ext' in SampleDASName:
+                sample_name = sample_name + '_ext' + SampleDASName.split('ext')[-1].split('/')[0]
             print("==> sample_name = ",sample_name)
             campaign = SampleDASName.split('/')[2].split('-')[0]
             print("==> campaign = ",campaign)
@@ -131,6 +139,12 @@ def main(args):
                 outjdl_file.write("Log  = "+output_log_path+"/"+sample_name+"_$(Process).log\n")
                 outjdl_file.write("Arguments = "+(xrd_redirector+root_file)+" "+output_path+"  "+EOS_Output_path+ " " + (root_file.split('/')[-1]).split('.')[0] + "\n")
                 outjdl_file.write("Queue \n")
+                if args.debug:
+                    # break the for loop after 1 iteration to submit only 1 job
+                    break
+            if args.debug:
+                # break the for loop after 1 iteration to submit only 1 job
+                break
             print("Number of files: ",count_root_files)
             print("Number of jobs (till now): ",count_jobs)
         outjdl_file.close();
@@ -142,36 +156,41 @@ def main(args):
     outScript.write("\n"+'echo "Running on: `uname -a`"');
     outScript.write("\n"+'echo "System software: `cat /etc/redhat-release`"');
     outScript.write("\n"+'source /cvmfs/cms.cern.ch/cmsset_default.sh');
+    outScript.write("\n"+'echo "====> List input arguments : " ');
+    outScript.write("\n"+'echo "1. nanoAOD ROOT file: ${1}"');
+    outScript.write("\n"+'echo "2. EOS path to store output root file: ${2}"');
+    outScript.write("\n"+'echo "3. EOS path from where we copy CMSSW: ${3}"');
+    outScript.write("\n"+'echo "4. Output root file name: ${4}"');
+    outScript.write("\n"+'echo "========================================="');
     outScript.write("\n"+'echo "copy cmssw tar file from store area"');
-    outScript.write("\n"+'cp -s ${3}/'+CMSSWRel +'.tgz  .');
+    outScript.write("\n"+'xrdcp -f  root://eosuser.cern.ch/${3}/'+CMSSWRel +'.tgz  .');
     outScript.write("\n"+'tar -xf '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'rm '+ CMSSWRel +'.tgz' );
     outScript.write("\n"+'cd ' + CMSSWRel + '/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/'+TOP_LEVEL_DIR_NAME+'/' );
-    #outScript.write("\n"+'echo "====> List files : " ');
-    #outScript.write("\n"+'ls -alh');
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'scramv1 b ProjectRename');
     outScript.write("\n"+'eval `scram runtime -sh`');
-    # outScript.write("\n"+'sed -i "s/ifRunningOnCondor = .*/ifRunningOnCondor = True/g" '+post_proc_to_run);
-    # outScript.write("\n"+'sed -i "s/testfile = .*/testfile = \\"${1}\\"/g" '+post_proc_to_run);
     outScript.write("\n"+'echo "========================================="');
     outScript.write("\n"+'echo "cat post_proc.py"');
     outScript.write("\n"+'echo "..."');
     outScript.write("\n"+'cat post_proc.py');
     outScript.write("\n"+'echo "..."');
     outScript.write("\n"+'echo "========================================="');
-    outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} ");
+    if args.NOsyst:
+        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --DownloadFileToLocalThenRun True  --NOsyst");
+    else:
+        outScript.write("\n"+command + " --entriesToRun 0  --inputFile ${1} --outputFile ${4}_hadd.root --DownloadFileToLocalThenRun True");
     outScript.write("\n"+'echo "====> List root files : " ');
-    outScript.write("\n"+'ls *.root');
+    outScript.write("\n"+'ls -ltrh *.root');
+    outScript.write("\n"+'ls -ltrh *.json');
     outScript.write("\n"+'echo "====> copying *.root file to stores area..." ');
-    outScript.write("\n"+'if ls skimmed_nano.root 1> /dev/null 2>&1; then');
-    outScript.write("\n"+'    echo "File skimmed_nano.root exists. Copy this."');
-    outScript.write("\n"+'    echo "cp skimmed_nano.root ${2}/${4}_Skim.root"');
-    outScript.write("\n"+'    cp  skimmed_nano.root ${2}/${4}_Skim.root');
+    outScript.write("\n"+'if ls ${4}_hadd.root 1> /dev/null 2>&1; then');
+    outScript.write("\n"+'    echo "File ${4}_hadd.root exists. Copy this."');
+    outScript.write("\n"+'    echo "xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root"');
+    outScript.write("\n"+'    xrdcp -f ${4}_hadd.root  root://eosuser.cern.ch/${2}/${4}_Skim.root');
+    # outScript.write("\n"+'    echo "xrdcp -f ${4}.json  root://eosuser.cern.ch/${2}/cutFlow_${4}.json"');
     outScript.write("\n"+'else');
-    outScript.write("\n"+'    echo "file skimmed_nano.root does not exists, so copy *.root file."');
-    outScript.write("\n"+'    echo "cp *.root ${2}/${4}_Skim.root"');
-    outScript.write("\n"+'    cp  *.root ${2}/${4}_Skim.root');
+    outScript.write("\n"+'    echo "Something wrong: file ${4}_hadd.root does not exists, please check the post_proc.py script."');
     outScript.write("\n"+'fi');
     outScript.write("\n"+'rm *.root');
     outScript.write("\n"+'cd ${_CONDOR_SCRATCH_DIR}');
@@ -199,11 +218,10 @@ if __name__ == "__main__":
     parser.add_argument("--use_custom_eos", default=False, action='store_true', help="Use custom EOS.")
     parser.add_argument("--DontCreateTarFile", default=False, action='store_true', help="Create tar file of CMSSW directory.")
     parser.add_argument("--use_custom_eos_cmd", default='eos root://cmseos.fnal.gov find -name "*.root" /store/group/lnujj/VVjj_aQGC/custom_nanoAOD', help="Custom EOS command.")
-    # input_file mandatory
     parser.add_argument("--input_file", default='', required=True,  help="Input file from where to read DAS names.")
     parser.add_argument("--eos_output_path", default='', help="EOS path for output files. By default it is `/eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples`")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
-    parser.add_argument("--condor_file_name", default='submit_condor_jobs_lnujj_', help="Name for the condor file.")
+    parser.add_argument("--condor_file_name", default='submit_condor_jobs', help="Name for the condor file.")
     parser.add_argument("--condor_queue", default="tomorrow", help="""
                         Condor queue options: (Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours)
 
@@ -220,6 +238,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--post_proc", default="post_proc.py", help="Post process script to run.")
     parser.add_argument("--transfer_input_files", default="keep_and_drop.txt", help="Files to be transferred as input.")
+    parser.add_argument("--NOsyst", default=False, action='store_true', help="Run without systematics.")
+    parser.add_argument("--debug", default=False, action='store_true', help="Debug mode.")
 
     args = parser.parse_args()
     main(args)
