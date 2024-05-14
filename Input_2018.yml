@@ -117,9 +117,9 @@ HZZ2l2nu:
     Leading_Lep_pT: 25.0
     SubLeading_Lep_pT: 25.0
     Lep_eta: 2.5
-    Pt_ll: 55.0
-    M_ll_Window: 15.0
-    dPhi_jetMET: 0.5
+    Pt_ll: 10.0
+    M_ll_Window: 70.0
+    dPhi_jetMET: 0.0
     MZLepcut:
         down: 60.0
         up: 120.0

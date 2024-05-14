@@ -499,16 +499,16 @@ class HZZAnalysisCppProducer(Module):
         isBoosted2l2q = False
 
         if self.worker.GetZ1_2l2qOR2l2nu():
-            foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
-            isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
-            if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
+            #foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
+            #isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
+            #if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
 
             foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
         # FIXME: To debug 2l2q and 2l2nu channels, I am commenting out the 4l channel
         # foundZZCandidate_4l = self.worker.ZZSelection_4l()
-        if self.worker.GetZ1_emuCR():
-	    HZZ2l2nu_isEMuCR = True;
-            foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
+        ##if self.worker.GetZ1_emuCR():
+	    ##HZZ2l2nu_isEMuCR = True;
+            ##foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
             #foundZZCandidate_2l2nu_emuCR = self.worker.ZZSelection_2l2nu_EMu_CR()
 
         HZZ2l2q_boostedJet_PNScore = self.worker.boostedJet_PNScore
