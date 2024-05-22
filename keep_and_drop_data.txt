@@ -37,9 +37,9 @@ keep *j2
 keep pass*
 #keep GEN*
 keep njet*
-keep nZXCR*
 keep D_*
 keep lep*
+keep nZXCR*
 keep *Weight
 keep *Weight*
 #keep nPhoton
@@ -66,7 +66,7 @@ keep HTXS*
 #keep L1*
 #keep nLowPtElectron
 #keep LowPtElectron*
-#keep MET*
+keep MET*
 keep Pileup*
 #keep PuppiMET*
 #keep RawMET*
