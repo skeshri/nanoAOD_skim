@@ -116,3 +116,8 @@ keep PSWeight*
 keep MT_2l2nu
 keep *Weight
 keep *Weight*
+keep Boostdiff
+keep BoostZ1
+keep BoostZ2
+keep genV1DaughterPt
+keep Pz_neutrino
