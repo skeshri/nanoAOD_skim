@@ -470,11 +470,11 @@ public:
         mj2 = -99;
 
         HZZ2l2nu_ifVBF = false;
-        HZZ2l2qNu_nJets = -999;
-        HZZ2l2qNu_nJets = -999;
-        HZZ2l2qNu_nTightBtagJets = -999;
-        HZZ2l2qNu_nMediumBtagJets = -999;
-        HZZ2l2qNu_nLooseBtagJets = -999;
+        HZZ2l2qNu_nJets = 0;
+        HZZ2l2qNu_nJets = 0;
+        HZZ2l2qNu_nTightBtagJets = 0;
+        HZZ2l2qNu_nMediumBtagJets = 0;
+        HZZ2l2qNu_nLooseBtagJets = 0;
         minDeltaPhi = 999.0;
 
         boostedJet_PNScore = -999.0;

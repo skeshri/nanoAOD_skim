@@ -502,7 +502,6 @@ class HZZAnalysisCppProducer(Module):
             #foundZZCandidate_2l2q = self.worker.ZZSelection_2l2q()
             #isBoosted2l2q = self.worker.isBoosted2l2q    # for 2l2q
             #if self.DEBUG: print("isBoosted2l2q: ", isBoosted2l2q)
-
             foundZZCandidate_2l2nu = self.worker.ZZSelection_2l2nu()
         # FIXME: To debug 2l2q and 2l2nu channels, I am commenting out the 4l channel
         # foundZZCandidate_4l = self.worker.ZZSelection_4l()
@@ -525,7 +524,7 @@ class HZZAnalysisCppProducer(Module):
         HZZ2l2nu_isEMuCR = self.worker.HZZ2l2nu_isEMuCR
         HZZ2l2qNu_cutOppositeChargeFlag = self.worker.HZZ2l2qNu_cutOppositeChargeFlag
         HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
-        HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
+        #HZZ2l2qNu_nJets = self.worker.HZZ2l2qNu_nJets
         HZZ2l2qNu_nTightBtagJets = self.worker.HZZ2l2qNu_nTightBtagJets
         HZZ2l2qNu_nMediumBtagJets = self.worker.HZZ2l2qNu_nMediumBtagJets
         HZZ2l2qNu_nLooseBtagJets = self.worker.HZZ2l2qNu_nLooseBtagJets
@@ -769,7 +768,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("HZZ2l2nu_isEMuCR",HZZ2l2nu_isEMuCR)
         self.out.fillBranch("HZZ2l2qNu_cutOppositeChargeFlag",HZZ2l2qNu_cutOppositeChargeFlag)
         self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
-        self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
+        #self.out.fillBranch("HZZ2l2qNu_nJets",HZZ2l2qNu_nJets)
         self.out.fillBranch("HZZ2l2qNu_nTightBtagJets",HZZ2l2qNu_nTightBtagJets)
         self.out.fillBranch("HZZ2l2qNu_nMediumBtagJets",HZZ2l2qNu_nMediumBtagJets)
         self.out.fillBranch("HZZ2l2qNu_nLooseBtagJets",HZZ2l2qNu_nLooseBtagJets)

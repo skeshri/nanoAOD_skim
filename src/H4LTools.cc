@@ -1239,13 +1239,13 @@ bool H4LTools::ZZSelection_2l2nu()
         std::cout << "Number of jets: " << jetidx.size() << std::endl;
 
     // No b-tagged jets
-    if (HZZ2l2qNu_nMediumBtagJets > 0)
-    {
-        return foundZZCandidate;
-    }
-    HZZ2l2nu_cutbtag++;
+    //if (HZZ2l2qNu_nMediumBtagJets > 0)    
+    //{
+        //return foundZZCandidate;
+    //}
+    //HZZ2l2nu_cutbtag++;
     if (DEBUG)
-        std::cout << "Number of b-tagged jets: (Tight, Med, Loose): " << HZZ2l2qNu_nTightBtagJets << ", " << HZZ2l2qNu_nMediumBtagJets << ", " << HZZ2l2qNu_nLooseBtagJets << std::endl;
+        std::cout << "Number of b-tagged jets [inside 2l2nu]: (Tight, Med, Loose): " << HZZ2l2qNu_nTightBtagJets << ", " << HZZ2l2qNu_nMediumBtagJets << ", " << HZZ2l2qNu_nLooseBtagJets << std::endl;
 
     // Get Angle between MET and nearest good jet
     for (unsigned int i = 0; i < jetidx.size(); i++)
@@ -1287,7 +1287,7 @@ bool H4LTools::ZZSelection_2l2nu()
     // Fetch number of jets
     HZZ2l2qNu_nJets = jetidx.size();
     if (DEBUG)
-        std::cout << "Size of jets: " << HZZ2l2qNu_nJets << std::endl;
+        std::cout << "Size of jets: [inside 2l2nu] " << HZZ2l2qNu_nJets << std::endl;
 
     // Get VBF jets having dEta>4.0 and mjj>500
     // If there are more than one pair of VBF jets, select the pair with highest mjj
