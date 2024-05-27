@@ -87,6 +87,7 @@ def main(args):
         outjdl_file.write("MY.WantOS = \"el7\"\n")
         count = 0
         count_jobs = 0
+        output_string_list = []
         for SampleDASName in in_file:
             if SampleDASName[0] == "#": continue
             count = count +1
@@ -99,6 +100,7 @@ def main(args):
                 sample_name = sample_name + '_ext' + SampleDASName.split('ext')[-1].split('/')[0]
             print("==> sample_name = ",sample_name)
             campaign = SampleDASName.split('/')[2].split('-')[0]
+            campaign_ifNeeded = SampleDASName.split('/')[2].split('-')[1]
             print("==> campaign = ",campaign)
             ########################################
             #
@@ -107,16 +109,27 @@ def main(args):
             ########################################
             if (SampleDASName.strip()).endswith("/NANOAOD"): # if the sample name ends with /NANOAOD, then it is a data if it ends with /NANOAODSIM then it is a MC. As the line contain the "\n" at the end, so we need to use the strip() function.
                 output_string = sample_name + os.sep + campaign + os.sep + dirName
+                # if output_string is already present in the output_string_list, then append the campaign_ifNeeded
+                if output_string in output_string_list:
+                    output_string = sample_name + os.sep + campaign + os.sep + dirName + "_" + campaign_ifNeeded
                 output_path = EOS_Output_path + os.sep + output_string
                 print("==> output_path = ",output_path)
                 os.system("mkdir -p "+ output_path)
                 infoLogFiles.send_git_log_and_patch_to_eos(output_path)
             else:
                 output_string = campaign + os.sep + sample_name + os.sep + dirName
+                # if output_string is already present in the output_string_list, then append the campaign_ifNeeded
+                if output_string in output_string_list:
+                    output_string = campaign + os.sep + sample_name + os.sep + dirName + "_" + campaign_ifNeeded
+                    if output_string in output_string_list:
+                        output_string = campaign + os.sep + sample_name + os.sep + dirName + "_" + campaign_ifNeeded + "_ext" + SampleDASName.split('ext')[-1].split('/')[0]
                 output_path = EOS_Output_path+ os.sep + output_string
                 print("==> output_path = ",output_path)
                 os.system("mkdir -p "+output_path)
                 infoLogFiles.send_git_log_and_patch_to_eos(output_path)
+
+            output_string_list.append(output_string)
+
             #  print "==> output_path = ",output_path
 
             ########################################
