@@ -1,3 +1,4 @@
+lumi: 59740.
 TriggerChannels:
     - Triggers_HZZ4l
     - Triggers_HZZ2l2q
@@ -104,6 +105,10 @@ FsrPhoton:
 Jet:
     pTcut: 30
     Etacut: 4.7
+    deepJet_btag:
+        Loose: 0.0494
+        Medium: 0.2770
+        Tight: 0.7264
 
 HZZ2l2q:
     Leading_Lep_pT: 40
