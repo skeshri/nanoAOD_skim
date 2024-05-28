@@ -112,7 +112,7 @@ public:
         Electron_dz.push_back(Electron_dz_);
         Electron_sip3d.push_back(Electron_sip3d_);
         //Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
-        Electron_mvaFall17V2noIso_WP90.push_back(Electron_mvaFall17V2Iso_WP90_);
+        Electron_mvaFall17V2Iso_WP90.push_back(Electron_mvaFall17V2Iso_WP90_);
         Electron_pdgId.push_back(Electron_pdgId_);
         Electron_pfRelIso03_all.push_back(Electron_pfRelIso03_all_);
     }
@@ -149,8 +149,8 @@ public:
         //	std::cout<<"Inside header file: MET_sumEt = " << MET_sumEt_ << "\t" << MET_sumEt << std::endl;
     }
 
-    void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_, bool Muon_mediumId_,
-                  float Muon_dxy_, float Muon_dz_, float Muon_sip3d_, float Muon_ptErr_,
+    void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_,
+                  bool Muon_mediumId_, float Muon_dxy_, float Muon_dz_, float Muon_sip3d_, float Muon_ptErr_,
                   int Muon_nTrackerLayers_, bool Muon_isPFcand_, int Muon_pdgId_, int Muon_charge_, float Muon_pfRelIso03_all_)
     {
         Muon_pt.push_back(Muon_pt_);
