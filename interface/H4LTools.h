@@ -98,7 +98,7 @@ public:
     }
 
     void SetElectrons(float Electron_pt_, float Electron_eta_, float Electron_phi_, float Electron_mass_, float Electron_dxy_, float Electron_dz_,
-                      float Electron_sip3d_, float Electron_mvaFall17V2Iso_, int Electron_pdgId_, float Electron_pfRelIso03_all_)
+                      float Electron_sip3d_, float Electron_mvaFall17V2Iso_WP90_, int Electron_pdgId_, float Electron_pfRelIso03_all_)
     {
         Electron_pt.push_back(Electron_pt_);
         Electron_phi.push_back(Electron_phi_);
@@ -107,7 +107,8 @@ public:
         Electron_dxy.push_back(Electron_dxy_);
         Electron_dz.push_back(Electron_dz_);
         Electron_sip3d.push_back(Electron_sip3d_);
-        Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
+        //Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
+        Electron_mvaFall17V2noIso_WP90.push_back(Electron_mvaFall17V2Iso_WP90_);
         Electron_pdgId.push_back(Electron_pdgId_);
         Electron_pfRelIso03_all.push_back(Electron_pfRelIso03_all_);
     }
@@ -144,7 +145,7 @@ public:
         //	std::cout<<"Inside header file: MET_sumEt = " << MET_sumEt_ << "\t" << MET_sumEt << std::endl;
     }
 
-    void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_,
+    void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_, bool Muon_mediumId_,
                   float Muon_dxy_, float Muon_dz_, float Muon_sip3d_, float Muon_ptErr_,
                   int Muon_nTrackerLayers_, bool Muon_isPFcand_, int Muon_pdgId_, int Muon_charge_, float Muon_pfRelIso03_all_)
     {
@@ -154,6 +155,7 @@ public:
         Muon_mass.push_back(Muon_mass_);
         Muon_isGlobal.push_back(Muon_isGlobal_);
         Muon_isTracker.push_back(Muon_isTracker_);
+        Muon_mediumId.push_back(Muon_mediumId_);
         Muon_dxy.push_back(Muon_dxy_);
         Muon_dz.push_back(Muon_dz_);
         Muon_sip3d.push_back(Muon_sip3d_);
@@ -330,7 +332,7 @@ public:
         Electron_dxy.clear();
         Electron_dz.clear();
         Electron_sip3d.clear();
-        Electron_mvaFall17V2Iso.clear();
+        Electron_mvaFall17V2Iso_WP90.clear();
         Electron_pdgId.clear();
         Electron_pfRelIso03_all.clear();
         Elechg.clear();
@@ -357,6 +359,7 @@ public:
         Muon_charge.clear();
         Muon_isTracker.clear();
         Muon_isGlobal.clear();
+        Muon_mediumId.clear();
         Muon_isPFcand.clear();
         Muchg.clear();
         Muiso.clear();
@@ -585,7 +588,7 @@ public:
 
 private:
     std::vector<float> Electron_pt, Electron_phi, Electron_eta, Electron_mass, Electron_dxy, Electron_dz, Electron_sip3d;
-    std::vector<float> Electron_mvaFall17V2Iso, Electron_pfRelIso03_all;
+    std::vector<float> Electron_mvaFall17V2Iso_WP90, Electron_pfRelIso03_all;
     std::vector<int> Electron_pdgId;
 
     std::vector<float> Jet_pt, Jet_phi, Jet_eta, Jet_mass, Jet_btagDeepFlavB;
@@ -598,7 +601,7 @@ private:
 
     std::vector<float> Muon_pt, Muon_phi, Muon_eta, Muon_mass, Muon_dxy, Muon_dz, Muon_sip3d, Muon_ptErr, Muon_pfRelIso03_all;
     std::vector<int> Muon_nTrackerLayers, Muon_genPartIdx, Muon_pdgId, Muon_charge;
-    std::vector<bool> Muon_isTracker, Muon_isGlobal, Muon_isPFcand;
+    std::vector<bool> Muon_isTracker, Muon_isGlobal, Muon_isPFcand, Muon_mediumId;
 
     std::vector<float> FsrPhoton_dROverEt2, FsrPhoton_phi, FsrPhoton_pt, FsrPhoton_relIso03, FsrPhoton_eta;
 
