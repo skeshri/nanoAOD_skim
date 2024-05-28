@@ -466,7 +466,7 @@ class HZZAnalysisCppProducer(Module):
                 print("Electrons: pT, eta: {}, {}".format(xe.pt, xe.eta))
 
         for xm in muons:
-            self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker,
+            self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker, xm.mediumId,
                                 xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all)
             if self.DEBUG:
