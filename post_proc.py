@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import glob
+import tempfile
 
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.muonScaleResProducer import *
@@ -15,6 +16,7 @@ from H4Lmodule import *
 from H4LCppModule import *
 from JetSFMaker import *
 from GenVarsProducer import *
+from keep_and_drop_list import keep_drop_rules_Data_MC, keep_drop_rules_GEN
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -32,6 +34,13 @@ def getListFromFile(filename):
     """Read file list from a text file."""
     with open(filename, "r") as file:
         return ["root://cms-xrd-global.cern.ch/" + line.strip() for line in file]
+
+def create_temp_keep_drop_file(rules):
+    """Create a temporary keep and drop file from a list of rules."""
+    temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt')
+    temp_file.write("\n".join(rules))
+    temp_file.close()
+    return temp_file.name
 
 def main():
     args = parse_arguments()
@@ -89,7 +98,7 @@ def main():
         sfFileName = "DeepCSV_102XSF_V2.csv"
         modulesToRun.extend([muonScaleRes2016()])
     H4LCppModule = lambda: HZZAnalysisCppProducer(year,cfgFile, isMC, isFSR, args.cutFlowFile, args.DEBUG)
-    #GenVarModule = lambda : GenVarsProducer() # FIXME: Gen variable producer module is not working
+    # GenVarModule = lambda : GenVarsProducer() # FIXME: Gen variable producer module is not working
     modulesToRun.extend([H4LCppModule()])
     # modulesToRun.extend([H4LCppModule(), GenVarModule()])
     #modulesToRun.extend([ GenVarModule()])
@@ -116,28 +125,31 @@ def main():
 
         # INFO: Keep the `fwkJobReport=False` to trigger `haddnano.py`
         #            otherwise the output file will have larger size then expected. Reference: https://github.com/cms-nanoAOD/nanoAOD-tools/issues/249
+        temp_keep_drop_file = create_temp_keep_drop_file(keep_drop_rules_GEN + keep_drop_rules_Data_MC)
+        print("DEBUG: Keep and drop file: {}".format(temp_keep_drop_file))
         p=PostProcessor(".",testfilelist, None, None,modules = modulesToRun,
                         provenance=True,fwkJobReport=True,
                         haddFileName=args.outputFile,
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun, longTermCache= True,   # prefetch: download file to local then run, longTermCache: keep the file in local after running so that if it is present use local instead of downloading again
-                        outputbranchsel="keep_and_drop.txt")
+                        outputbranchsel=temp_keep_drop_file)
     else:
         if (not args.NOsyst):
             jetmetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK4PFchs")
             fatJetCorrector = createJMECorrector(isMC=isMC, dataYear=year, jesUncert="All", jetType = "AK8PFPuppi")
             modulesToRun.extend([jetmetCorrector(), fatJetCorrector()])
 
+        temp_keep_drop_file = create_temp_keep_drop_file(keep_drop_rules_Data_MC)
+        print("DEBUG: Keep and drop file: {}".format(temp_keep_drop_file))
         p=PostProcessor(".",testfilelist, None, None, modules = modulesToRun,
                         provenance=True, fwkJobReport=True,
                         haddFileName=args.outputFile,
                         jsonInput=jsonFileName,
                         maxEntries=entriesToRun,
                         prefetch=DownloadFileToLocalThenRun, longTermCache= True,
-                        outputbranchsel="keep_and_drop_data.txt")
+                        outputbranchsel=temp_keep_drop_file)
 
     p.run()
 
 if __name__ == "__main__":
     main()
-

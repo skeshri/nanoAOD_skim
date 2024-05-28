@@ -999,7 +999,7 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     Z1nofsr = Zlistnofsr[Z1index];
 
     // The invariant mass of dilepton system within 15 GeV of the known Z boson mass, ensuring that the pair likely originates from a Z-boson decay
-    if (Z1.M() - Zmass > HZZ2l2nu_M_ll_Window)
+    if (fabs(Z1.M() - Zmass) > HZZ2l2nu_M_ll_Window)
     {
         return foundZ1Candidate;
     }
@@ -1033,15 +1033,21 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     HZZ2l2qNu_nJets = jetidx.size();
 
     // count the number of tight, medium and loose b-tagged jets
-    for (unsigned int i = 0; i < jetidx.size(); i++)
+    for (unsigned int i = 0; i < jetidx.size(); i++) // FIXME: These variables seems to be wrong.
     {
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.7100)
+        // Reference: https://btv-wiki.docs.cern.ch/ScaleFactors/UL2018/#ak4-b-tagging
+        if (DEBUG)
+        {
+            std::cout << "Jet_btagDeepFlavB[" << jetidx[i] << "]: " << Jet_btagDeepFlavB[jetidx[i]] << std::endl;
+        }
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Tight)
             HZZ2l2qNu_nTightBtagJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.2783)
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Medium)
             HZZ2l2qNu_nMediumBtagJets++;
-        if (Jet_btagDeepFlavB[jetidx[i]] > 0.0490)
+        if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Loose)
             HZZ2l2qNu_nLooseBtagJets++;
     }
+    HZZ2l2qNu_cutmZ1Window++;
 
     return foundZ1Candidate;
 }
@@ -1049,31 +1055,32 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
 ////// emu control region (Z1 candidate selection) /////////
 bool H4LTools::GetZ1_emuCR()
 {
- if (DEBUG)
-     std::cout << "##Inside function GetZ1_emuCR()" << std::endl;
- bool foundZ1_emuCRCandidate = false;
- if (!((nTightMu == 1) && (nTightEle == 1)))
+    if (DEBUG)
+        std::cout << "##Inside function GetZ1_emuCR()" << std::endl;
+    bool foundZ1_emuCRCandidate = false;
+    if (!((nTightMu == 1) && (nTightEle == 1)))
     {
         return foundZ1_emuCRCandidate;
     }
 
- HZZemuCR_cut2l++;
-  if (DEBUG)
-      std::cout << "##Number of leptons inside emu control region: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
+    HZZemuCR_cut2l++;
+    if (DEBUG)
+        std::cout << "##Number of leptons inside emu control region: (Mu, Ele, Total): " << nTightMu << ", " << nTightEle << ", " << nTightMu + nTightEle << std::endl;
 
-     if((TightEleindex.size() == 1) && (TightMuindex.size() == 1)){
+    if ((TightEleindex.size() == 1) && (TightMuindex.size() == 1))
+    {
 
-	std::cout << "Size of tight ele: " << TightEleindex[0] << "\t " << ElelistFsr[TightEleindex[0]].Pt() << std::endl; 
-	std::cout << "Size of tight mu: " << TightMuindex[0] << "\t " << MulistFsr[TightMuindex[0]].Pt() << std::endl; 
-     Z_emuCRlep1pt.push_back(ElelistFsr[TightEleindex[0]].Pt());
-     Z_emuCRlep2pt.push_back(MulistFsr[TightMuindex[0]].Pt());
-     Z_emuCRlep1eta.push_back(ElelistFsr[TightEleindex[0]].Eta());
-     Z_emuCRlep2eta.push_back(MulistFsr[TightMuindex[0]].Eta());
-     Z_emuCRlep1phi.push_back(ElelistFsr[TightEleindex[0]].Phi());
-     Z_emuCRlep2phi.push_back(MulistFsr[TightMuindex[0]].Phi());
-     Z_emuCRlep1mass.push_back(ElelistFsr[TightEleindex[0]].M());
-     Z_emuCRlep2mass.push_back(MulistFsr[TightMuindex[0]].M());
-     }
+        std::cout << "Size of tight ele: " << TightEleindex[0] << "\t " << ElelistFsr[TightEleindex[0]].Pt() << std::endl;
+        std::cout << "Size of tight mu: " << TightMuindex[0] << "\t " << MulistFsr[TightMuindex[0]].Pt() << std::endl;
+        Z_emuCRlep1pt.push_back(ElelistFsr[TightEleindex[0]].Pt());
+        Z_emuCRlep2pt.push_back(MulistFsr[TightMuindex[0]].Pt());
+        Z_emuCRlep1eta.push_back(ElelistFsr[TightEleindex[0]].Eta());
+        Z_emuCRlep2eta.push_back(MulistFsr[TightMuindex[0]].Eta());
+        Z_emuCRlep1phi.push_back(ElelistFsr[TightEleindex[0]].Phi());
+        Z_emuCRlep2phi.push_back(MulistFsr[TightMuindex[0]].Phi());
+        Z_emuCRlep1mass.push_back(ElelistFsr[TightEleindex[0]].M());
+        Z_emuCRlep2mass.push_back(MulistFsr[TightMuindex[0]].M());
+    }
 
     // if (DEBUG)
     // std::cout << "##Zlep1pt,Zlep2pt (emu control region): " << ElelistFsr[TightEleindex[0]].Pt() << ", " << MulistFsr[TightMuindex[0]].Pt() << std::endl;
@@ -1090,52 +1097,48 @@ bool H4LTools::GetZ1_emuCR()
     phiL1 = ElelistFsr[TightEleindex[0]].Phi();
     phiL2 = MulistFsr[TightMuindex[0]].Phi();
     massL1 = ElelistFsr[TightEleindex[0]].M();
-    massL2 = MulistFsr[TightMuindex[0]].M(); 
+    massL2 = MulistFsr[TightMuindex[0]].M();
 
-
-///pT selection 
+    /// pT selection
     if ((pTL1 < HZZ2l2nu_Leading_Lep_pT || pTL2 < HZZ2l2nu_SubLeading_Lep_pT))
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutpTl1l2++;
 
-     if (DEBUG)
-     std::cout << "##Zlep1pt,Zlep2pt (emu control region): " << pTL1 << ", " << pTL2 << std::endl; 
+    if (DEBUG)
+        std::cout << "##Zlep1pt,Zlep2pt (emu control region): " << pTL1 << ", " << pTL2 << std::endl;
 
-///eta selection
- if (fabs(etaL1) > HZZ2l2nu_Lep_eta || fabs(etaL2) > HZZ2l2nu_Lep_eta)
+    /// eta selection
+    if (fabs(etaL1) > HZZ2l2nu_Lep_eta || fabs(etaL2) > HZZ2l2nu_Lep_eta)
     {
         return foundZ1_emuCRCandidate;
     }
-    HZZemuCR_cutETAl1l2++; 
+    HZZemuCR_cutETAl1l2++;
     if (DEBUG)
-    std::cout << "##Zlep1eta,Zlep2eta (emu control region): " << etaL1 << ", " << etaL2 << std::endl;
-    //std::cout << "##HELLO##Z_emu mass: " << Z1_emuCR.M() <<  std::endl;
-    //std::cout << "##HELLO#Z_emu Pt: " << Z1_emuCR.Pt() <<  std::endl;
- if (fabs(Z1.M() - Zmass) > HZZ2l2nu_M_ll_Window)
+        std::cout << "##Zlep1eta,Zlep2eta (emu control region): " << etaL1 << ", " << etaL2 << std::endl;
+    // std::cout << "##HELLO##Z_emu mass: " << Z1_emuCR.M() <<  std::endl;
+    // std::cout << "##HELLO#Z_emu Pt: " << Z1_emuCR.Pt() <<  std::endl;
+    if (fabs(Z1.M() - Zmass) > HZZ2l2nu_M_ll_Window)
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutmZ1Window++;
-     if (DEBUG)
-     std::cout << "##Z_emu mass: " << Z1.M() <<  std::endl; 
+    if (DEBUG)
+        std::cout << "##Z_emu mass: " << Z1.M() << std::endl;
 
-///pT selection of dilepton
- if (Z1.Pt() < 25)
+    /// pT selection of dilepton
+    if (Z1.Pt() < 25)
     {
         return foundZ1_emuCRCandidate;
     }
     HZZemuCR_cutZ1Pt++;
     foundZ1_emuCRCandidate = true;
     if (DEBUG)
-        std::cout << "Found Z1_emuCR candidate: " << foundZ1_emuCRCandidate << std::endl;  
+        std::cout << "Found Z1_emuCR candidate: " << foundZ1_emuCRCandidate << std::endl;
 
     return foundZ1_emuCRCandidate;
-}  
-
-//////////////////////////////////////////////////
-
+}
 
 bool H4LTools::ZZSelection_2l2q()
 {
@@ -1241,7 +1244,7 @@ bool H4LTools::ZZSelection_2l2nu()
         std::cout << "Number of jets: " << jetidx.size() << std::endl;
 
     // No b-tagged jets
-    //if (HZZ2l2qNu_nMediumBtagJets > 0)    
+    //if (HZZ2l2qNu_nMediumBtagJets > 0)
     //{
         //return foundZZCandidate;
     //}
@@ -1333,7 +1336,6 @@ bool H4LTools::ZZSelection_2l2nu()
 
     return foundZZCandidate;
 }
-
 
 float H4LTools::getDg4Constant(float ZZMass){
     return spline_g4->Eval(ZZMass);
