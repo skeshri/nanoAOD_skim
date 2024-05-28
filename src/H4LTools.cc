@@ -23,7 +23,6 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
     for (unsigned int i=0; i<Muon_eta.size(); i++){
         if (DEBUG)
             std::cout << "Inside goodLooseMuons2012:: Muon_pt[" << i << "] = " << Muon_pt[i] << std::endl;
-        //if ((Muon_pt[i]>MuPtcut)&&(fabs(Muon_eta[i])<MuEtacut)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i]))){
         if ((Muon_pt[i]>MuPtcut)&&(fabs(Muon_eta[i])<MuEtacut)&&((Muon_isGlobal[i]||Muon_isTracker[i]||Muon_isPFcand[i])&&(Muon_mediumId[i]))){
             LooseMuonindex.push_back(i);
       //      std::cout << nMuon << std::endl;
@@ -35,7 +34,6 @@ std::vector<unsigned int> H4LTools::goodLooseMuons2012(){
 std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigned int> Muonindex){
     std::vector<unsigned int> bestMuonindex;
     for (unsigned int i=0; i<Muonindex.size(); i++){
-        //if ((Muon_pt[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<MuEtacut)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])){
         if ((Muon_pt[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<MuEtacut)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])&&(Muon_mediumId[Muonindex[i]])){
             if (Muon_sip3d[Muonindex[i]]<Musip3dCut){
                 if((fabs(Muon_dxy[Muonindex[i]])<MuLoosedxycut)&&(fabs(Muon_dz[Muonindex[i]])<MuLoosedzcut)){
@@ -68,17 +66,6 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
     mvaVal = -1;
     //unsigned nE = (*nElectron).Get()[0];
     for (unsigned int i=0; i<Electron_pt.size(); i++){
-        if(Electron_pt[i]<10){
-            if(fabs(Electron_eta[i])<0.8) cutVal = eleBDTWPLELP;
-            if((fabs(Electron_eta[i])>=0.8)&&(fabs(Electron_eta[i])<1.479)) cutVal = eleBDTWPMELP;
-            if(fabs(Electron_eta[i])>=1.479) cutVal = eleBDTWPHELP;
-          //  std::cout << nElectron << std::endl;
-        }
-        else{
-            if(fabs(Electron_eta[i])<0.8) cutVal = eleBDTWPLEHP;
-            if((fabs(Electron_eta[i])>=0.8)&&(fabs(Electron_eta[i])<1.479)) cutVal = eleBDTWPMEHP;
-            if(fabs(Electron_eta[i])>=1.479) cutVal = eleBDTWPHEHP;
-        }
 
         mvaVal = Electron_mvaFall17V2Iso_WP90[i];
         if(mvaVal > cutVal){
