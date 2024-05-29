@@ -68,13 +68,13 @@ std::vector<bool> H4LTools::passTight_BDT_Id(){
     for (unsigned int i=0; i<Electron_pt.size(); i++){
 
         mvaVal = Electron_mvaFall17V2Iso_WP90[i];
-        if(mvaVal > cutVal){
-            tightid.push_back(true);
+//        if(mvaVal > cutVal){
+            tightid.push_back(mvaVal);
             //std::cout << nElectron << std::endl;
-        }
-        else{
-            tightid.push_back(false);
-        }
+   //     }
+     //   else{
+       //     tightid.push_back(false);
+     //   }
 
     }
 
