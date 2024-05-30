@@ -156,6 +156,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("phij2",  "F")
         self.out.branch("mj2",  "F")
         self.out.branch("EvtNum",  "I")
+        self.out.branch("Weight",  "F")
         self.out.branch("pileupWeight",  "F")
         self.out.branch("dataMCWeight_new",  "F")
         self.out.branch("prefiringWeight",  "F")
@@ -215,6 +216,7 @@ class HZZAnalysisCppProducer(Module):
         keepIt = False
         Lepointer = 0
         EvtNum = 0
+        Weight = 1
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -451,7 +453,7 @@ class HZZAnalysisCppProducer(Module):
             phi4l = self.worker.ZZsystemnofsr.Phi()
             mass4l = self.worker.ZZsystemnofsr.M()
             rapidity4l = self.worker.ZZsystemnofsr.Rapidity()
-        
+        Weight = event.genWeight * pileupWeight * dataMCWeight_new * prefiringWeight
         self.out.fillBranch("mass4l",mass4l)
         self.out.fillBranch("GENmass4l",GENmass4l)
         self.out.fillBranch("mass4e",mass4e)
@@ -516,7 +518,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("pileupWeight",pileupWeight)
         self.out.fillBranch("dataMCWeight_new",dataMCWeight_new)
         self.out.fillBranch("prefiringWeight",prefiringWeight)
-
+        self.out.fillBranch("Weight",Weight)
         # self.out.fillBranch("nElectron_Fsr", len(electrons))
         # self.out.fillBranch("nMuon_Fsr", len(muons))
         
