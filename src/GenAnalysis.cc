@@ -32,6 +32,8 @@ void GenAnalysis::SetGenVariables(){
     int GENmom1_id=-999, GENmom2_id=-999;
     int counter_initParticle=0;
     for(unsigned int genpidx=0; genpidx<nGenPart; genpidx++){
+        GENlep_MomId.push_back(-1);
+        GENlep_MomMomId.push_back(-1);
         if(GenPart_status[genpidx]==21){
             counter_initParticle++;
             if (counter_initParticle==1){
@@ -75,6 +77,8 @@ void GenAnalysis::SetGenVariables(){
             GENlep_eta.push_back( lep_dressed.Eta() );
             GENlep_phi.push_back( lep_dressed.Phi() );
             GENlep_mass.push_back( lep_dressed.M() );
+            GENlep_MomId.pop_back();
+            GENlep_MomMomId.pop_back();
             GENlep_MomId.push_back(motherID(genpidx));
             GENlep_MomMomId.push_back(mothermotherID(genpidx));
 

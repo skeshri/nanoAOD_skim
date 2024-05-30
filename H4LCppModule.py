@@ -167,8 +167,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("passedFiducialSelection",  "O")
         GENHlepNum = 4
         GENZNum = 2
-        self.out.branch("GENlep_MomId",  "I", lenVar = "nGENLeptons")
-        self.out.branch("GENlep_MomMomId",  "I", lenVar = "nGENLeptons")
+        self.out.branch("GENlep_MomId",  "I", lenVar = "nGenPart")
+        self.out.branch("GENlep_MomMomId",  "I", lenVar = "nGenPart")
         self.out.branch("GENZ_MomId",  "I", lenVar = "nVECZ")
         self.out.branch("GENZ_DaughtersId",  "I", lenVar = "GENZNum")
         self.out.branch("GENlep_Hindex",  "I", lenVar = "GENHlepNum")
@@ -211,8 +211,8 @@ class HZZAnalysisCppProducer(Module):
             self.worker.SetObjectNumGen(event.nGenPart)
             self.genworker.Initialize()
             self.genworker.SetObjectNumGen(event.nGenPart, event.nGenJet)
-        keepIt = True
-
+        keepIt = False
+        Lepointer = 0
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -236,6 +236,7 @@ class HZZAnalysisCppProducer(Module):
         GENrapidity4l = -99
         GENnjets_pt30_eta4p7 = -1
         nGENLeptons = 0
+        nGenPart = 0
         pTZ1 = -99
         etaZ1 = -99
         phiZ1 = -99
@@ -261,6 +262,7 @@ class HZZAnalysisCppProducer(Module):
         fsrPhotons = Collection(event, "FsrPhoton")
         jets = Collection(event, "Jet")
         if isMC:
+            nGenPart = event.nGenPart
             genparts = Collection(event, "GenPart")
             genjets = Collection(event, "GenJet")
             for xj in genjets:
@@ -355,7 +357,6 @@ class HZZAnalysisCppProducer(Module):
                 for i in range(len(GENlep_MomMomId_vec)):
                     GENlep_MomMomId.append(GENlep_MomMomId_vec[i])
 
-            
         foundZZCandidate = self.worker.ZZSelection()
         passedFullSelection=foundZZCandidate
         Lepointer = self.worker.Lepointer
@@ -372,6 +373,7 @@ class HZZAnalysisCppProducer(Module):
                     lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             self.passZZEvts += 1
+            keepIt = True
         if self.worker.RecoFourMuEvent: finalState = 1
         if self.worker.RecoFourEEvent: finalState = 2
         if self.worker.RecoTwoETwoMuEvent: finalState = 3
@@ -445,6 +447,7 @@ class HZZAnalysisCppProducer(Module):
             phi4l = self.worker.ZZsystemnofsr.Phi()
             mass4l = self.worker.ZZsystemnofsr.M()
             rapidity4l = self.worker.ZZsystemnofsr.Rapidity()
+        
         self.out.fillBranch("mass4l",mass4l)
         self.out.fillBranch("GENmass4l",GENmass4l)
         self.out.fillBranch("mass4e",mass4e)
@@ -523,6 +526,8 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("Electron_Fsr_eta",Electron_Fsr_eta)
         self.out.fillBranch("Electron_Fsr_phi",Electron_Fsr_phi)
 
+        self.out.fillBranch("lep_Hindex",lep_Hindex)
+        self.out.fillBranch("lep_genindex",lep_genindex)
         self.out.fillBranch("Muon_Fsr_pt",Muon_Fsr_pt)
         self.out.fillBranch("Muon_Fsr_eta",Muon_Fsr_eta)
         self.out.fillBranch("Muon_Fsr_phi",Muon_Fsr_phi)
