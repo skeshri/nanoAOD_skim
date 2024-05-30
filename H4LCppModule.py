@@ -155,6 +155,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.branch("etaj2",  "F")
         self.out.branch("phij2",  "F")
         self.out.branch("mj2",  "F")
+        self.out.branch("EvtNum",  "I")
         self.out.branch("pileupWeight",  "F")
         self.out.branch("dataMCWeight_new",  "F")
         self.out.branch("prefiringWeight",  "F")
@@ -213,6 +214,7 @@ class HZZAnalysisCppProducer(Module):
             self.genworker.SetObjectNumGen(event.nGenPart, event.nGenJet)
         keepIt = False
         Lepointer = 0
+        EvtNum = 0
         passedTrig=False
         passedFullSelection=False
         passedZ4lSelection=False
@@ -373,6 +375,8 @@ class HZZAnalysisCppProducer(Module):
                     lep_genindex.append(lep_genindex_vec[i])
         if (foundZZCandidate):
             self.passZZEvts += 1
+        if (foundZZCandidate |passedFiducialSelection ):
+            EvtNum += 1
             keepIt = True
         if self.worker.RecoFourMuEvent: finalState = 1
         if self.worker.RecoFourEEvent: finalState = 2
@@ -483,7 +487,7 @@ class HZZAnalysisCppProducer(Module):
         self.out.fillBranch("passedZ4lZXCRSelection",  passedZ4lZXCRSelection)
         self.out.fillBranch("passedZXCRSelection",  passedZXCRSelection)
         self.out.fillBranch("passedFiducialSelection",  passedFiducialSelection)
-
+        self.out.fillBranch("EvtNum",EvtNum)
         self.out.fillBranch("massL1",massL1)
         self.out.fillBranch("pTL1",pTL1)
         self.out.fillBranch("etaL1",etaL1)
