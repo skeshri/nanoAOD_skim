@@ -63,7 +63,7 @@ keep *Weight*
 #keep LowPtElectron*
 #keep MET*
 keep Pileup*
-#keep PuppiMET*
+keep PuppiMET*
 #keep RawMET*
 #keep RawPuppiMET*
 #keep fixedGridRho*
