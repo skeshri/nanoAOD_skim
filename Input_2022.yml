@@ -43,19 +43,19 @@ Electron:
   BDTWP:
     LowEta:
       LowPT:
-        0.9044286167
+        1.6339
       HighPT:
-        0.1968600840
+        0.3685
     MedEta:
       LowPT:
-        0.9094166886
+        1.5499
       HighPT:
-        0.0759172100
+        0.2662
     HighEta:
       LowPT:
-        0.9443653660
+        2.0629
       HighPT:
-        -0.5169136775
+        -0.5444
   Isocut:
     0.35
 Muon:
