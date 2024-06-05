@@ -113,12 +113,10 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
     std::vector<unsigned int> goodJets;
     //unsigned nJ = (*nJet).Get()[0];
     for(unsigned int i=0;i<Jet_pt.size();i++){
-        if (Jet_pt[i]< 50){
-                Jet_puId[i]==7;
-                }
         if((Jet_pt[i]>JetPtcut)&&(fabs(Jet_eta[i])<JetEtacut)){
-        //    if((Jet_jetId[i]>0)&&(Jet_puId[i]==7)){
-             if((Jet_jetId[i]>0)){
+        if (Jet_jetId[i] <= 0) continue;
+        if ((Jet_pt[i]<50)&&(Jet_puId[i]!=7)) continue;
+             std::cout<<"DEBUG: Jet_pt.size() = " << Jet_pt.size() << ";" <<" JetID = " << Jet_jetId[i] << ";" << "Jet_pt = " << Jet_pt[i] << ";" << " puID = " << Jet_puId[i] <<  std::endl;
                 int overlaptag=0;
                 TLorentzVector jettest;
                 jettest.SetPtEtaPhiM(Jet_pt[i],Jet_eta[i],Jet_phi[i],Jet_mass[i]);
@@ -133,10 +131,10 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
                     if(mutest.DeltaR(jettest)<0.5) overlaptag++;
                 }
                 if(overlaptag==0) goodJets.push_back(i);
-            }
         }
     }
     return goodJets;
+
 }
 
 // Pre-selection for Fat-jets
