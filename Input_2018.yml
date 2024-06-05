@@ -88,8 +88,8 @@ Muon:
     #Sip3dcut: 4
     Loosedxycut: 0.045 #0.5
     Loosedzcut: 0.2 #1
-    Tightdxycut: 0.2
-    Tightdzcut: 0.5
+    Tightdxycut: 0.045 #0.2
+    Tightdzcut: 0.2 #0.5
     TightTrackerLayercut: 5
     TightpTErrorcut: 0.3
     HighPtBound: 200
