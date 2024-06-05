@@ -55,14 +55,14 @@ class HZZAnalysisCppProducer(Module):
 
     def _initialize_worker(self, cfg):
         self.worker.InitializeElecut(*self._get_nested_values(cfg['Electron'], [
-            'pTcut', 'Etacut', 'Sip3dcut', 'Loosedxycut', 'Loosedzcut',
+            'pTcut', 'Etacut', 'Loosedxycut', 'Loosedzcut',
             'Isocut', ['BDTWP', 'LowEta', 'LowPT'], ['BDTWP', 'MedEta', 'LowPT'],
             ['BDTWP', 'HighEta', 'LowPT'], ['BDTWP', 'LowEta', 'HighPT'],
             ['BDTWP', 'MedEta', 'HighPT'], ['BDTWP', 'HighEta', 'HighPT']
         ]))
 
         self.worker.InitializeMucut(*self._get_nested_values(cfg['Muon'], [
-            'pTcut', 'Etacut', 'Sip3dcut', 'Loosedxycut', 'Loosedzcut', 'Isocut',
+            'pTcut', 'Etacut', 'Loosedxycut', 'Loosedzcut', 'Isocut',
             'Tightdxycut', 'Tightdzcut', 'TightTrackerLayercut', 'TightpTErrorcut',
             'HighPtBound'
         ]))
@@ -461,13 +461,13 @@ class HZZAnalysisCppProducer(Module):
 
         for xe in electrons:
             self.worker.SetElectrons(xe.pt, xe.eta, xe.phi, xe.mass, xe.dxy,
-                                      xe.dz, xe.sip3d, xe.mvaFall17V2Iso_WP90, xe.pdgId, xe.pfRelIso03_all)
+                                      xe.dz, xe.mvaFall17V2Iso_WP90, xe.pdgId, xe.pfRelIso03_all)
             if self.DEBUG:
                 print("Electrons: pT, eta: {}, {}".format(xe.pt, xe.eta))
 
         for xm in muons:
             self.worker.SetMuons(xm.corrected_pt, xm.eta, xm.phi, xm.mass, xm.isGlobal, xm.isTracker, xm.mediumId,
-                                xm.dxy, xm.dz, xm.sip3d, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
+                                xm.dxy, xm.dz, xm.ptErr, xm.nTrackerLayers, xm.isPFcand,
                                  xm.pdgId, xm.charge, xm.pfRelIso03_all)
             if self.DEBUG:
                 print("Muons: pT, eta: {}, {}".format(xm.corrected_pt, xm.eta))

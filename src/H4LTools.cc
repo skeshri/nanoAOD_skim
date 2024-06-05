@@ -9,7 +9,8 @@ std::vector<unsigned int> H4LTools::goodLooseElectrons2012(){
     for (unsigned int i=0; i<Electron_pt.size(); i++){
         if (DEBUG)
             std::cout << "Inside goodLooseElectrons2012:: Electron_pt[" << i << "] = " << Electron_pt[i] << std::endl;
-        if ((Electron_pt[i]>elePtcut)&&(fabs(Electron_eta[i])<eleEtacut)){
+        //if ((Electron_pt[i]>elePtcut)&&(fabs(Electron_eta[i])<eleEtacut)){
+        if ((Electron_pt[i]>elePtcut)&&((fabs(Electron_eta[i])<1.4442)||(fabs(Electron_eta[i])>1.5660)&&(fabs(Electron_eta[i])<eleEtacut))){
             LooseElectronindex.push_back(i);
             //std::cout << nElectron << std::endl;
         }
@@ -35,10 +36,10 @@ std::vector<unsigned int> H4LTools::goodMuons2015_noIso_noPf(std::vector<unsigne
     std::vector<unsigned int> bestMuonindex;
     for (unsigned int i=0; i<Muonindex.size(); i++){
         if ((Muon_pt[Muonindex[i]]>MuPtcut)&&(fabs(Muon_eta[Muonindex[i]])<MuEtacut)&&(Muon_isGlobal[Muonindex[i]]||Muon_isTracker[Muonindex[i]])&&(Muon_mediumId[Muonindex[i]])){
-            if (Muon_sip3d[Muonindex[i]]<Musip3dCut){
+            //if (Muon_sip3d[Muonindex[i]]<Musip3dCut){
                 if((fabs(Muon_dxy[Muonindex[i]])<MuLoosedxycut)&&(fabs(Muon_dz[Muonindex[i]])<MuLoosedzcut)){
                     bestMuonindex.push_back(Muonindex[i]);
-                }
+               // }
             }
         }
     }
@@ -48,11 +49,11 @@ std::vector<unsigned int> H4LTools::goodElectrons2015_noIso_noBdt(std::vector<un
     std::vector<unsigned int> bestElectronindex;
     for (unsigned int i=0; i<Electronindex.size(); i++){
         if ((Electron_pt[Electronindex[i]])>elePtcut){
-            if(Electron_sip3d[Electronindex[i]]<elesip3dCut){
+           // if(Electron_sip3d[Electronindex[i]]<elesip3dCut){
                 if((fabs(Electron_dxy[Electronindex[i]])<eleLoosedxycut)&&(fabs(Electron_dz[Electronindex[i]])<eleLoosedzcut)){
                     bestElectronindex.push_back(Electronindex[i]);
                     //std::cout << nElectron << std::endl;
-                }
+                //}
             }
         }
     }
@@ -112,20 +113,24 @@ std::vector<unsigned int> H4LTools::SelectedJets(std::vector<unsigned int> ele, 
     std::vector<unsigned int> goodJets;
     //unsigned nJ = (*nJet).Get()[0];
     for(unsigned int i=0;i<Jet_pt.size();i++){
+        if (Jet_pt[i]< 50){
+                Jet_puId[i]==7;
+                }
         if((Jet_pt[i]>JetPtcut)&&(fabs(Jet_eta[i])<JetEtacut)){
-            if((Jet_jetId[i]>0)&&(Jet_puId[i]==7)){
+        //    if((Jet_jetId[i]>0)&&(Jet_puId[i]==7)){
+             if((Jet_jetId[i]>0)){
                 int overlaptag=0;
                 TLorentzVector jettest;
                 jettest.SetPtEtaPhiM(Jet_pt[i],Jet_eta[i],Jet_phi[i],Jet_mass[i]);
                 for(unsigned int ie=0;ie<ele.size();ie++){
                     TLorentzVector eletest;
                     eletest.SetPtEtaPhiM(Electron_pt[ele[ie]],Electron_eta[ele[ie]],Electron_phi[ele[ie]],Electron_mass[ele[ie]]);
-                    if(eletest.DeltaR(jettest)<0.4) overlaptag++;
+                    if(eletest.DeltaR(jettest)<0.5) overlaptag++;
                 }
                 for(unsigned int im=0;im<mu.size();im++){
                     TLorentzVector mutest;
                     mutest.SetPtEtaPhiM(Muon_pt[mu[im]],Muon_eta[mu[im]],Muon_phi[mu[im]],Muon_mass[mu[im]]);
-                    if(mutest.DeltaR(jettest)<0.4) overlaptag++;
+                    if(mutest.DeltaR(jettest)<0.5) overlaptag++;
                 }
                 if(overlaptag==0) goodJets.push_back(i);
             }
@@ -1014,6 +1019,10 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
     phiL2 = Lep2.Phi();
     massL2 = Lep2.M();
 
+    if(Lep1.DeltaR(Lep2)<0.3){
+    foundZ1Candidate = false;
+    }
+
     jetidx = SelectedJets(tighteleforjetidx, tightmuforjetidx);
     if (DEBUG)
         std::cout << "Number of jets: " << jetidx.size() << std::endl;
@@ -1034,7 +1043,7 @@ bool H4LTools::GetZ1_2l2qOR2l2nu()
         if (Jet_btagDeepFlavB[jetidx[i]] > btag_deepJet_Loose)
             HZZ2l2qNu_nLooseBtagJets++;
     }
-    HZZ2l2qNu_cutmZ1Window++;
+//    HZZ2l2qNu_cutmZ1Window++;
 
     return foundZ1Candidate;
 }

@@ -23,11 +23,11 @@ public:
     float HZZ2l2nu_Leading_Lep_pT, HZZ2l2nu_SubLeading_Lep_pT, HZZ2l2nu_Lep_eta, HZZ2l2nu_Pt_ll, HZZ2l2nu_M_ll_Window, HZZ2l2nu_dPhi_jetMET, HZZ2l2nu_MZLepcutdown, HZZ2l2nu_MZLepcutup;
     bool DEBUG;
 
-    void InitializeElecut(float elePtcut_, float eleEtacut_, float elesip3dCut_, float eleLoosedxycut_, float eleLoosedzcut_, float eleIsocut_, float eleBDTWPLELP_, float eleBDTWPMELP_, float eleBDTWPHELP_, float eleBDTWPLEHP_, float eleBDTWPMEHP_, float eleBDTWPHEHP_)
+    void InitializeElecut(float elePtcut_, float eleEtacut_, float eleLoosedxycut_, float eleLoosedzcut_, float eleIsocut_, float eleBDTWPLELP_, float eleBDTWPMELP_, float eleBDTWPHELP_, float eleBDTWPLEHP_, float eleBDTWPMEHP_, float eleBDTWPHEHP_)
     {
         elePtcut = elePtcut_;
         eleEtacut = eleEtacut_;
-        elesip3dCut = elesip3dCut_;
+        //elesip3dCut = elesip3dCut_;
         eleLoosedxycut = eleLoosedxycut_;
         eleLoosedzcut = eleLoosedzcut_;
         eleIsocut = eleIsocut_;
@@ -60,11 +60,11 @@ public:
         HZZ2l2nu_MZLepcutup = HZZ2l2nu_MZLepcutup_;
     }
 
-    void InitializeMucut(float MuPtcut_, float MuEtacut_, float Musip3dCut_, float MuLoosedxycut_, float MuLoosedzcut_, float MuIsocut_, float MuTightdxycut_, float MuTightdzcut_, float MuTightTrackerLayercut_, float MuTightpTErrorcut_, float MuHighPtBound_)
+    void InitializeMucut(float MuPtcut_, float MuEtacut_, float MuLoosedxycut_, float MuLoosedzcut_, float MuIsocut_, float MuTightdxycut_, float MuTightdzcut_, float MuTightTrackerLayercut_, float MuTightpTErrorcut_, float MuHighPtBound_)
     {
         MuPtcut = MuPtcut_;
         MuEtacut = MuEtacut_;
-        Musip3dCut = Musip3dCut_;
+     //   Musip3dCut = Musip3dCut_;
         MuLoosedxycut = MuLoosedxycut_;
         MuLoosedzcut = MuLoosedzcut_;
         MuIsocut = MuIsocut_;
@@ -102,7 +102,7 @@ public:
     }
 
     void SetElectrons(float Electron_pt_, float Electron_eta_, float Electron_phi_, float Electron_mass_, float Electron_dxy_, float Electron_dz_,
-                      float Electron_sip3d_, float Electron_mvaFall17V2Iso_WP90_, int Electron_pdgId_, float Electron_pfRelIso03_all_)
+                      float Electron_mvaFall17V2Iso_WP90_, int Electron_pdgId_, float Electron_pfRelIso03_all_)
     {
         Electron_pt.push_back(Electron_pt_);
         Electron_phi.push_back(Electron_phi_);
@@ -110,7 +110,7 @@ public:
         Electron_mass.push_back(Electron_mass_);
         Electron_dxy.push_back(Electron_dxy_);
         Electron_dz.push_back(Electron_dz_);
-        Electron_sip3d.push_back(Electron_sip3d_);
+        //Electron_sip3d.push_back(Electron_sip3d_);
         //Electron_mvaFall17V2Iso.push_back(Electron_mvaFall17V2Iso_);
         Electron_mvaFall17V2Iso_WP90.push_back(Electron_mvaFall17V2Iso_WP90_);
         Electron_pdgId.push_back(Electron_pdgId_);
@@ -150,7 +150,7 @@ public:
     }
 
     void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_,
-                  bool Muon_mediumId_, float Muon_dxy_, float Muon_dz_, float Muon_sip3d_, float Muon_ptErr_,
+                  bool Muon_mediumId_, float Muon_dxy_, float Muon_dz_, float Muon_ptErr_,
                   int Muon_nTrackerLayers_, bool Muon_isPFcand_, int Muon_pdgId_, int Muon_charge_, float Muon_pfRelIso03_all_)
     {
         Muon_pt.push_back(Muon_pt_);
@@ -162,7 +162,7 @@ public:
         Muon_mediumId.push_back(Muon_mediumId_);
         Muon_dxy.push_back(Muon_dxy_);
         Muon_dz.push_back(Muon_dz_);
-        Muon_sip3d.push_back(Muon_sip3d_);
+        //Muon_sip3d.push_back(Muon_sip3d_);
         Muon_ptErr.push_back(Muon_ptErr_);
         Muon_nTrackerLayers.push_back(Muon_nTrackerLayers_);
         Muon_isPFcand.push_back(Muon_isPFcand_);
