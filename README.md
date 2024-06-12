@@ -25,6 +25,13 @@ nanoAOD skiming code for H->ZZ->2l2Q studies.
    cd $CMSSW_BASE/src
    git clone git@github.com:ram1123/nanoAOD_skim.git PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
    cd PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim
+   git clone git@github.com:jbeder/yaml-cpp.git external/yaml-cpp
+   cd external/yaml-cpp/
+   mkdir build
+   cd build
+   cmake3 .. -DBUILD_SHARED_LIBS=ON
+   cmake3 --build .
+   cd -
    git checkout HZZ_Analysis
    cd -
    cmsenv

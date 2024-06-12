@@ -27,6 +27,10 @@ class HZZAnalysisCppProducer(Module):
 
     def loadLibraries(self):
         base_path = os.getenv('CMSSW_BASE') + '/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim'
+        yaml_cpp_path = os.path.join(base_path, "external/yaml-cpp")
+
+        # Adding yaml-cpp headers to the include path
+        ROOT.gSystem.AddIncludePath("-I%s/include" % yaml_cpp_path)
         libraries = [
             'libJHUGenMELAMELA.so',
             'libjhugenmela.so',
@@ -36,6 +40,10 @@ class HZZAnalysisCppProducer(Module):
         for lib in libraries:
             fullPath = os.path.join(base_path, 'JHUGenMELA/MELA/data/slc7_amd64_gcc700', lib)
             ROOT.gSystem.Load(fullPath)
+
+        # Load the yaml-cpp library
+        yaml_cpp_lib_path = os.path.join(yaml_cpp_path, "build")
+        ROOT.gSystem.Load(os.path.join(yaml_cpp_lib_path, "libyaml-cpp.so"))
 
         # Load the C++ module
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
