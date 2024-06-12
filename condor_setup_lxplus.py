@@ -65,14 +65,8 @@ def main(args):
 
     post_proc_to_run = "post_proc.py"
     command = "python "+post_proc_to_run
+    condor_arguments_list = []  # A list that contains all the arguments to be passed for each job
 
-    # Transfer_Input_Files = ("keep_and_drop.txt")     # FIXME: Generalise this.
-    # Transfer_Input_Files = ("Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt, " +
-    #                         "Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt, " +
-    #                         "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt, " +
-    #                         "keep_and_drop_data.txt")
-
-    # with open('input_data_Files/sample_list_v6_2017_campaign.dat') as in_file:
     with open('input_data_Files/'+InputFileFromWhereReadDASNames) as in_file:
         outjdl_file = open(condor_file_name+".jdl","w")
         outjdl_file.write("+JobFlavour   = \""+condor_queue+"\"\n")
@@ -80,13 +74,12 @@ def main(args):
         outjdl_file.write("Universe = vanilla\n")
         outjdl_file.write("Notification = ERROR\n")
         outjdl_file.write("Should_Transfer_Files = NO\n")
-        # outjdl_file.write("WhenToTransferOutput = ON_EXIT\n")
-        # outjdl_file.write("Transfer_Input_Files = "+Transfer_Input_Files + ",  " + post_proc_to_run+"\n")
         outjdl_file.write("x509userproxy = $ENV(X509_USER_PROXY)\n")
-        # outjdl_file.write("requirements = TARGET.OpSysAndVer =?= \"AlmaLinux9\"\n")
-        # outjdl_file.write("MY.WantOS = \"el7\"\n")
-        # MY.SingularityImage = "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/"
         outjdl_file.write("MY.SingularityImage = \"/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/\"\n")
+        outjdl_file.write("Output = {output_log_path}/$(logtxt)_$(Process).stdout\n".format(output_log_path=output_log_path))
+        outjdl_file.write("Error  = {output_log_path}/$(logtxt)_$(Process).err\n".format(output_log_path=output_log_path))
+        outjdl_file.write("Log  = {output_log_path}/$(logtxt)_$(Process).log\n".format(output_log_path=output_log_path))
+        outjdl_file.write('Arguments = "$(infile) $(outfile) $(eospath) $(outfilename)"\n')
         count = 0
         count_jobs = 0
         output_string_list = []
@@ -149,11 +142,15 @@ def main(args):
                 # print "=> ",root_file
                 count_root_files+=1
                 count_jobs += 1
-                outjdl_file.write("Output = "+output_log_path+"/"+sample_name+"_$(Process).stdout\n")
-                outjdl_file.write("Error  = "+output_log_path+"/"+sample_name+"_$(Process).err\n")
-                outjdl_file.write("Log  = "+output_log_path+"/"+sample_name+"_$(Process).log\n")
-                outjdl_file.write("Arguments = "+(xrd_redirector+root_file)+" "+output_path+"  "+EOS_Output_path+ " " + (root_file.split('/')[-1]).split('.')[0] + "\n")
-                outjdl_file.write("Queue \n")
+                condor_arguments_list.append(
+                    (
+                        xrd_redirector + root_file,
+                        output_path,
+                        EOS_Output_path,
+                        (root_file.split("/")[-1]).split(".")[0],
+                        output_path.split("/")[-2], # This argument is used for the log file name
+                    )
+                )
                 if args.debug:
                     # break the for loop after 1 iteration to submit only 1 job
                     break
@@ -162,7 +159,13 @@ def main(args):
                 break
             print("Number of files: ",count_root_files)
             print("Number of jobs (till now): ",count_jobs)
+        outjdl_file.write("queue infile, outfile, eospath, outfilename, logtxt from {}.txt\n".format(condor_file_name))
         outjdl_file.close();
+
+    # Write all condor jobs arguments from list to a file with same name as condor_file_name but with .txt extension
+    with open(condor_file_name+".txt", "w") as f:
+        for item in condor_arguments_list:
+            f.write("{}\n".format(",".join(item)))
 
     outScript = open(condor_file_name+".sh","w");
     outScript.write('#!/bin/bash');
