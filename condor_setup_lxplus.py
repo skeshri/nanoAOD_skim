@@ -66,7 +66,7 @@ def main(args):
     post_proc_to_run = "post_proc.py"
     command = "python "+post_proc_to_run
 
-    Transfer_Input_Files = ("keep_and_drop.txt")     # FIXME: Generalise this.
+    # Transfer_Input_Files = ("keep_and_drop.txt")     # FIXME: Generalise this.
     # Transfer_Input_Files = ("Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt, " +
     #                         "Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt, " +
     #                         "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt, " +
@@ -79,12 +79,14 @@ def main(args):
         outjdl_file.write("Executable = "+condor_file_name+".sh\n")
         outjdl_file.write("Universe = vanilla\n")
         outjdl_file.write("Notification = ERROR\n")
-        outjdl_file.write("Should_Transfer_Files = YES\n")
-        outjdl_file.write("WhenToTransferOutput = ON_EXIT\n")
-        outjdl_file.write("Transfer_Input_Files = "+Transfer_Input_Files + ",  " + post_proc_to_run+"\n")
+        outjdl_file.write("Should_Transfer_Files = NO\n")
+        # outjdl_file.write("WhenToTransferOutput = ON_EXIT\n")
+        # outjdl_file.write("Transfer_Input_Files = "+Transfer_Input_Files + ",  " + post_proc_to_run+"\n")
         outjdl_file.write("x509userproxy = $ENV(X509_USER_PROXY)\n")
-        outjdl_file.write("requirements = TARGET.OpSysAndVer =?= \"AlmaLinux9\"\n")
-        outjdl_file.write("MY.WantOS = \"el7\"\n")
+        # outjdl_file.write("requirements = TARGET.OpSysAndVer =?= \"AlmaLinux9\"\n")
+        # outjdl_file.write("MY.WantOS = \"el7\"\n")
+        # MY.SingularityImage = "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/"
+        outjdl_file.write("MY.SingularityImage = \"/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/\"\n")
         count = 0
         count_jobs = 0
         output_string_list = []
