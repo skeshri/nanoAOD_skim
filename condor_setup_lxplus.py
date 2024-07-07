@@ -235,7 +235,7 @@ if __name__ == "__main__":
     parser.add_argument("--eos_output_path", default='', help="EOS path for output files. By default it is `/eos/user/<UserInitials>/<UserName>/nanoAOD_ntuples`")
     parser.add_argument("--condor_log_path", default='./', help="Path where condor log should be saved. By default is the current working directory")
     parser.add_argument("--condor_file_name", default='submit_condor_jobs', help="Name for the condor file.")
-    parser.add_argument("--condor_queue", default="tomorrow", help="""
+    parser.add_argument("--condor_queue", default="testmatch", help="""
                         Condor queue options: (Reference: https://twiki.cern.ch/twiki/bin/view/ABPComputing/LxbatchHTCondor#Queue_Flavours)
 
                         name            Duration

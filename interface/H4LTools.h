@@ -97,7 +97,7 @@ class H4LTools {
       
       void SetMuons(float Muon_pt_, float Muon_eta_, float Muon_phi_, float Muon_mass_, bool Muon_isGlobal_, bool Muon_isTracker_,
                         float Muon_dxy_, float Muon_dz_,float Muon_sip3d_, float Muon_ptErr_,
-                        int Muon_nTrackerLayers_, bool Muon_isPFcand_, int Muon_pdgId_,int Muon_charge_, float Muon_pfRelIso03_all_
+                        int Muon_nTrackerLayers_, int Muon_nStations_, bool Muon_isPFcand_, int Muon_pdgId_,int Muon_charge_, float Muon_pfRelIso03_all_
                         ){
         Muon_pt.push_back(Muon_pt_); 
         Muon_phi.push_back(Muon_phi_);
@@ -110,6 +110,7 @@ class H4LTools {
         Muon_sip3d.push_back(Muon_sip3d_);
         Muon_ptErr.push_back(Muon_ptErr_);
         Muon_nTrackerLayers.push_back(Muon_nTrackerLayers_);
+        Muon_nStations.push_back(Muon_nStations_);
         Muon_isPFcand.push_back(Muon_isPFcand_);
         Muon_pdgId.push_back(Muon_pdgId_);
         Muon_charge.push_back(Muon_charge_);
@@ -240,6 +241,10 @@ class H4LTools {
       std::vector<float> lep_eta;
       std::vector<float> lep_phi;
       std::vector<float> lep_mass;
+      std::vector<float> lepFSR_pt;
+      std::vector<float> lepFSR_eta;
+      std::vector<float> lepFSR_phi;
+      std::vector<float> lepFSR_mass;
       std::vector<int> lep_matchedR03_PdgId;
       std::vector<float> lep_RelIsoNoFSR;
       std::vector<int> lep_matchedR03_MomId;
@@ -267,6 +272,7 @@ class H4LTools {
         lep_genindex.clear();
         lep_tightId.clear();lep_RelIsoNoFSR.clear();
         lep_pt.clear();lep_eta.clear(); lep_phi.clear();lep_mass.clear();lep_matchedR03_PdgId.clear();lep_matchedR03_MomId.clear();lep_matchedR03_MomMomId.clear();lep_id.clear();
+        lepFSR_pt.clear();lepFSR_eta.clear(); lepFSR_phi.clear();lepFSR_mass.clear();
         Muonindex.clear();
         AllEid.clear();
         AllMuid.clear();
@@ -360,7 +366,7 @@ class H4LTools {
       std::vector<int> Jet_jetId,Jet_puId;
 
       std::vector<float> Muon_pt,Muon_phi,Muon_eta,Muon_mass,Muon_dxy,Muon_dz,Muon_sip3d,Muon_ptErr,Muon_pfRelIso03_all;
-      std::vector<int> Muon_nTrackerLayers,Muon_genPartIdx,Muon_pdgId,Muon_charge;
+      std::vector<int> Muon_nStations,Muon_nTrackerLayers,Muon_genPartIdx,Muon_pdgId,Muon_charge;
       std::vector<bool> Muon_isTracker,Muon_isGlobal,Muon_isPFcand;
 
       std::vector<float> FsrPhoton_dROverEt2,FsrPhoton_phi,FsrPhoton_pt,FsrPhoton_relIso03,FsrPhoton_eta,FsrPhoton_muonIdx,FsrPhoton_electronIdx;

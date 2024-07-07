@@ -39,7 +39,7 @@ def main():
     testfilelist = []
     modulesToRun = []
     isMC = True
-    isFSR = False
+    isFSR = True
     isFiducialAna = True
     year = None
     cfgFile = None
