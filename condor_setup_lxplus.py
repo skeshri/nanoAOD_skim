@@ -41,7 +41,7 @@ def main(args):
 
     # Create log files
     import infoCreaterGit
-    SumamryOfCurrentSubmission = raw_input("\n\nWrite summary for current job submission: ")
+    SumamryOfCurrentSubmission = input("\n\nWrite summary for current job submission: ") # in python3 raw_input is renamed as input
     infoLogFiles = infoCreaterGit.BasicInfoCreater('summary.dat',SumamryOfCurrentSubmission)
     infoLogFiles.generate_git_patch_and_log()
 
@@ -181,13 +181,13 @@ echo "Running on: `uname -a`"
 echo "System software: `cat /etc/redhat-release`"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 echo "====> List input arguments : "
-echo "1. nanoAOD ROOT file: ${1}"
-echo "2. EOS path to store output root file: ${2}"
-echo "3. EOS path from where we copy CMSSW: ${3}"
-echo "4. Output root file name: ${4}"
+echo "1. nanoAOD ROOT file: ${{1}}"
+echo "2. EOS path to store output root file: ${{2}}"
+echo "3. EOS path from where we copy CMSSW: ${{3}}"
+echo "4. Output root file name: ${{4}}"
 echo "========================================="
 echo "copy cmssw tar file from store area"
-xrdcp -f root://eosuser.cern.ch/${3}/{CMSSWRel}.tgz .
+xrdcp -f root://eosuser.cern.ch/${{3}}/{CMSSWRel}.tgz .
 tar -xf {CMSSWRel}.tgz
 rm {CMSSWRel}.tgz
 cd {CMSSWRel}/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/{TOP_LEVEL_DIR_NAME}/
@@ -200,22 +200,22 @@ echo "..."
 cat post_proc.py
 echo "..."
 echo "========================================="
-{command} --entriesToRun 0 --inputFile ${1} --outputFile ${4}_hadd.root --cutFlowFile ${4}.json --DownloadFileToLocalThenRun True {no_syst_flag}
+{command} --entriesToRun 0 --inputFile ${{1}} --outputFile ${{4}}_hadd.root --cutFlowFile ${{4}}.json --DownloadFileToLocalThenRun True {no_syst_flag}
 echo "====> List root files : "
 ls -ltrh *.root
 ls -ltrh *.json
 echo "====> copying *.root file to stores area..."
-if ls ${4}_hadd.root 1> /dev/null 2>&1; then
-    echo "File ${4}_hadd.root exists. Copy this."
-    echo "xrdcp -f ${4}_hadd.root root://eosuser.cern.ch/${2}/${4}_Skim.root"
-    xrdcp -f ${4}_hadd.root root://eosuser.cern.ch/${2}/${4}_Skim.root
-    echo "xrdcp -f ${4}.json root://eosuser.cern.ch/${2}/cutFlow_${4}.json"
-    xrdcp -f ${4}.json root://eosuser.cern.ch/${2}/cutFlow_${4}.json
+if ls ${{4}}_hadd.root 1> /dev/null 2>&1; then
+    echo "File ${{4}}_hadd.root exists. Copy this."
+    echo "xrdcp -f ${{4}}_hadd.root root://eosuser.cern.ch/${{2}}/${{4}}_Skim.root"
+    xrdcp -f ${{4}}_hadd.root root://eosuser.cern.ch/${{2}}/${{4}}_Skim.root
+    echo "xrdcp -f ${{4}}.json root://eosuser.cern.ch/${{2}}/cutFlow_${{4}}.json"
+    xrdcp -f ${{4}}.json root://eosuser.cern.ch/${{2}}/cutFlow_${{4}}.json
 else
-    echo "Something wrong: file ${4}_hadd.root does not exists, please check the post_proc.py script."
+    echo "Something wrong: file ${{4}}_hadd.root does not exists, please check the post_proc.py script."
 fi
 rm *.root
-cd ${_CONDOR_SCRATCH_DIR}
+cd ${{_CONDOR_SCRATCH_DIR}}
 rm -rf {CMSSWRel}
 """.format(
     CMSSWRel=CMSSWRel,

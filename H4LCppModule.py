@@ -34,11 +34,11 @@ class HZZAnalysisCppProducer(Module):
         libraries = [
             'libJHUGenMELAMELA.so',
             'libjhugenmela.so',
-            'libmcfm_707.so',
+            'libmcfm_710.so',
             'libcollier.so',
         ]
         for lib in libraries:
-            fullPath = os.path.join(base_path, 'JHUGenMELA/MELA/data/slc7_amd64_gcc700', lib)
+            fullPath = os.path.join(base_path, 'JHUGenMELA/MELA/data/el9_amd64_gcc12', lib)
             ROOT.gSystem.Load(fullPath)
 
         # Load the yaml-cpp library

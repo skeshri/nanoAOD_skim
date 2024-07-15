@@ -43,7 +43,7 @@ class GenVarsProducer(Module):
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
     def getParentID(self,particle,genParticles):
-        if particle.genPartIdxMother is -1: #No parent in record, return ID of original particle
+        if particle.genPartIdxMother == -1: #No parent in record, return ID of original particle
             return particle.pdgId
         elif genParticles[particle.genPartIdxMother].pdgId is particle.pdgId: #'Parent' is self, keep iterating
             return self.getParentID(genParticles[particle.genPartIdxMother],genParticles)
@@ -56,7 +56,7 @@ class GenVarsProducer(Module):
         genmet = Object(event, "GenMET", None)
         GenMET_pt = None
         GenMET_pt = genmet.pt
-        print("GenMET_pt: {}".format(GenMET_pt)) 
+        print("GenMET_pt: {}".format(GenMET_pt))
         # Loop over gen particles to find Higgs and its each respective decay products. Then keep all kinematics information of Higgs and its respective decay products along with its PDG ID and status flag.
 
         higgs = None
@@ -163,7 +163,7 @@ class GenVarsProducer(Module):
             v2_decay_products_eta = [0.]
             v2_decay_products_phi = [0.]
             v2_decay_products_mass = [-1.]
-        
+
         ##Calculating Pz of neutrino
         Pz_list = []
         Pz = ROOT.TMath.Sqrt((v2_mass ** 2) / 4 - GenMET_pt)
@@ -171,12 +171,12 @@ class GenVarsProducer(Module):
         print("Pz:", Pz_list)
         #Pz = ROOT.TMath.Sqrt(((v2_mass * v2_mass)/4) - (v2_decay_products_pt * v2_decay_products_pt))
         #print("Pz of neutrino in lab frame (MC): {}".format(Pz))
-     
+
         boost_diff = boost_Z1 - boost_Z2
         boost_diff_mag = boost_Z1_mag - boost_Z2_mag
-        print("delta boost: {}".format(boost_diff_mag)) 
+        print("delta boost: {}".format(boost_diff_mag))
 
-        
+
         self.out.fillBranch("Pz_neutrino", Pz)
         self.out.fillBranch("BoostZ1", boost_Z1_mag)
         self.out.fillBranch("BoostZ2", boost_Z2_mag)
