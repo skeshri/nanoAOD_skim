@@ -167,6 +167,17 @@ class H4LTools {
       std::vector<float> MuonFsrPt();
       std::vector<float> MuonFsrEta();
       std::vector<float> MuonFsrPhi();
+      std::vector<float> Z_pt;
+      std::vector<float> Z_eta;
+      std::vector<float> Z_phi;
+      std::vector<float> Z_mass;
+      std::vector<float> Z_noFSR_pt;
+      std::vector<float> Z_noFSR_eta;
+      std::vector<float> Z_noFSR_phi;
+      std::vector<float> Z_noFSR_mass;
+      std::vector<int> Z_lepindex1;
+      std::vector<int> Z_lepindex2;
+      void findHiggsCandidate();
       std::vector<unsigned int> SelectedJets(std::vector<unsigned int> ele, std::vector<unsigned int> mu);
       std::vector<TLorentzVector> Electrondressed_Run3;
       std::vector<TLorentzVector> Muondressed_Run3;
@@ -232,7 +243,7 @@ class H4LTools {
       std::vector<bool> muid;
       std::vector<bool> istightele;
       std::vector<bool> istightmu;
-      
+      float Z_Hindex[2];
       std::vector<int> TightEleindex;
       std::vector<int> TightMuindex;
       std::vector<int> lep_genindex;
@@ -252,6 +263,7 @@ class H4LTools {
       std::vector<int> lep_id;
       std::vector<int> Elelep_index;
       std::vector<int> Mulep_index;
+      float massZ1, massZ2, mass4l = -1;
       int lep_Hindex[4];
       TLorentzVector Z1;
       TLorentzVector Z1nofsr;
@@ -259,6 +271,8 @@ class H4LTools {
       TLorentzVector Z2nofsr;
       TLorentzVector ZZsystem;
       TLorentzVector ZZsystemnofsr;
+      TLorentzVector Z1Vec,Z2Vec,HVec;
+      bool foundHiggsCandidate;
       void Initialize(){
         looseEle.clear();
         looseMu.clear();
@@ -291,6 +305,8 @@ class H4LTools {
         Jet_jetId.clear();Jet_puId.clear();
         FsrPhoton_dROverEt2.clear();FsrPhoton_phi.clear();FsrPhoton_eta.clear();FsrPhoton_pt.clear();FsrPhoton_relIso03.clear();
         GenPart_pt.clear();
+        Z_pt.clear();Z_eta.clear();Z_phi.clear(); Z_mass.clear();Z_noFSR_pt.clear(); Z_noFSR_eta.clear();
+        Z_noFSR_phi.clear(); Z_noFSR_mass.clear(); Z_lepindex1.clear(); Z_lepindex2.clear();
         Zlist.clear();
         Zlistnofsr.clear();
         Zflavor.clear();
@@ -309,10 +325,15 @@ class H4LTools {
         Elechg.clear(); Muchg.clear(); Muiso.clear();Eiso.clear(); Eid.clear(); muid.clear(); istightele.clear(); istightmu.clear(); TightEleindex.clear(); TightMuindex.clear();
         nElectron = 0; nMuon = 0; nJet = 0; nFsrPhoton = 0; nGenPart = 0; mass3l = -99;
         for (int i=0; i<4; i++) {lep_Hindex[i]=-1;}
+        Z_Hindex[0]=-1;Z_Hindex[1]=-1;
         nTightEle = 0; nTightMu = 0; nTightEleChgSum = 0; nTightMuChgSum = 0; nTightZ = 0; nfailedleptons=0;
-        Z1LZ1index = -1;
+        Z1LZ1index = -1;foundHiggsCandidate=false;
         Lepointer = 0; njets_pt30_eta4p7=0;
+        massZ1 = -1;massZ2 = -1;mass4l = -1;
         Z1.SetPtEtaPhiM(0,0,0,0);
+        Z1Vec.SetPtEtaPhiM(0,0,0,0);
+        Z2Vec.SetPtEtaPhiM(0,0,0,0);
+        HVec.SetPtEtaPhiM(0,0,0,0);
         Z1nofsr.SetPtEtaPhiM(0,0,0,0);
         Z2.SetPtEtaPhiM(0,0,0,0);
         Z2nofsr.SetPtEtaPhiM(0,0,0,0);

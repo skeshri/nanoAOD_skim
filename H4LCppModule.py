@@ -14,6 +14,10 @@ class HZZAnalysisCppProducer(Module):
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libjhugenmela.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libmcfm_707.so" % base)
         ROOT.gSystem.Load("%s/JHUGenMELA/MELA/data/slc7_amd64_gcc700/libcollier.so" % base)
+        yaml_cpp_path = os.path.join(base, "external/yaml-cpp")
+        ROOT.gSystem.AddIncludePath("-I%s/include" % yaml_cpp_path)
+        yaml_cpp_lib_path = os.path.join(yaml_cpp_path, "build")
+        ROOT.gSystem.Load(os.path.join(yaml_cpp_lib_path, "libyaml-cpp.so"))
         if "/H4LTools_cc.so" not in ROOT.gSystem.GetLibraries():
             print("Load H4LTools C++ module")
             base = "$CMSSW_BASE/src/PhysicsTools/NanoAODTools/python/postprocessing/analysis/nanoAOD_skim"
@@ -278,8 +282,8 @@ class HZZAnalysisCppProducer(Module):
                 Muon_Fsr_eta.append(Muon_Fsr_eta_vec[i])
                 Muon_Fsr_phi.append(Muon_Fsr_phi_vec[i])
 
-
-        foundZZCandidate = self.worker.ZZSelection()
+        self.worker.findHiggsCandidate()
+        foundZZCandidate = self.worker.passedFullSelection
         passedFullSelection = self.worker.passedFullSelection
         passedZ1LSelection = self.worker.passedZ1LSelection
         passedZXCRSelection = self.worker.passedZXCRSelection
@@ -389,11 +393,11 @@ class HZZAnalysisCppProducer(Module):
             etaL3, etaL4 = etaL4, etaL3
             phiL3, phiL4 = phiL4, phiL3
             massL3, massL4 = massL4, massL3
-        if passedFullSelection:
+        if (passedFullSelection | passedZXCRSelection):
             pT4l = self.worker.ZZsystem.Pt()
             eta4l = self.worker.ZZsystem.Eta()
             phi4l = self.worker.ZZsystem.Phi()
-            mass4l = self.worker.ZZsystem.M()
+            mass4l = self.worker.mass4l
             rapidity4l = self.worker.ZZsystem.Rapidity()
         njets_pt30_eta4p7 = self.worker.njets_pt30_eta4p7
         if self.worker.flag4e:
@@ -402,11 +406,11 @@ class HZZAnalysisCppProducer(Module):
             mass4e = mass4l
         if self.worker.flag4mu:
             mass4mu = mass4l
-        if (self.worker.isFSR==False & passedFullSelection):
+        if (self.worker.isFSR==False & (passedFullSelection | passedZXCRSelection)):
             pT4l = self.worker.ZZsystemnofsr.Pt()
             eta4l = self.worker.ZZsystemnofsr.Eta()
             phi4l = self.worker.ZZsystemnofsr.Phi()
-            mass4l = self.worker.ZZsystemnofsr.M()
+            mass4l = self.worker.mass4l
             rapidity4l = self.worker.ZZsystemnofsr.Rapidity()
         self.out.fillBranch("mass4l",mass4l)
         self.out.fillBranch("mass4e",mass4e)

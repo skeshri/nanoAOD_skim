@@ -1361,6 +1361,499 @@ bool H4LTools::ZZSelection(){
     
 
 }
+void H4LTools::findHiggsCandidate()
+{
+
+    using namespace std;
+    float mZ1Low, mZ2Low, mZ1High, mZ2High, m4lLowCut;
+    mZ1Low=40;mZ2Low=12;mZ1High=120;mZ2High=120;m4lLowCut=70;
+    bool isCode4l=true;
+    bool doMela=true;
+    bool bestCandMela=true;
+    
+
+    const double Zmass = 91.1876;
+
+    unsigned int Nlep = lepFSR_pt.size();
+
+    // First, make all Z candidates including any FSR photons
+    int n_Zs=0;
+    vector<int> Z_lepindex1;
+    vector<int> Z_lepindex2;
+
+    for(unsigned int i=0; i<Nlep; i++){
+        //if (!(lep_tightId[i])) continue; // checking tight lepton ID
+        //if (lep_RelIsoNoFSR[i]>((abs(lep_id[i])==11) ? isoCutEl : isoCutMu)) continue; // checking iso with FSR removed
+        for(unsigned int j=i+1; j<Nlep; j++){
+            //if (!(lep_tightId[j])) continue; // checking tight lepton ID
+            //if (lep_RelIsoNoFSR[j]>((abs(lep_id[j])==11) ? isoCutEl : isoCutMu)) continue; // checking iso with FSR removed
+
+            // same flavor opposite charge
+            if((lep_id[i]+lep_id[j])!=0) continue;
+
+// std::cout<<i<<"\t"<<j<<"\t"<<std::endl;
+
+            TLorentzVector li, lj;
+            li.SetPtEtaPhiM(lep_pt[i],lep_eta[i],lep_phi[i],lep_mass[i]);
+            lj.SetPtEtaPhiM(lep_pt[j],lep_eta[j],lep_phi[j],lep_mass[j]);
+
+            TLorentzVector lifsr, ljfsr;
+            lifsr.SetPtEtaPhiM(lepFSR_pt[i],lepFSR_eta[i],lepFSR_phi[i],lepFSR_mass[i]);
+            ljfsr.SetPtEtaPhiM(lepFSR_pt[j],lepFSR_eta[j],lepFSR_phi[j],lepFSR_mass[j]);
+
+            TLorentzVector liljfsr = lifsr+ljfsr;
+
+            TLorentzVector Z, Z_noFSR;
+            Z = lifsr+ljfsr;
+            Z_noFSR = li+lj;
+            
+
+          if (Z.M()>0.0) {
+                n_Zs++;
+                Z_pt.push_back(Z.Pt());
+                Z_eta.push_back(Z.Eta());
+                Z_phi.push_back(Z.Phi());
+                Z_mass.push_back(Z.M());
+                Z_noFSR_pt.push_back(Z_noFSR.Pt());
+                Z_noFSR_eta.push_back(Z_noFSR.Eta());
+                Z_noFSR_phi.push_back(Z_noFSR.Phi());
+                Z_noFSR_mass.push_back(Z_noFSR.M());
+                Z_lepindex1.push_back(i);
+                Z_lepindex2.push_back(j);
+//                 if(fabs(lep_id[i]) == 13 && fabs(lep_id[j]) == 13) ZfromMuons.push_back(1);
+//                 else if(fabs(lep_id[i]) == 11 && fabs(lep_id[j]) == 11) ZfromMuons.push_back(0);
+//                 else ZfromMuons.push_back(999);
+                
+            } 
+
+        } // lep i
+    } // lep j
+   
+    if( (Muon_charge.size() + Electron_charge.size()) < 4 ) return;
+        
+
+    bool properLep_ID = false; int Nmm = 0; int Nmp = 0; int Nem = 0; int Nep = 0;
+    for(unsigned int i =0; i<Muonindex.size(); i++) {
+        if(Muon_charge[Muonindex[i]]<0) Nmm = Nmm+1;
+        if(Muon_charge[Muonindex[i]]>0) Nmp = Nmp+1;
+    }
+    for(unsigned int i =0; i<Electronindex.size(); i++) {
+        if(Electron_charge[Electronindex[i]]<0) Nem = Nem+1;
+        if(Electron_charge[Electronindex[i]]>0) Nep = Nep+1;
+    }
+    
+    if(Nmm>=2 && Nmp>=2) properLep_ID = true; //4mu
+    if(Nem>=2 && Nep>=2) properLep_ID = true; //4e
+    if(Nmm>0 && Nmp>0 && Nem>0 && Nep>0) properLep_ID = true; //2e2mu
+    
+    // four proper charge flavor combination
+    if(!properLep_ID) return;
+
+    // Consider all ZZ candidates
+    double minZ1DeltaM_SR=9999.9; double minZ1DeltaM_CR=99999.9;
+    double maxZ2SumPt_SR=0.0; double maxZ2SumPt_CR=0.0;
+    double max_D_bkg_kin_SR=0.0; double max_D_bkg_kin_CR=0.0;
+    bool foundSRCandidate=false;
+
+    for (int i=0; i<n_Zs; i++) {
+        for (int j=i+1; j<n_Zs; j++) {
+        
+ 
+            int i1 = Z_lepindex1[i]; int i2 = Z_lepindex2[i];                            
+            int j1 = Z_lepindex1[j]; int j2 = Z_lepindex2[j];                            
+
+            if (i1 == j1 || i1 == j2 || i2 == j1 || i2 == j2) continue; // if there common leptons
+
+// 	std::cout<<"\t"<<i1<<"\t"<<i2<<"\t"<<std::endl;
+// 	std::cout<<"\t"<<j1<<"\t"<<j2<<"\t"<<std::endl;
+	
+
+
+            TLorentzVector lep_i1, lep_i2, lep_j1, lep_j2;
+            lep_i1.SetPtEtaPhiM(lepFSR_pt[i1],lepFSR_eta[i1],lepFSR_phi[i1],lepFSR_mass[i1]);
+            lep_i2.SetPtEtaPhiM(lepFSR_pt[i2],lepFSR_eta[i2],lepFSR_phi[i2],lepFSR_mass[i2]);
+            lep_j1.SetPtEtaPhiM(lepFSR_pt[j1],lepFSR_eta[j1],lepFSR_phi[j1],lepFSR_mass[j1]);
+            lep_j2.SetPtEtaPhiM(lepFSR_pt[j2],lepFSR_eta[j2],lepFSR_phi[j2],lepFSR_mass[j2]);
+
+            TLorentzVector lep_i1_nofsr, lep_i2_nofsr, lep_j1_nofsr, lep_j2_nofsr;
+            lep_i1_nofsr.SetPtEtaPhiM(lep_pt[i1],lep_eta[i1],lep_phi[i1],lep_mass[i1]);
+            lep_i2_nofsr.SetPtEtaPhiM(lep_pt[i2],lep_eta[i2],lep_phi[i2],lep_mass[i2]);
+            lep_j1_nofsr.SetPtEtaPhiM(lep_pt[j1],lep_eta[j1],lep_phi[j1],lep_mass[j1]);
+            lep_j2_nofsr.SetPtEtaPhiM(lep_pt[j2],lep_eta[j2],lep_phi[j2],lep_mass[j2]);
+
+            TLorentzVector Zi, Zj;
+            Zi.SetPtEtaPhiM(Z_pt[i],Z_eta[i],Z_phi[i],Z_mass[i]);
+            Zj.SetPtEtaPhiM(Z_pt[j],Z_eta[j],Z_phi[j],Z_mass[j]);
+                        
+
+            TLorentzVector Z1, Z2;
+            int Z1index, Z2index;
+            int Z1_lepindex[2] = {0,0};
+            int Z2_lepindex[2] = {0,0};
+            double Z1DeltaM, Z2SumPt;
+
+//////////////////////////////////////
+////////////// PAPER approach:
+////////////// 1) check tight leptons
+////////////// 2) closest Z boson to Z mass PDG
+//////////////////////////////////////
+
+			bool Iso11, Iso12, Iso21, Iso22;
+
+            if (lep_RelIsoNoFSR[i1]>((abs(lep_id[i1])==11) ? 9999 : 0.35)) Iso11 = 0;
+            else Iso11 = 1;
+            if (lep_RelIsoNoFSR[i2]>((abs(lep_id[i2])==11) ? 9999 :  0.35)) Iso12 = 0;
+            else Iso12 = 1;
+            if (lep_RelIsoNoFSR[j1]>((abs(lep_id[j1])==11) ? 9999 :  0.35)) Iso21 = 0;
+            else Iso21 = 1;
+            if (lep_RelIsoNoFSR[j2]>((abs(lep_id[j2])==11) ? 9999 :  0.35)) Iso22 = 0;
+            else Iso22 = 1;
+            
+// 				std::cout<<"\t\t"<<i1<<"\t"<<i2<<"\t"<<Zi.M()<<std::endl;
+// 				std::cout<<"\t\t"<<j1<<"\t"<<j2<<"\t"<<Zj.M()<<std::endl;
+
+// 				std::cout<<"ID = \t\t\t"<<lep_id[i1]<<"\t"<<lep_id[i2]<<"\t"<<lep_id[j1]<<"\t"<<lep_id[j2]<<std::endl;
+// 				std::cout<<"tight = \t\t\t"<<lep_tightId[i1]<<"\t"<<lep_tightId[i2]<<"\t"<<lep_tightId[j1]<<"\t"<<lep_tightId[j2]<<std::endl;
+// 				std::cout<<"ISO = \t\t\t"<<lep_RelIsoNoFSR[i1]<<"\t"<<lep_RelIsoNoFSR[i2]<<"\t"<<lep_RelIsoNoFSR[j1]<<"\t"<<lep_RelIsoNoFSR[j2]<<std::endl;
+// 				std::cout<<"isISO = \t\t\t"<<Iso11<<"\t"<<Iso12<<"\t"<<Iso21<<"\t"<<Iso22<<std::endl;
+// 	            if (abs(Zi.M()-Zmass)<abs(Zj.M()-Zmass))
+// 	            	std::cout<<"Zi closest than Zj"<<std::endl;
+//             	if (abs(Zj.M()-Zmass)<abs(Zi.M()-Zmass))
+// 	            	std::cout<<"Zj closest than Zi"<<std::endl;
+
+            if (lep_tightId[i1] && lep_tightId[i2]
+            	&& Iso11 && Iso12) { 
+					Z1index = i; Z2index = j;
+					Z1 = Zi; Z2 = Zj;                 
+					if (lep_i1.Pt()>lep_i2.Pt()) { Z1_lepindex[0] = i1;  Z1_lepindex[1] = i2; }
+					else { Z1_lepindex[0] = i2;  Z1_lepindex[1] = i1; }                
+					if (lep_j1.Pt()>lep_j2.Pt()) { Z2_lepindex[0] = j1;  Z2_lepindex[1] = j2; } 
+					else { Z2_lepindex[0] = j2;  Z2_lepindex[1] = j1; }                
+					Z1DeltaM = abs(Zi.M()-Zmass); 
+					Z2SumPt = lep_j1_nofsr.Pt()+lep_j2_nofsr.Pt();
+            }
+            else if(lep_tightId[j1] && lep_tightId[j2]
+            	&& Iso21 && Iso22) {
+					Z1index = j; Z2index = i;
+					Z1 = Zj; Z2 = Zi; 
+					if (lep_j1.Pt()>lep_j2.Pt()) { Z1_lepindex[0] = j1;  Z1_lepindex[1] = j2; }
+					else { Z1_lepindex[0] = j2;  Z1_lepindex[1] = j1; }
+					if (lep_i1.Pt()>lep_i2.Pt()) { Z2_lepindex[0] = i1;  Z2_lepindex[1] = i2; }
+					else { Z2_lepindex[0] = i2;  Z2_lepindex[1] = i1; }
+					Z1DeltaM = abs(Zj.M()-Zmass); 
+					Z2SumPt = lep_i1_nofsr.Pt()+lep_i2_nofsr.Pt();
+            }    
+            else{
+// 				std::cout<<"no tight Z bosons"<<std::endl;
+            	continue;     
+            }
+
+// 				std::cout<<"\t\t\t"<<i1<<"\t"<<i2<<"\t"<<Zi.M()<<std::endl;
+// 				std::cout<<"\t\t\t"<<j1<<"\t"<<j2<<"\t"<<Zj.M()<<std::endl;
+
+if (lep_tightId[i1] && lep_tightId[i2]
+      	&& Iso11 && Iso12 && lep_tightId[j1] && lep_tightId[j2]
+       	&& Iso21 && Iso22) {
+
+				if (abs(Zi.M()-Zmass)<abs(Zj.M()-Zmass)) { 
+					Z1index = i; Z2index = j;
+					Z1 = Zi; Z2 = Zj;                 
+					if (lep_i1.Pt()>lep_i2.Pt()) { Z1_lepindex[0] = i1;  Z1_lepindex[1] = i2; }
+					else { Z1_lepindex[0] = i2;  Z1_lepindex[1] = i1; }                
+					if (lep_j1.Pt()>lep_j2.Pt()) { Z2_lepindex[0] = j1;  Z2_lepindex[1] = j2; } 
+					else { Z2_lepindex[0] = j2;  Z2_lepindex[1] = j1; }                
+					Z1DeltaM = abs(Zi.M()-Zmass); 
+					Z2SumPt = lep_j1_nofsr.Pt()+lep_j2_nofsr.Pt();
+		        	
+				}
+				else { 
+					Z1index = j; Z2index = i;
+					Z1 = Zj; Z2 = Zi; 
+					if (lep_j1.Pt()>lep_j2.Pt()) { Z1_lepindex[0] = j1;  Z1_lepindex[1] = j2; }
+					else { Z1_lepindex[0] = j2;  Z1_lepindex[1] = j1; }
+					if (lep_i1.Pt()>lep_i2.Pt()) { Z2_lepindex[0] = i1;  Z2_lepindex[1] = i2; }
+					else { Z2_lepindex[0] = i2;  Z2_lepindex[1] = i1; }
+					Z1DeltaM = abs(Zj.M()-Zmass); 
+					Z2SumPt = lep_i1_nofsr.Pt()+lep_i2_nofsr.Pt();
+		        	
+}
+
+//////////////////////////////////////
+////////////// PAPER approach:
+////////////// 1) check tight leptons
+////////////// 2) closest Z boson to Z mass PDG
+//////////////////////////////////////
+
+
+
+//////////////////////////////////////
+////////////// BBBBF approach:
+////////////// 1) closest Z boson to Z mass PDG
+////////////// 2) check tight leptons
+//////////////////////////////////////
+/*
+            if (abs(Zi.M()-Zmass)<abs(Zj.M()-Zmass)) { 
+                Z1index = i; Z2index = j;
+                Z1 = Zi; Z2 = Zj;                 
+                if (lep_i1.Pt()>lep_i2.Pt()) { Z1_lepindex[0] = i1;  Z1_lepindex[1] = i2; }
+                else { Z1_lepindex[0] = i2;  Z1_lepindex[1] = i1; }                
+                if (lep_j1.Pt()>lep_j2.Pt()) { Z2_lepindex[0] = j1;  Z2_lepindex[1] = j2; } 
+                else { Z2_lepindex[0] = j2;  Z2_lepindex[1] = j1; }                
+                Z1DeltaM = abs(Zi.M()-Zmass); 
+                Z2SumPt = lep_j1_nofsr.Pt()+lep_j2_nofsr.Pt();
+//                 if(isMuonZi) isMuon = true;
+//                 else isMuon = false;
+            }
+            else { 
+                Z1index = j; Z2index = i;
+                Z1 = Zj; Z2 = Zi; 
+                if (lep_j1.Pt()>lep_j2.Pt()) { Z1_lepindex[0] = j1;  Z1_lepindex[1] = j2; }
+                else { Z1_lepindex[0] = j2;  Z1_lepindex[1] = j1; }
+                if (lep_i1.Pt()>lep_i2.Pt()) { Z2_lepindex[0] = i1;  Z2_lepindex[1] = i2; }
+                else { Z2_lepindex[0] = i2;  Z2_lepindex[1] = i1; }
+                Z1DeltaM = abs(Zj.M()-Zmass); 
+                Z2SumPt = lep_i1_nofsr.Pt()+lep_i2_nofsr.Pt();
+//                 if(isMuonZj) isMuon = true;
+//                 else isMuon = false;
+            }         
+
+            if (verbose) {cout<<"ZZ candidate Z1->M() "<<Z1.M()<<" Z2->M() "<<Z2.M()<<endl;}
+*/
+//////////////////////////////////////
+////////////// BBBBF approach:
+////////////// 1) closest Z boson to Z mass PDG
+////////////// 2) check tight leptons
+//////////////////////////////////////
+
+
+            // Check isolation cut (without FSR ) for Z1 leptons
+            if (lep_RelIsoNoFSR[Z1_lepindex[0]]>((abs(lep_id[Z1_lepindex[0]])==11) ? 9999 : 0.35)) continue; // checking iso with FSR removed
+            if (lep_RelIsoNoFSR[Z1_lepindex[1]]>((abs(lep_id[Z1_lepindex[1]])==11) ? 9999 : 0.35)) continue; // checking iso with FSR removed
+            // Check tight ID cut for Z1 leptons
+            if (!(lep_tightId[Z1_lepindex[0]])) continue; // checking tight lepton ID
+            if (!(lep_tightId[Z1_lepindex[1]])) continue; // checking tight lepton ID
+          
+            // Check Leading and Subleading pt Cut
+            vector<double> allPt;
+            allPt.push_back(lep_i1_nofsr.Pt()); allPt.push_back(lep_i2_nofsr.Pt());
+            allPt.push_back(lep_j1_nofsr.Pt()); allPt.push_back(lep_j2_nofsr.Pt());
+            std::sort(allPt.begin(), allPt.end());
+            if (allPt[3]<20 || allPt[2]<10) continue;
+            
+            // Check dR(li,lj)>0.02 for any i,j
+            vector<double> alldR;
+            alldR.push_back(lep_i1_nofsr.DeltaR(lep_i2_nofsr));
+            alldR.push_back(lep_i1_nofsr.DeltaR(lep_j1_nofsr));
+            alldR.push_back(lep_i1_nofsr.DeltaR(lep_j2_nofsr));
+            alldR.push_back(lep_j1_nofsr.DeltaR(lep_i2_nofsr));
+            alldR.push_back(lep_i2_nofsr.DeltaR(lep_j2_nofsr));
+            alldR.push_back(lep_j1_nofsr.DeltaR(lep_j2_nofsr));            
+            if (*min_element(alldR.begin(),alldR.end())<0.02) continue;
+
+            // Check M(l+,l-)>4.0 GeV for any OS pair
+            // Do not include FSR photons
+            vector<double> allM;
+            TLorentzVector i1i2;
+            TLorentzVector _4l_temp;            
+            i1i2 = (lep_i1_nofsr)+(lep_i2_nofsr); allM.push_back(i1i2.M());
+            TLorentzVector j1j2;
+            j1j2 = (lep_j1_nofsr)+(lep_j2_nofsr); allM.push_back(j1j2.M());  
+            _4l_temp = Z1 + Z2; 
+
+            if (lep_id[i1]*lep_id[j1]<0) {
+                TLorentzVector i1j1;
+                i1j1 = (lep_i1_nofsr)+(lep_j1_nofsr); allM.push_back(i1j1.M());
+                TLorentzVector i2j2;
+                i2j2 = (lep_i2_nofsr)+(lep_j2_nofsr); allM.push_back(i2j2.M());
+            } else {
+                TLorentzVector i1j2;
+                i1j2 = (lep_i1_nofsr)+(lep_j2_nofsr); allM.push_back(i1j2.M());
+                TLorentzVector i2j1;
+                i2j1 = (lep_i2_nofsr)+(lep_j1_nofsr); allM.push_back(i2j1.M());
+            }
+            if (*min_element(allM.begin(),allM.end())<4.0) {passedFullSelection=false; passedZXCRSelection=false; continue;}
+
+            // Check the "smart cut": !( |mZa-mZ| < |mZ1-mZ| && mZb<12)
+            // only for 4mu or 4e ZZ candidates
+            bool passSmartCut=true;
+
+            if ( abs(lep_id[i1])==abs(lep_id[j1])) {
+                TLorentzVector Za, Zb;
+                if (lep_id[i1]==lep_id[j1]) {                  
+                    Za = (lep_i1)+(lep_j2);
+                    Zb = (lep_i2)+(lep_j1);                    
+                } else {
+                    Za = (lep_i1)+(lep_j1);
+                    Zb = (lep_i2)+(lep_j2);
+                }                
+                if ( abs(Za.M()-Zmass)<abs(Zb.M()-Zmass) ) {
+                    if ( abs(Za.M()-Zmass)<abs(Z1.M()-Zmass) && Zb.M()<mZ2Low ) passSmartCut=false;
+                }
+                else {
+                    if ( abs(Zb.M()-Zmass)<abs(Z1.M()-Zmass) && Za.M()<mZ2Low ) passSmartCut=false;
+                }
+
+            }
+            if (!passSmartCut) continue;
+            
+            if ( (Z1.M() < mZ1Low) || (Z1.M() > mZ1High) || (Z2.M() < mZ2Low) || (Z2.M() > mZ2High) ) continue;
+
+            if ( _4l_temp.M() < m4lLowCut ) continue;
+
+            // Signal region if Z2 leptons are both tight ID Iso
+            bool signalRegion=true;
+            if (lep_RelIsoNoFSR[Z2_lepindex[0]]>((abs(lep_id[Z2_lepindex[0]])==11) ? 9999 : 0.35)) signalRegion=false; // checking iso with FSR removed
+            if (lep_RelIsoNoFSR[Z2_lepindex[1]]>((abs(lep_id[Z2_lepindex[1]])==11) ? 9999 : 0.35)) signalRegion=false; // checking iso with FSR removed
+            if (!(lep_tightId[Z2_lepindex[0]])) signalRegion=false; // checking tight lepton ID
+            if (!(lep_tightId[Z2_lepindex[1]])) signalRegion=false; // checking tight lepton ID  
+            
+            // Check if this candidate has the highest D_bkg_kin
+            vector<TLorentzVector> P4s;
+            P4s.clear();
+            vector<int> tmpIDs;
+            tmpIDs.clear();
+
+            if (Z1_lepindex[0] == i1) {
+                P4s.push_back(lep_i1); P4s.push_back(lep_i2);
+                if (Z2_lepindex[0] == j1) {
+                    P4s.push_back(lep_j1); P4s.push_back(lep_j2);
+                } else {
+                    P4s.push_back(lep_j2); P4s.push_back(lep_j1);
+                }
+            } else if (Z1_lepindex[0] == i2) {
+                P4s.push_back(lep_i2); P4s.push_back(lep_i1);
+                if (Z2_lepindex[0] == j1) {
+                    P4s.push_back(lep_j1); P4s.push_back(lep_j2);
+                } else {
+                    P4s.push_back(lep_j2); P4s.push_back(lep_j1);
+                }
+            } else if (Z1_lepindex[0] == j1) {
+                P4s.push_back(lep_j1); P4s.push_back(lep_j2);
+                if (Z2_lepindex[0] == i1) {
+                    P4s.push_back(lep_i1); P4s.push_back(lep_i2);
+                } else {
+                    P4s.push_back(lep_i2); P4s.push_back(lep_i1);
+                }
+            } else if (Z1_lepindex[0] == j2) {
+                P4s.push_back(lep_j2); P4s.push_back(lep_j1);
+                if (Z2_lepindex[0] == i1) {
+                    P4s.push_back(lep_i1); P4s.push_back(lep_i2);
+                } else {
+                    P4s.push_back(lep_i2); P4s.push_back(lep_i1);
+                }
+            }
+
+            tmpIDs.push_back(lep_id[Z1_lepindex[0]]); tmpIDs.push_back(lep_id[Z1_lepindex[1]]);
+            tmpIDs.push_back(lep_id[Z2_lepindex[0]]); tmpIDs.push_back(lep_id[Z2_lepindex[1]]);
+
+            SimpleParticleCollection_t daughters;
+            daughters.push_back(SimpleParticle_t(tmpIDs[0],P4s[0]));
+            daughters.push_back(SimpleParticle_t(tmpIDs[1],P4s[1]));
+            daughters.push_back(SimpleParticle_t(tmpIDs[2],P4s[2]));
+            daughters.push_back(SimpleParticle_t(tmpIDs[3],P4s[3]));
+
+            SimpleParticleCollection_t associated;
+		    float D_bkg_kin_tmp=-999; 
+			if(isCode4l && doMela){
+// 			if(doMela){
+	            mela->setInputEvent(&daughters, &associated, 0, 0);
+    	        mela->setCurrentCandidateFromIndex(0);
+
+	            float me_0plus_JHU_tmp, me_qqZZ_MCFM_tmp;
+    	        mela->setProcess(TVar::HSMHiggs, TVar::JHUGen, TVar::ZZGG);
+	            mela->computeP(me_0plus_JHU_tmp, true);            
+    	        mela->setProcess(TVar::bkgZZ, TVar::MCFM, TVar::ZZQQB);
+        	    mela->computeP(me_qqZZ_MCFM_tmp, true);
+	            D_bkg_kin_tmp = me_0plus_JHU_tmp / (me_0plus_JHU_tmp + me_qqZZ_MCFM_tmp);
+
+    	        mela->resetInputEvent(); 
+    	    }
+            
+            bool same4l=false;
+            bool foundZ11=false; bool foundZ12=false; bool foundZ21=false; bool foundZ22=false;
+            for(int l = 0; l < 4; l++){
+                if (lep_Hindex[l]==Z1_lepindex[0]) foundZ11 = true;
+                if (lep_Hindex[l]==Z1_lepindex[1]) foundZ12 = true;
+                if (lep_Hindex[l]==Z2_lepindex[0]) foundZ21 = true;
+                if (lep_Hindex[l]==Z2_lepindex[1]) foundZ22 = true;
+            }
+            same4l = (foundZ11 && foundZ12 && foundZ21 && foundZ22);
+
+            if (signalRegion) { // Signal Region has priority
+                
+                if (!foundSRCandidate) same4l=false;                
+
+                if ( (bestCandMela && ((!same4l && D_bkg_kin_tmp>max_D_bkg_kin_SR) || (same4l && Z1DeltaM<=minZ1DeltaM_SR))) 
+                     || (!bestCandMela && Z1DeltaM<=minZ1DeltaM_SR) ) {                 
+                //if ( (!same4l && D_bkg_kin_tmp>max_D_bkg_kin_SR) || (same4l && Z1DeltaM<=minZ1DeltaM_SR) ) {
+                    
+                    max_D_bkg_kin_SR = D_bkg_kin_tmp;
+                    minZ1DeltaM_SR = Z1DeltaM;
+                    
+                    if (!bestCandMela && Z_Hindex[0]==Z1index && Z2SumPt<maxZ2SumPt_SR) continue;
+                    
+                    Z_Hindex[0] = Z1index;
+                    lep_Hindex[0] = Z1_lepindex[0];
+                    lep_Hindex[1] = Z1_lepindex[1];
+                    
+                    maxZ2SumPt_SR = Z2SumPt;
+                    Z_Hindex[1] = Z2index;
+                    lep_Hindex[2] = Z2_lepindex[0];
+                    lep_Hindex[3] = Z2_lepindex[1];
+                    
+//                     std::cout<<"H index = "<<lep_Hindex[0]<<"\t"<<lep_Hindex[1]<<std::endl;
+                    
+                    Z1Vec = Z1; Z2Vec = Z2; HVec = Z1+Z2;                   
+                    massZ1 = Z1Vec.M(); massZ2 = Z2Vec.M(); mass4l = HVec.M();
+               
+                    if (HVec.M()>m4lLowCut)  { //m4lLowCut move forward
+                        foundHiggsCandidate=true;                    
+                        foundSRCandidate=true;
+                        passedFullSelection=true;
+                    }
+                }                
+
+            } else if (!foundSRCandidate) { // Control regions get second priority
+
+                
+                if ( (bestCandMela && ((!same4l && D_bkg_kin_tmp>max_D_bkg_kin_CR) || (same4l && Z1DeltaM<=minZ1DeltaM_CR)))
+                     || (!bestCandMela && Z1DeltaM<=minZ1DeltaM_CR) ) {                 
+                //if ( (!same4l && D_bkg_kin_tmp>max_D_bkg_kin_CR) || (same4l && Z1DeltaM<=minZ1DeltaM_CR) ) {
+
+                    max_D_bkg_kin_CR = D_bkg_kin_tmp;
+                    minZ1DeltaM_CR = Z1DeltaM;
+                    
+                    if (!bestCandMela && Z_Hindex[0]==Z1index && Z2SumPt<maxZ2SumPt_CR) continue;
+
+                    Z_Hindex[0] = Z1index;
+                    lep_Hindex[0] = Z1_lepindex[0];
+                    lep_Hindex[1] = Z1_lepindex[1];
+                    
+                    maxZ2SumPt_CR = Z2SumPt;
+                    Z_Hindex[1] = Z2index;
+                    lep_Hindex[2] = Z2_lepindex[0];
+                    lep_Hindex[3] = Z2_lepindex[1];
+
+                    Z1Vec = Z1; Z2Vec = Z2; HVec = Z1+Z2;                   
+                    massZ1 = Z1Vec.M(); massZ2 = Z2Vec.M(); mass4l = HVec.M();
+
+                    if (HVec.M()>m4lLowCut){//m4lLowCut move forward 
+                        foundHiggsCandidate=true;
+                        passedZXCRSelection=true;
+                    }
+                }
+            }
+
+        } // Zj
+    } // Zi
+
+    
+
+}
+}
+
+
+
 
 float H4LTools::getDg4Constant(float ZZMass){
     return spline_g4->Eval(ZZMass);
